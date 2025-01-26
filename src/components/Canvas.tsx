@@ -1,10 +1,46 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback, useLayoutEffect } from "react";
+import "./Canvas.css";
+import { debounce } from "es-toolkit";
 
-export function Canvas({ ratio }: { ratio: string }): JSX.Element {
+const hiddenStyle = {
+    display: "none",
+};
+
+export function Canvas({ ratio }: { ratio: number }): JSX.Element {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [drawing, setDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
+
+    const saveDrawing = useCallback(() => {
+        if (!canvasRef.current || !canvasHiddenRef.current) return;
+        const context = canvasRef.current.getContext("2d");
+        const contextHidden = canvasHiddenRef.current.getContext("2d");
+        canvasHiddenRef.current.width = canvasRef.current.width;
+        canvasHiddenRef.current.height = canvasRef.current.height;
+        if (context && contextHidden) {
+            contextHidden.drawImage(canvasRef.current, 0, 0);
+        }
+    }, [canvasRef.current, canvasHiddenRef.current]);
+
+    const restoreDrawing = useCallback(() => {
+        if (!canvasRef.current || !canvasHiddenRef.current) return;
+        const context = canvasRef.current.getContext("2d");
+        const contextHidden = canvasHiddenRef.current.getContext("2d");
+        if (context && contextHidden) {
+            context.drawImage(canvasHiddenRef.current, 0, 0, canvasHiddenRef.current.width, canvasHiddenRef.current.height);
+        }
+    }, [canvasRef.current, canvasHiddenRef.current]);
+
+    const resizeCanvas = useCallback(() => {
+        if (!canvasRef.current) return;
+        saveDrawing();
+        canvasRef.current.width = canvasRef.current.parentElement!.offsetWidth;
+        canvasRef.current.height = canvasRef.current.parentElement!.offsetHeight;
+        restoreDrawing();
+    }, [canvasRef.current, saveDrawing, restoreDrawing]);
+
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -17,13 +53,25 @@ export function Canvas({ ratio }: { ratio: string }): JSX.Element {
                 contextRef.current = context;
             }
         }
-    }, []);
+    }, [canvasRef.current]);
 
-    const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    useLayoutEffect(() => {
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+        return () => {
+            window.removeEventListener("resize", resizeCanvas);
+        };
+    }, [resizeCanvas]);
+
+    const startDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+
         if (event.pointerType === "pen") {
             setIsErasing(event.button === 5);
         }
         setDrawing(true);
+        if (canvasRef.current) {
+            canvasRef.current.setPointerCapture(event.pointerId);
+        }
         if (contextRef.current) {
             contextRef.current.beginPath();
             contextRef.current.moveTo(
@@ -31,14 +79,17 @@ export function Canvas({ ratio }: { ratio: string }): JSX.Element {
                 event.nativeEvent.offsetY
             );
         }
-    };
+    }, [contextRef.current]);
 
-    const endDrawing = () => {
+    const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         setDrawing(false);
+        if (canvasRef.current) {
+            canvasRef.current.setPointerCapture(event.pointerId);
+        }
         if (contextRef.current) {
             contextRef.current.closePath();
         }
-    };
+    }, [canvasRef.current, contextRef.current]);
 
     const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
         if (!drawing || !contextRef.current) return;
@@ -62,13 +113,20 @@ export function Canvas({ ratio }: { ratio: string }): JSX.Element {
     };
     const cursor = isErasing ? "crosshair" : "pointer";
     return (
-        <canvas
-            ref={canvasRef}
-            onPointerDown={startDrawing}
-            onPointerUp={endDrawing}
-            onPointerMove={draw}
-            width={100}
-            style={{ cursor, flexBasis: ratio, height: "100%" }}
-        ></canvas>
+        <>
+            <div className="drawing-container" style={{flexGrow: ratio}}>
+                <canvas
+                    className="drawing-canvas"
+                    ref={canvasRef}
+                    onPointerDown={startDrawing}
+                    onPointerUp={endDrawing}
+                    onPointerMove={draw}
+                />
+            </div>
+            <canvas
+                className="hidden"
+                ref={canvasHiddenRef}
+                style={hiddenStyle} />
+        </>
     );
 }
