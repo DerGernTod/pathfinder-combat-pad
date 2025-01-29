@@ -1,12 +1,15 @@
 import "./CharacterMarkers.css";
+import { InitSlot } from "./components/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
+
 export function CharacterMarkers() {
     return (
         <div className="character-markers">
-            <MarkerHeading classes="init-heading">Initiative</MarkerHeading>
+            <div className="character-marker-header-bg"></div>
+            <MarkerHeading classes="init-heading">INITIATIVE</MarkerHeading>
             <MarkerHeading classes="status-heading">
-                <div className="delay"><div className="rotated-text">Delay</div></div>
-                <div className="dying">Dying</div>
+                <div className="delay"><div className="rotated-text">DELAY</div></div>
+                <div className="dying">DYING</div>
                 <div className="dying-count">
                     <div>1</div>
                     <div>2</div>
@@ -17,13 +20,12 @@ export function CharacterMarkers() {
                 className="init-content"
                 style={{ backgroundColor: "lightblue" }}
             >
-                init content
-            </div>
-            <div
-                className="status-content"
-                style={{ backgroundColor: "lightgreen" }}
-            >
-                status content
+                <InitSlot />
+                <InitSlot />
+                <InitSlot />
+                <InitSlot />
+                <div>second</div>
+                <div>third</div>
             </div>
         </div>
     );

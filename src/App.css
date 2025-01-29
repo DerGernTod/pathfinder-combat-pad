@@ -4,6 +4,11 @@
     --parchment: #eed2b0;
     --parchment-light: #e2caac;
     --gold: #b28340;
+    --grid-gap: 2px;
+}
+@font-face {
+    font-family: "Breathe Fire";
+    src: url("/Breathe Fire.otf");
 }
 * {
     box-sizing: border-box;
@@ -13,7 +18,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Calibri', sans-serif;
+    font-family: "Breathe Fire", sans-serif;
 }
 #root {
     margin: 0;
@@ -40,7 +45,6 @@ main {
     color: #333;
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
     border-top: var(--crimson) 3px solid;
     border-bottom: var(--crimson) 3px solid;
 }
@@ -83,4 +87,10 @@ main > * {
 canvas {
     border: 1px solid #333;
     background-color: peachpuff;
+}
+
+.rotated-text {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    position: absolute;
 }

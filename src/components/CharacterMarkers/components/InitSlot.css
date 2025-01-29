@@ -1,0 +1,44 @@
+.init-slot-container {
+    width: 100%;
+    height: 5rem;
+    background-color: var(--parchment);
+}
+
+.init-slot {
+    background-color: var(--crimson);
+    height: 100%;
+}
+
+.init-content-status {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    justify-content: center;
+    gap: var(--grid-gap);
+    height: 100%;
+}
+
+.init-content-status > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--crimson);
+    height: 100%;
+    width: 100%;
+}
+
+.init-content-status > div:nth-child(2) {
+    background-color: #483730;
+}
+
+.init-content-status > div:nth-child(3) {
+    background-color: #483730;
+}
+
+.init-content-status > div:nth-child(4) {
+    background-color: #2b2828;
+}
+
+.init-content > *:nth-child(2n) .init-slot {
+    background-color: var(--crimson-light);
+}

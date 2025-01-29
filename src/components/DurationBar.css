@@ -1,0 +1,42 @@
+.duration-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background-color: var(--gold);
+    flex-basis: 25px;
+    font-size: 8pt;
+    flex-grow: 0;
+    color: white;
+    text-shadow: 1px 1px 2px black, -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black;
+    border-right: 10px solid var(--crimson);
+}
+
+.pad {
+    flex-grow: 0;
+    flex-basis: 10px;
+    background-color: var(--gold);
+    border-left: 3px solid var(--crimson);
+    border-right: 3px solid var(--crimson);
+}
+
+.duration-label {
+    font-weight: bold;
+    flex-grow: 0;
+    flex-basis: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.duration-numbers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-grow: 1;
+}
+
+.duration-number {
+    text-align: center;
+}

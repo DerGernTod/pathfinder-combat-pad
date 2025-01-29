@@ -3,6 +3,7 @@
 import "./App.css";
 import { Canvas } from "./components/Canvas";
 import { CharacterMarkers } from "./components/CharacterMarkers/CharacterMarkers";
+import { DurationBar } from "./components/DurationBar";
 
 function App() {
     // const [greetMsg, setGreetMsg] = useState("");
@@ -20,7 +21,7 @@ function App() {
                 <Canvas style={{flexBasis: "75px", flexGrow: 0}} />
                 <CharacterMarkers />
                 <Canvas style={{flexGrow: 8}} />
-                <div style={{ flexBasis: "75px", flexGrow: 0, backgroundColor: "var(--gold)" }}>d u r a t i o n</div>
+                <DurationBar />
                 {/* <div>
 
                     <form
