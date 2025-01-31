@@ -1,7 +1,14 @@
 .init-slot-container {
-    width: 100%;
-    height: 5rem;
+    height: 4rem;
     background-color: var(--parchment);
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--grid-gap);
+    color: var(--parchment);
 }
 
 .init-slot {
@@ -41,4 +48,12 @@
 
 .init-content > *:nth-child(2n) .init-slot {
     background-color: var(--crimson-light);
+}
+
+.entity-slot {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }

@@ -1,8 +1,11 @@
 import "./CharacterMarkers.css";
-import { InitSlot } from "./components/InitSlot";
+import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
+import { useEntityStore } from "../../store/useEntityStore";
 
 export function CharacterMarkers() {
+    const { entities } = useEntityStore();
+
     return (
         <div className="character-markers">
             <div className="character-marker-header-bg"></div>
@@ -16,16 +19,9 @@ export function CharacterMarkers() {
                     <div>3</div>
                 </div>
             </MarkerHeading>
-            <div
-                className="init-content"
-                style={{ backgroundColor: "lightblue" }}
-            >
+            <div className="init-content">
+                {entities.map((entity) => (<InitSlot key={entity.id} entity={entity} />))}
                 <InitSlot />
-                <InitSlot />
-                <InitSlot />
-                <InitSlot />
-                <div>second</div>
-                <div>third</div>
             </div>
         </div>
     );

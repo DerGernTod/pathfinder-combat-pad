@@ -1,12 +1,14 @@
-import React, { useRef, useState, useEffect, useCallback, useLayoutEffect, CSSProperties } from "react";
+import React, { useRef, useState, useEffect, useCallback, useLayoutEffect, CSSProperties, forwardRef, useImperativeHandle } from "react";
 import "./Canvas.css";
 
-export function Canvas({ style }: { style: CSSProperties }): JSX.Element {
+export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSProperties }>(({ style }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [drawing, setDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
+
+    useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
 
     const resizeCurrentCanvas = useCallback(() => {
         if (!canvasRef.current || !canvasHiddenRef.current) return;
@@ -99,7 +101,7 @@ export function Canvas({ style }: { style: CSSProperties }): JSX.Element {
                 ref={canvasHiddenRef} />
         </>
     );
-}
+});
 
 function resizeCanvas(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement) {
     saveDrawing(canvas, canvasHidden);

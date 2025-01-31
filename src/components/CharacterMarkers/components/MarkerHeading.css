@@ -8,6 +8,4 @@ h1.marker-heading {
     display: grid;
     height: 100%;
     width: 100%;
-    filter: url(#rough-border);
-    border: 5px solid black;
 }
