@@ -2,6 +2,7 @@ import "./CharacterMarkers.css";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
 import { useEntityStore } from "../../store/useEntityStore";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function CharacterMarkers() {
     const { entities } = useEntityStore();
@@ -19,10 +20,10 @@ export function CharacterMarkers() {
                     <div>3</div>
                 </div>
             </MarkerHeading>
-            <div className="init-content">
-                {entities.map((entity) => (<InitSlot key={entity.id} entity={entity} />))}
-                <InitSlot />
-            </div>
+                <motion.div layout className="init-content">
+                    {entities.map((entity) => (<InitSlot key={entity.id} entity={entity} />))}
+                    <InitSlot />
+                </motion.div>
         </div>
     );
 }

@@ -1,0 +1,40 @@
+<html>
+    <style>
+        div {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            margin: 10px;
+        }
+        body {
+            display: flex;
+        }
+    </style>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+            console.log("dropallowed");
+        }
+
+        function dragStart(e) {
+            console.log("dragstart");
+            e.dataTransfer.effectAllowed='move';
+            e.dataTransfer.setData('text/plain', 'fooo');
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+        }
+    </script>
+<body>
+    <div
+        ondragover="allowDrop(event)"
+        ondrop="drop(event)"
+        ondragenter="(e) => {console.log('dragenter')}"
+        ondragend="(e) => {console.log('dragend')}"
+    >drop here</div>
+    <div draggable="true" ondragstart="dragStart(event)">drag me</div>
+</body>
+</html>

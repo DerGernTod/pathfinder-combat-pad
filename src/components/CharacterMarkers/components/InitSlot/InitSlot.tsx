@@ -2,6 +2,8 @@ import { Entity } from "../../../../store/useEntityStore";
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
 import { EntitySlot } from "./components/EntitySlot";
+import { motion } from "framer-motion";
+
 
 interface InitSlotProps {
     entity?: Entity;
@@ -16,7 +18,7 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
     }
 
     return (
-        <div className="init-slot-container">
+        <motion.div layout className="init-slot-container">
             <div className="init-slot">{slot}</div>
             <div className="init-content-status">
                 <div>O</div>
@@ -24,6 +26,6 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
                 <div>💀</div>
                 <div>💀</div>
             </div>
-        </div>
+        </motion.div>
     );
 }

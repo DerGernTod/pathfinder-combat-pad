@@ -18,14 +18,17 @@ interface EntityStore {
     entities: Entity[];
     addEntity(entity: Omit<Entity, "id" | "priority">): void;
     removeEntity(id: number): void;
-    swapEntityWithHigherPriority(id: number): void;
-    swapEntityWithLowerPriority(id: number): void;
+    swapEntities(id1: number, id2: number): void;
+
+    draggedEntityId: number | null;
+    setDraggedEntityId(id: number | null): void;
 }
 
 let curId = 0;
 
 export const useEntityStore = create<EntityStore>()((set) => ({
     entities: [],
+    draggedEntityId: null,
     addEntity(entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities.push({
@@ -39,26 +42,18 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
         }));
     },
-    swapEntityWithHigherPriority(id: number): void {
+    swapEntities(id1: number, id2: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
-            const entityIndex = recipe.entities.findIndex(entity => entity.id === id);
-            const curEntity = recipe.entities[entityIndex];
-            const higherEntity = recipe.entities[entityIndex - 1];
-            if (curEntity && higherEntity) {
-                recipe.entities[entityIndex] = higherEntity;
-                recipe.entities[entityIndex - 1] = curEntity;
+            const entityIndex1 = recipe.entities.findIndex(entity => entity.id === id1);
+            const entityIndex2 = recipe.entities.findIndex(entity => entity.id === id2);
+            if (entityIndex1 !== -1 && entityIndex2 !== -1) {
+                const temp = recipe.entities[entityIndex1];
+                recipe.entities[entityIndex1] = recipe.entities[entityIndex2];
+                recipe.entities[entityIndex2] = temp;
             }
         }));
     },
-    swapEntityWithLowerPriority(id: number): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const entityIndex = recipe.entities.findIndex(entity => entity.id === id);
-            const curEntity = recipe.entities[entityIndex];
-            const lowerEntity = recipe.entities[entityIndex + 1];
-            if (curEntity && lowerEntity) {
-                recipe.entities[entityIndex] = lowerEntity;
-                recipe.entities[entityIndex + 1] = curEntity;
-            }
-        }));
+    setDraggedEntityId(id: number | null): void {
+        set({ draggedEntityId: id });
     }
 }));
