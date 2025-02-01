@@ -5,6 +5,9 @@ import {
 } from "../../../../../store/useEntityStore";
 import { Canvas } from "../../../../Canvas";
 import { useRef } from "react";
+import CustomSelect from "../../../../CustomSelect";
+import { useState } from "react";
+import { useMemo } from "react";
 
 const canvasStyle = {
     flexBasis: "200px",
@@ -13,13 +16,24 @@ const canvasStyle = {
     height: "80%",
 };
 
+const EntityOptions = [
+    EntityKind.PlayerCharacter,
+    EntityKind.NonPlayerCharacter,
+    EntityKind.Monster,
+    EntityKind.Hazard,
+] as const;
+
 export function CreateSlot(): JSX.Element {
     const { addEntity } = useEntityStore();
+    const [kind, setKind] = useState<null | EntityKind>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
+        if (!kind) {
+            return;
+        }
         addEntity({
             name: canvasRef.current?.toDataURL("image/webp") || "",
-            kind: EntityKind.PlayerCharacter,
+            kind,
             level: 1,
         });
         canvasRef.current
@@ -31,31 +45,35 @@ export function CreateSlot(): JSX.Element {
                 canvasRef.current.height
             );
     }, [addEntity]);
+    const selectOptions = useMemo(() => {
+        return EntityOptions.map(toCustomSelectOption);
+    }, []);
 
     return (
         <div className="entity-slot">
             <Canvas style={canvasStyle} ref={canvasRef} />
-            <select>
-                <option
-                    value={EntityKind.PlayerCharacter}
-                    className="kind-option-0"
-                >
-                    <circle />
-                </option>
-                <option
-                    value={EntityKind.NonPlayerCharacter}
-                    className="kind-option-1"
-                >
-                    <circle />
-                </option>
-                <option value={EntityKind.Monster} className="kind-option-2">
-                    <circle />
-                </option>
-                <option value={EntityKind.Hazard} className="kind-option-3">
-                    <circle />
-                </option>
-            </select>
-            <button onClick={createEntity}>+</button>
+            <CustomSelect options={selectOptions} />
+            <button disabled={!kind} onClick={createEntity}>
+                +
+            </button>
+        </div>
+    );
+
+    function toCustomSelectOption(entityKind: EntityKind) {
+        return {
+            element: <KindOption kind={entityKind} />,
+            id: String(entityKind),
+            onSelect() {
+                setKind(entityKind);
+            },
+        };
+    }
+}
+
+function KindOption({ kind }: { kind: EntityKind }): JSX.Element {
+    return (
+        <div className={`kind-option kind-option-${kind}`}>
+            <circle />
         </div>
     );
 }

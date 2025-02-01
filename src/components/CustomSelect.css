@@ -1,0 +1,11 @@
+.custom-select {
+    min-width: 50px;
+    min-height: 50px;
+}
+.options {
+    display: none;
+    position: absolute;
+}
+.options.open {
+    display: flex;
+}

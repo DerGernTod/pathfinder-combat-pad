@@ -1,21 +1,26 @@
-import React, { useState } from "react";
-import "./CustomSelect.css"; // Import your custom styles
+import "./CustomSelect.css";
+import { useState } from "react";
+import { useCallback } from "react";
 
-const options = [
-    { value: "option1", label: "Option 1", icon: "🔧" },
-    { value: "option2", label: "Option 2", icon: "⚙️" },
-    { value: "option3", label: "Option 3", icon: "🔩" },
-    { value: "option4", label: "Option 4", icon: "🛠️" },
-];
-interface CustomSelectProps {
-    options: { element: JSX.Element, props: }
+interface CustomSelectOption {
+    id: string;
+    element: JSX.Element;
+    onSelect(): void;
 }
-export function CustomSelect(): JSX.Element {
-    const [selectedOption, setSelectedOption] = useState(options[0]);
 
-    const handleSelect = (option) => {
+interface CustomSelectProps {
+    options: CustomSelectOption[];
+}
+
+export function CustomSelect({ options }: CustomSelectProps): JSX.Element {
+    const [selectedOption, setSelectedOption] = useState(options[0]);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    const handleSelect = useCallback((option: CustomSelectOption) => {
         setSelectedOption(option);
-    };
+        option.onSelect();
+        setDropdownOpen(false);
+    }, []);
 
     return (
         <div className="custom-select">
@@ -23,16 +28,16 @@ export function CustomSelect(): JSX.Element {
                 className="selected-option"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-                {selectedOption.icon} {selectedOption.label}
+                {selectedOption.element}
             </div>
-            <div className="options">
+            <div className={`options ${dropdownOpen ? "open" : ""}`}>
                 {options.map((option) => (
                     <div
-                        key={option.value}
+                        key={option.id}
                         className="option"
                         onClick={() => handleSelect(option)}
                     >
-                        {option.icon} {option.label}
+                        {option.element}
                     </div>
                 ))}
             </div>
