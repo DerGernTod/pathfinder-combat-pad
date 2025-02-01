@@ -8,6 +8,7 @@ import { useRef } from "react";
 import CustomSelect from "../../../../CustomSelect";
 import { useState } from "react";
 import { useMemo } from "react";
+import "./CreateSlot.css";
 
 const canvasStyle = {
     flexBasis: "200px",
@@ -44,7 +45,7 @@ export function CreateSlot(): JSX.Element {
                 canvasRef.current.width,
                 canvasRef.current.height
             );
-    }, [addEntity]);
+    }, [addEntity, kind, canvasRef.current]);
     const selectOptions = useMemo(() => {
         return EntityOptions.map(toCustomSelectOption);
     }, []);
@@ -53,7 +54,7 @@ export function CreateSlot(): JSX.Element {
         <div className="entity-slot">
             <Canvas style={canvasStyle} ref={canvasRef} />
             <CustomSelect options={selectOptions} />
-            <button disabled={!kind} onClick={createEntity}>
+            <button disabled={kind === null} onClick={createEntity}>
                 +
             </button>
         </div>
@@ -71,9 +72,5 @@ export function CreateSlot(): JSX.Element {
 }
 
 function KindOption({ kind }: { kind: EntityKind }): JSX.Element {
-    return (
-        <div className={`kind-option kind-option-${kind}`}>
-            <circle />
-        </div>
-    );
+    return <div className={`kind-option kind-option-${kind}`}>●</div>;
 }

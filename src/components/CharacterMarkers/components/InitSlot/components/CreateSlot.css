@@ -1,0 +1,19 @@
+.kind-option {
+    width: 10px;
+    height: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kind-option-0 {
+    color: var(--pc);
+}
+.kind-option-1 {
+    color: var(--npc);
+}
+.kind-option-2 {
+    color: var(--mon);
+}
+.kind-option-3 {
+    color: var(--haz);
+}
