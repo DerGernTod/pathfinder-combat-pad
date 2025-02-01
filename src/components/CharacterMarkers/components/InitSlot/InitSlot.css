@@ -9,7 +9,6 @@
     text-align: center;
     gap: var(--grid-gap);
     color: var(--parchment);
-    transform: transform 0.3s ease;
 }
 
 .init-slot {

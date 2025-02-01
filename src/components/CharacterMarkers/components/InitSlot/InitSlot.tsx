@@ -2,7 +2,7 @@ import { Entity } from "../../../../store/useEntityStore";
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
 import { EntitySlot } from "./components/EntitySlot";
-import { motion } from "motion/react";
+import { StatusSlot } from "./components/StatusSlot";
 
 interface InitSlotProps {
     entity?: Entity;
@@ -17,20 +17,14 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
     }
 
     return (
-        <motion.div
-            exit={{ height: 0 }}
-            initial={{ height: 0 }}
-            animate={{ height: "4rem" }}
-            layout
-            className="init-slot-container"
-        >
-            <div className="init-slot">{slot}</div>
+        <div className="init-slot-container">
+            <StatusSlot entity={entity} className="init-slot" status={0}>{slot}</StatusSlot>
             <div className="init-content-status">
-                <div>O</div>
-                <div>💀</div>
-                <div>💀</div>
-                <div>💀</div>
+                <StatusSlot entity={entity} status={1}>O</StatusSlot>
+                <StatusSlot entity={entity} status={2}>💀</StatusSlot>
+                <StatusSlot entity={entity} status={3}>💀</StatusSlot>
+                <StatusSlot entity={entity} status={4}>💀</StatusSlot>
             </div>
-        </motion.div>
+        </div>
     );
 }

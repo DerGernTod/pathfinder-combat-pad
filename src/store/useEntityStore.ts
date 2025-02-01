@@ -6,6 +6,7 @@ export interface Entity {
     name: string;
     kind: EntityKind;
     level: number;
+    status: number;
 }
 
 export const enum EntityKind {
@@ -23,6 +24,8 @@ interface EntityStore {
 
     draggedEntityId: number | null;
     setDraggedEntityId(id: number | null): void;
+
+    setStatus(id: number, status: number): void;
 }
 
 let curId = 0;
@@ -56,5 +59,15 @@ export const useEntityStore = create<EntityStore>()((set) => ({
     },
     setDraggedEntityId(id: number | null): void {
         set({ draggedEntityId: id });
+    },
+    setStatus(id: number, status: number): void {
+        set(produce(function updateState(recipe: EntityStore): void {
+            const entity = recipe.entities.find(entity => entity.id === id);
+            if (!entity) {
+                throw Error(`Tried to increase status for non-existing Entity ${id}`);
+            }
+            entity.status = status;
+        }));
     }
+    
 }));

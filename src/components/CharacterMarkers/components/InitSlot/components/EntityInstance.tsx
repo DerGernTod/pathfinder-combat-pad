@@ -1,21 +1,25 @@
+import "./EntityInstance.css";
 import { useCallback } from "react";
-import { Entity, useEntityStore } from "../../../../../store/useEntityStore";
+import { Entity, EntityKind, useEntityStore } from "../../../../../store/useEntityStore";
 import { motion } from "motion/react";
 import { PointerEventHandler } from "react";
 
 interface EntityInstanceProps {
     entity: Entity;
-    onAnimationComplete: () => void;
-    onAnimationStart: () => void;
+}
+
+const KIND_LOOKUP = {
+    [EntityKind.PlayerCharacter]: "PC",
+    [EntityKind.NonPlayerCharacter]: "NPC",
+    [EntityKind.Monster]: "MON",
+    [EntityKind.Hazard]: "HAZ"
 }
 
 export const EntityInstance = ({
-    entity,
-    onAnimationComplete,
-    onAnimationStart,
+    entity
 }: EntityInstanceProps): JSX.Element => {
     const { removeEntity, entities } = useEntityStore();
-    const { id, name, kind: status } = entity;
+    const { id, name, kind, status, level } = entity;
     const handleRemove = useCallback(
         (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
             if ((e.pointerType === "pen" && e.button === 5) || e.shiftKey) {
@@ -28,23 +32,26 @@ export const EntityInstance = ({
         <motion.div
             layoutDependency={entities}
             layoutId={String(id)}
-            onLayoutAnimationComplete={onAnimationComplete}
-            onLayoutAnimationStart={onAnimationStart}
             onDragOver={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
             }}
             onPointerDown={handleRemove}
             layout
-            className={`entity-instance entity-instance-type-${status}`}
+            className={`entity-instance entity-instance-type-${kind} status-${status}`}
         >
+            <div className="label-wrapper">
+                <img src={name} />
+            </div>
+            <div className="instance-kind-container">
+                {KIND_LOOKUP[kind]}
+                <div className={`instance-kind instance-kind-${kind}`}>
+                    {level}
+                </div>
+            </div>
             <div draggable className="grabber">
                 ⋮
             </div>
-            <div className="label-wrapper">
-                <img style={{ width: "70%", opacity: "80%" }} src={name} />
-            </div>
-            <div className="entity-slot-controls"></div>
         </motion.div>
     );
 };

@@ -1,0 +1,47 @@
+.label-wrapper > img {
+    width: 70%;
+    opacity: 80%;
+}
+.entity-instance {
+    position: absolute;
+    width: 15rem;
+    height: 3rem;
+}
+.status-1 {
+    left: 130px;
+}
+.status-2 {
+    left: 164px;
+}
+.status-3 {
+    left: 197px;
+}
+.status-4 {
+    left: 231px;
+}
+.instance-kind-container {
+    font-size: 8pt;
+    color: white;
+}
+.instance-kind {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: lightgray;
+    border-radius: 15px;
+    border: solid 2px white;
+    width: 25px;
+    height: 25px;
+}
+.instance-kind-0 {
+    background-color: var(--pc-d);
+}
+.instance-kind-1 {
+    background-color: var(--npc-d);
+}
+.instance-kind-2 {
+    background-color: var(--mon-d);
+}
+.instance-kind-3 {
+    background-color: var(--haz-d);
+}

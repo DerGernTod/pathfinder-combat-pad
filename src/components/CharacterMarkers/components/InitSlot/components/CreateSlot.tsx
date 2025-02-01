@@ -5,7 +5,7 @@ import {
 } from "../../../../../store/useEntityStore";
 import { Canvas } from "../../../../Canvas";
 import { useRef } from "react";
-import CustomSelect from "../../../../CustomSelect";
+import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
 import { useState } from "react";
 import { useMemo } from "react";
 import "./CreateSlot.css";
@@ -25,17 +25,16 @@ const EntityOptions = [
 ] as const;
 
 export function CreateSlot(): JSX.Element {
+    const initialEntityKind = 0;
     const { addEntity } = useEntityStore();
-    const [kind, setKind] = useState<null | EntityKind>(null);
+    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
-        if (!kind) {
-            return;
-        }
         addEntity({
             name: canvasRef.current?.toDataURL("image/webp") || "",
             kind,
             level: 1,
+            status: 0
         });
         canvasRef.current
             ?.getContext("2d")
@@ -47,20 +46,20 @@ export function CreateSlot(): JSX.Element {
             );
     }, [addEntity, kind, canvasRef.current]);
     const selectOptions = useMemo(() => {
-        return EntityOptions.map(toCustomSelectOption);
+        return EntityOptions.map(toCustomSelectOption) as [CustomSelectOption, ...CustomSelectOption[]];
     }, []);
 
     return (
         <div className="entity-slot">
             <Canvas style={canvasStyle} ref={canvasRef} />
-            <CustomSelect options={selectOptions} />
-            <button disabled={kind === null} onClick={createEntity}>
+            <CustomSelect options={selectOptions} selectedIndex={initialEntityKind} />
+            <button onClick={createEntity}>
                 +
             </button>
         </div>
     );
 
-    function toCustomSelectOption(entityKind: EntityKind) {
+    function toCustomSelectOption(entityKind: EntityKind): CustomSelectOption {
         return {
             element: <KindOption kind={entityKind} />,
             id: String(entityKind),

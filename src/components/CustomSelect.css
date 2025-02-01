@@ -1,11 +1,25 @@
 .custom-select {
-    min-width: 50px;
-    min-height: 50px;
+    min-width: 1px;
+    min-height: 1px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 5px;
 }
+
 .options {
-    display: none;
-    position: absolute;
-}
-.options.open {
     display: flex;
+    opacity: 0;
+    flex-direction: column;
+    transform: scaleY(0);
+    transform-origin: top;
+    position: absolute;
+    transition: .2s;
+    background-color: #fffe;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.options.open {
+    opacity: 1;
+    transform: scaleY(1);
 }

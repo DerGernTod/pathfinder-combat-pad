@@ -1,29 +1,30 @@
 import "./CustomSelect.css";
 import { useState } from "react";
 import { useCallback } from "react";
+import { motion } from "motion/react";
 
-interface CustomSelectOption {
+export interface CustomSelectOption {
     id: string;
     element: JSX.Element;
     onSelect(): void;
 }
 
 interface CustomSelectProps {
-    options: CustomSelectOption[];
+    options: [CustomSelectOption, ...CustomSelectOption[]];
+    className?: string;
+    selectedIndex: number;
 }
 
-export function CustomSelect({ options }: CustomSelectProps): JSX.Element {
-    const [selectedOption, setSelectedOption] = useState(options[0]);
+export function CustomSelect({ options, className, selectedIndex }: CustomSelectProps): JSX.Element {
+    const [selectedOption, setSelectedOption] = useState(options[selectedIndex]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-
     const handleSelect = useCallback((option: CustomSelectOption) => {
         setSelectedOption(option);
         option.onSelect();
         setDropdownOpen(false);
     }, []);
-
     return (
-        <div className="custom-select">
+        <div className={`custom-select ${className || ""}`}>
             <div
                 className="selected-option"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -32,13 +33,14 @@ export function CustomSelect({ options }: CustomSelectProps): JSX.Element {
             </div>
             <div className={`options ${dropdownOpen ? "open" : ""}`}>
                 {options.map((option) => (
-                    <div
+                    <motion.div
                         key={option.id}
                         className="option"
+                        whileTap={{ scale: 1.2 }}
                         onClick={() => handleSelect(option)}
                     >
                         {option.element}
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </div>

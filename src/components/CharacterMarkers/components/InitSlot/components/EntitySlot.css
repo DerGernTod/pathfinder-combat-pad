@@ -1,8 +1,12 @@
 :root {
-    --npc: #a3cfa9; /* Light green */
-    --pc: #9fcfe0; /* Light blue */
-    --mon: #b36b5e; /* Light brown */
-    --haz: #e0cfcf; /* Light pink */
+    --npc: #82a687; /* Darker green */
+    --pc: #7fa6b3; /* Darker blue */
+    --mon: #8f554a; /* Darker brown */
+    --haz: #b39f9f; /* Darker pink */
+    --npc-d: #627a5f; /* Darker green */
+    --pc-d: #5f7a86; /* Darker blue */
+    --mon-d: #6b4137; /* Darker brown */
+    --haz-d: #8f7a7a; /* Darker pink */
     --label-border-radius: 12px;
 }
 

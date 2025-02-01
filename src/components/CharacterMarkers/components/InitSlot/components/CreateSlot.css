@@ -1,9 +1,15 @@
 .kind-option {
-    width: 10px;
-    height: 10px;
+    font-size: 20pt;
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 20px;
+}
+.kind-option:active {
+    text-shadow: 1px 1px 1px black, -1px -1px 1px black, 1px -1px 1px black, -1px 1px 1px black;
+}
+.kind-option:hover {
+    text-shadow: 1px 1px 1px var(--gold), -1px -1px 1px var(--gold), 1px -1px 1px var(--gold), -1px 1px 1px var(--gold);
 }
 .kind-option-0 {
     color: var(--pc);

@@ -1,5 +1,6 @@
 // import { useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
+import { useEffect } from "react";
 import "./App.css";
 import { Canvas } from "./components/Canvas";
 import { CharacterMarkers } from "./components/CharacterMarkers/CharacterMarkers";
@@ -13,7 +14,19 @@ function App() {
     //     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     //     setGreetMsg(await invoke("greet", { name }));
     // }
-    
+    useEffect(() => {
+        document.addEventListener("dragover", preventDragOverDefault, true);
+        document.addEventListener("dragenter", preventDragOverDefault, true);
+        return () => {
+            document.removeEventListener("dragover", preventDragOverDefault, true);
+            document.removeEventListener("dragenter", preventDragOverDefault, true);
+        }
+
+        function preventDragOverDefault(e: DragEvent): void {
+            e.preventDefault();
+        }
+    }, []);
+
     return (
         <div className="container">
             <header>Pathfinder Combat Pad</header>
