@@ -60,3 +60,7 @@
 .entity-instance-type-0 {
     background-color: var(--mon);
 }
+
+.cur-dragged {
+    z-index: -100;
+}
