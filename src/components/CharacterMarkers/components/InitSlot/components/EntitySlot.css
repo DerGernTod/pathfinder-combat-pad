@@ -29,6 +29,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--crimson);
 }
 
 .entity-instance {
@@ -47,7 +48,7 @@
     flex-shrink: 0;
     height: 85%;
     border-radius: var(--label-border-radius) 0 0 var(--label-border-radius);
-    
+
     box-sizing: border-box;
     overflow: hidden;
     display: flex;
@@ -58,9 +59,17 @@
 }
 
 .entity-instance-type-0 {
+    background-color: var(--pc);
+}
+
+.entity-instance-type-1 {
+    background-color: var(--npc);
+}
+
+.entity-instance-type-2 {
     background-color: var(--mon);
 }
 
-.cur-dragged {
-    z-index: -100;
+.entity-instance-type-3 {
+    background-color: var(--haz);
 }

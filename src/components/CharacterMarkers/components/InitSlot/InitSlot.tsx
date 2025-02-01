@@ -2,6 +2,7 @@ import { Entity } from "../../../../store/useEntityStore";
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
 import { EntitySlot } from "./components/EntitySlot";
+import { motion } from "motion/react";
 
 interface InitSlotProps {
     entity?: Entity;
@@ -16,7 +17,13 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
     }
 
     return (
-        <div className="init-slot-container">
+        <motion.div
+            exit={{ height: 0 }}
+            initial={{ height: 0 }}
+            animate={{ height: "4rem" }}
+            layout
+            className="init-slot-container"
+        >
             <div className="init-slot">{slot}</div>
             <div className="init-content-status">
                 <div>O</div>
@@ -24,6 +31,6 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
                 <div>💀</div>
                 <div>💀</div>
             </div>
-        </div>
+        </motion.div>
     );
 }

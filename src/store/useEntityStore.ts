@@ -4,19 +4,20 @@ import { produce } from "immer";
 export interface Entity {
     id: number;
     name: string;
-    status: EntityStatus;
+    kind: EntityKind;
+    level: number;
 }
 
-export const enum EntityStatus {
-    PlayerCharacter,
-    NonPlayerCharacter,
-    Monster,
-    Hazard
+export const enum EntityKind {
+    PlayerCharacter = 0,
+    NonPlayerCharacter = 1,
+    Monster = 2,
+    Hazard = 3
 }
 
 interface EntityStore {
     entities: Entity[];
-    addEntity(entity: Omit<Entity, "id" | "priority">): void;
+    addEntity(entity: Omit<Entity, "id">): void;
     removeEntity(id: number): void;
     swapEntities(id1: number, id2: number): void;
 
@@ -35,7 +36,7 @@ export const useEntityStore = create<EntityStore>()((set) => ({
                 ...entity,
                 id: curId++,
             });
-        })); 
+        }));
     },
     removeEntity(id: number): void {
         set(produce(function updateState(recipe: EntityStore): void {

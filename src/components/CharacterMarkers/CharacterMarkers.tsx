@@ -2,8 +2,7 @@ import "./CharacterMarkers.css";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
 import { useEntityStore } from "../../store/useEntityStore";
-import { AnimatePresence, motion } from "framer-motion";
-
+import { AnimatePresence, motion } from "motion/react";
 export function CharacterMarkers() {
     const { entities } = useEntityStore();
 
@@ -12,7 +11,9 @@ export function CharacterMarkers() {
             <div className="character-marker-header-bg"></div>
             <MarkerHeading classes="init-heading">INITIATIVE</MarkerHeading>
             <MarkerHeading classes="status-heading">
-                <div className="delay"><div className="rotated-text">DELAY</div></div>
+                <div className="delay">
+                    <div className="rotated-text">DELAY</div>
+                </div>
                 <div className="dying">DYING</div>
                 <div className="dying-count">
                     <div>1</div>
@@ -20,10 +21,14 @@ export function CharacterMarkers() {
                     <div>3</div>
                 </div>
             </MarkerHeading>
-                <motion.div layout className="init-content">
-                    {entities.map((entity) => (<InitSlot key={entity.id} entity={entity} />))}
-                    <InitSlot />
-                </motion.div>
+            <div className="init-content">
+                <AnimatePresence>
+                    {entities.map((entity) => (
+                        <InitSlot key={entity.id} entity={entity} />
+                    ))}
+                </AnimatePresence>
+                <InitSlot />
+            </div>
         </div>
     );
 }
