@@ -1,5 +1,5 @@
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Entity, useEntityStore } from "../../../../../store/useEntityStore";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 interface StatusSlotProps {
     children: string | JSX.Element;
@@ -7,21 +7,33 @@ interface StatusSlotProps {
     status: number;
     entity?: Entity;
 }
-export function StatusSlot({ children, className, status, entity }: StatusSlotProps): JSX.Element {
+export function StatusSlot({
+    children,
+    className,
+    status,
+    entity,
+}: StatusSlotProps): JSX.Element {
     const { draggedEntityId, setStatus, swapEntities } = useEntityStore();
     const elemRef = useRef<HTMLDivElement | null>(null);
     const [boundingRect, setBoundingRect] = useState<DOMRect | null>(null);
 
-    const moveEntityInstance = useCallback(function moveEntityInstanceCallback(e: PointerEvent) {
-        if (!entity || draggedEntityId === null || !isWithinBounds(e.clientX, e.clientY, boundingRect)) {
-            return;
-        }
-        if (entity.id !== draggedEntityId) {
-            swapEntities(draggedEntityId, entity.id);
-            return;
-        }
-        setStatus(draggedEntityId, status);
-    }, [entity, draggedEntityId, boundingRect, setStatus, status, swapEntities]);
+    const moveEntityInstance = useCallback(
+        function moveEntityInstanceCallback(e: PointerEvent) {
+            if (
+                !entity ||
+                draggedEntityId === undefined ||
+                !isWithinBounds(e.clientX, e.clientY, boundingRect)
+            ) {
+                return;
+            }
+            if (entity.id !== draggedEntityId) {
+                swapEntities(draggedEntityId, entity.id);
+                return;
+            }
+            setStatus(draggedEntityId, status);
+        },
+        [entity, draggedEntityId, boundingRect, setStatus, status, swapEntities]
+    );
 
     useLayoutEffect(() => {
         if (draggedEntityId === null) {
@@ -31,21 +43,29 @@ export function StatusSlot({ children, className, status, entity }: StatusSlotPr
         window.addEventListener("pointermove", moveEntityInstance);
         return () => {
             window.removeEventListener("pointermove", moveEntityInstance);
-        }
+        };
     }, [draggedEntityId, moveEntityInstance]);
 
     return (
-        <div ref={elemRef} className={className}>{children}</div>
+        <div ref={elemRef} className={className}>
+            {children}
+        </div>
     );
 }
 
-function isWithinBounds(x: number, y: number, boundingRect: DOMRect | null): boolean {
+function isWithinBounds(
+    x: number,
+    y: number,
+    boundingRect: DOMRect | null
+): boolean {
     if (!boundingRect) {
         return false;
     }
 
-    return x >= boundingRect.left
-        && x <= boundingRect.right
-        && y >= boundingRect.top
-        && y <= boundingRect.bottom;
+    return (
+        x >= boundingRect.left &&
+        x <= boundingRect.right &&
+        y >= boundingRect.top &&
+        y <= boundingRect.bottom
+    );
 }

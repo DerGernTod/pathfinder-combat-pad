@@ -1,16 +1,11 @@
 import "./CreateSlot.css";
-import { Canvas } from "../../../../Canvas";
 import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
 import {
     EntityKind,
     useEntityStore,
 } from "../../../../../store/useEntityStore";
-import {
-    useCallback,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Canvas } from "../../../../Canvas";
 
 const canvasStyle = {
     flexBasis: "200px",
@@ -29,14 +24,16 @@ const EntityOptions = [
 export function CreateSlot(): JSX.Element {
     const initialEntityKind = 0;
     const { addEntity } = useEntityStore();
-    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
+    const [kind, setKind] = useState<EntityKind>(
+        EntityOptions[initialEntityKind]
+    );
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
         addEntity({
             kind,
             level: 1,
             name: canvasRef.current?.toDataURL("image/webp") ?? "",
-            status: 0
+            status: 0,
         });
         canvasRef.current
             ?.getContext("2d")
@@ -48,16 +45,20 @@ export function CreateSlot(): JSX.Element {
             );
     }, [addEntity, kind]);
     const selectOptions = useMemo(() => {
-        return EntityOptions.map(toCustomSelectOption) as [CustomSelectOption, ...CustomSelectOption[]];
+        return EntityOptions.map(toCustomSelectOption) as [
+            CustomSelectOption,
+            ...CustomSelectOption[]
+        ];
     }, []);
 
     return (
         <div className="entity-slot">
             <Canvas style={canvasStyle} ref={canvasRef} />
-            <CustomSelect options={selectOptions} selectedIndex={initialEntityKind} />
-            <button onClick={createEntity}>
-                +
-            </button>
+            <CustomSelect
+                options={selectOptions}
+                selectedIndex={initialEntityKind}
+            />
+            <button onClick={createEntity}>+</button>
         </div>
     );
 

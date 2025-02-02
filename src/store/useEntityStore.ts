@@ -22,8 +22,8 @@ interface EntityStore {
     removeEntity(this: void, id: number): void;
     swapEntities(this: void, id1: number, id2: number): void;
 
-    draggedEntityId: number | null;
-    setDraggedEntityId(this: void, id: number | null): void;
+    draggedEntityId: number | undefined;
+    setDraggedEntityId(this: void, id: number | undefined): void;
 
     setStatus(this: void, id: number, status: number): void;
 }
@@ -31,8 +31,6 @@ interface EntityStore {
 let curId = 0;
 
 export const useEntityStore = create<EntityStore>()((set) => ({
-    entities: [],
-    draggedEntityId: null,
     addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities.push({
@@ -41,9 +39,23 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             });
         }));
     },
+    draggedEntityId: undefined,
+    entities: [],
     removeEntity(this: void, id: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
+        }));
+    },
+    setDraggedEntityId(this: void, id: number | undefined): void {
+        set({ draggedEntityId: id });
+    },
+    setStatus(this: void, id: number, status: number): void {
+        set(produce(function updateState(recipe: EntityStore): void {
+            const entity = recipe.entities.find(entity => entity.id === id);
+            if (!entity) {
+                throw new Error(`Tried to increase status for non-existing Entity ${id}`);
+            }
+            entity.status = status;
         }));
     },
     swapEntities(this: void, id1: number, id2: number): void {
@@ -57,18 +69,5 @@ export const useEntityStore = create<EntityStore>()((set) => ({
                 recipe.entities[entityIndex2] = temp;
             }
         }));
-    },
-    setDraggedEntityId(this: void, id: number | null): void {
-        set({ draggedEntityId: id });
-    },
-    setStatus(this: void, id: number, status: number): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const entity = recipe.entities.find(entity => entity.id === id);
-            if (!entity) {
-                throw Error(`Tried to increase status for non-existing Entity ${id}`);
-            }
-            entity.status = status;
-        }));
     }
-    
 }));

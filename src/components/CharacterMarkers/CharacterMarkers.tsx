@@ -1,14 +1,15 @@
 import "./CharacterMarkers.css";
+import { AnimatePresence } from "motion/react";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
 import { useEntityStore } from "../../store/useEntityStore";
-import { AnimatePresence } from "motion/react";
+
 export function CharacterMarkers() {
     const { entities } = useEntityStore();
 
     return (
         <div className="character-markers">
-            <div className="character-marker-header-bg"></div>
+            <div className="character-marker-header-bg" />
             <MarkerHeading classes="init-heading">INITIATIVE</MarkerHeading>
             <MarkerHeading classes="status-heading">
                 <div className="delay">

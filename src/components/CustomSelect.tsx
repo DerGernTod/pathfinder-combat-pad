@@ -1,6 +1,5 @@
 import "./CustomSelect.css";
-import { useState } from "react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { motion } from "motion/react";
 
 export interface CustomSelectOption {
@@ -15,14 +14,26 @@ interface CustomSelectProps {
     selectedIndex: number;
 }
 
-export function CustomSelect({ options, className, selectedIndex }: CustomSelectProps): JSX.Element {
-    const [selectedOption, setSelectedOption] = useState(options[selectedIndex]);
+export function CustomSelect({
+    options,
+    className,
+    selectedIndex,
+}: CustomSelectProps): JSX.Element {
+    const [selectedOption, setSelectedOption] = useState(
+        options[selectedIndex]
+    );
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const handleSelect = useCallback((option: CustomSelectOption) => {
         setSelectedOption(option);
         option.onSelect();
         setDropdownOpen(false);
     }, []);
+
+    let dropdownOpenClass = "";
+    if (dropdownOpen) {
+        dropdownOpenClass = "open";
+    }
+
     return (
         <div className={`custom-select ${className ?? ""}`}>
             <div
@@ -31,7 +42,7 @@ export function CustomSelect({ options, className, selectedIndex }: CustomSelect
             >
                 {selectedOption.element}
             </div>
-            <div className={`options ${dropdownOpen ? "open" : ""}`}>
+            <div className={`options ${dropdownOpenClass}`}>
                 {options.map((option) => (
                     <motion.div
                         key={option.id}

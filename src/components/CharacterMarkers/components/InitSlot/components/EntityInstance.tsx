@@ -1,8 +1,11 @@
 import "./EntityInstance.css";
-import { useCallback, useRef, useState } from "react";
-import { Entity, EntityKind, useEntityStore } from "../../../../../store/useEntityStore";
+import {
+    Entity,
+    EntityKind,
+    useEntityStore,
+} from "../../../../../store/useEntityStore";
+import { PointerEventHandler, useCallback, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { PointerEventHandler } from "react";
 
 interface EntityInstanceProps {
     entity: Entity;
@@ -15,32 +18,36 @@ const KIND_LOOKUP = {
     [EntityKind.PlayerCharacter]: "PC",
     [EntityKind.NonPlayerCharacter]: "NPC",
     [EntityKind.Monster]: "MON",
-    [EntityKind.Hazard]: "HAZ"
-}
+    [EntityKind.Hazard]: "HAZ",
+};
 
 export const EntityInstance = ({
-    entity
+    entity,
 }: EntityInstanceProps): JSX.Element => {
     const { removeEntity, entities, setDraggedEntityId } = useEntityStore();
     const draggableRef = useRef(null);
     const { id, name, kind, status, level } = entity;
-    const [isDragging, setIsDragging] = useState(false);
+    const [draggingClass, setDraggingClass] = useState("");
     const handlePointerDown = useCallback(
         (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
-            if ((e.pointerType === "pen" && e.button === 5) || e.shiftKey) {
+            const isPenErase = e.pointerType === "pen" && e.button === 5;
+            if (e.shiftKey || isPenErase) {
                 removeEntity(id);
             } else {
                 setDraggedEntityId(id);
-                setIsDragging(true);
-                window.addEventListener("pointerup", () => {
-                    setIsDragging(false);
-                    setDraggedEntityId(null);
-                }, { once: true });
+                setDraggingClass("dragging");
+                window.addEventListener(
+                    "pointerup",
+                    () => {
+                        setDraggingClass("");
+                        setDraggedEntityId(void 0);
+                    },
+                    { once: true }
+                );
             }
         },
         [removeEntity, id, setDraggedEntityId]
     );
-
     return (
         <motion.div
             ref={draggableRef}
@@ -48,7 +55,7 @@ export const EntityInstance = ({
             layoutId={String(id)}
             onPointerDown={handlePointerDown}
             layout
-            className={`entity-instance entity-instance-type-${kind} status-${status} ${isDragging ? "dragging" : ""}`}
+            className={`entity-instance entity-instance-type-${kind} status-${status} ${draggingClass}`}
         >
             <div className="label-wrapper">
                 <img src={name} />
@@ -59,9 +66,7 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
-            <div className="grabber">
-                ⋮
-            </div>
+            <div className="grabber">⋮</div>
         </motion.div>
     );
 };
