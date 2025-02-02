@@ -22,8 +22,8 @@ interface EntityStore {
     removeEntity(this: void, id: number): void;
     swapEntities(this: void, id1: number, id2: number): void;
 
-    draggedEntityId: number | undefined;
-    setDraggedEntityId(this: void, id: number | undefined): void;
+    draggedEntityId: number | null;
+    setDraggedEntityId(this: void, id: number | null): void;
 
     setStatus(this: void, id: number, status: number): void;
 }
@@ -39,14 +39,15 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             });
         }));
     },
-    draggedEntityId: undefined,
+    draggedEntityId: null,
     entities: [],
     removeEntity(this: void, id: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
         }));
     },
-    setDraggedEntityId(this: void, id: number | undefined): void {
+    setDraggedEntityId(this: void, id: number | null): void {
+        console.warn("setting dragged entity to", id);
         set({ draggedEntityId: id });
     },
     setStatus(this: void, id: number, status: number): void {

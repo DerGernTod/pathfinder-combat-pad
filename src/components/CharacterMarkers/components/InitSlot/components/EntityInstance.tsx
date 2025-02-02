@@ -26,6 +26,7 @@ export const EntityInstance = ({
 }: EntityInstanceProps): JSX.Element => {
     const { removeEntity, entities, setDraggedEntityId } = useEntityStore();
     const draggableRef = useRef(null);
+    const grabber = useRef<HTMLDivElement | null>(null);
     const { id, name, kind, status, level } = entity;
     const [draggingClass, setDraggingClass] = useState("");
     const handlePointerDown = useCallback(
@@ -36,11 +37,15 @@ export const EntityInstance = ({
             } else {
                 setDraggedEntityId(id);
                 setDraggingClass("dragging");
+                document.body.classList.add("grabbing");
+                grabber.current?.classList.remove("grab-cursor");
                 window.addEventListener(
                     "pointerup",
                     () => {
                         setDraggingClass("");
-                        setDraggedEntityId(void 0);
+                        setDraggedEntityId(null);
+                        document.body.classList.remove("grabbing");
+                        grabber.current?.classList.add("grab-cursor");
                     },
                     { once: true }
                 );
@@ -66,7 +71,7 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
-            <div className="grabber">⋮</div>
+            <div ref={grabber} className="grabber grab-cursor">⋮</div>
         </motion.div>
     );
 };

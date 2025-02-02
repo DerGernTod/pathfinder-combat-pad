@@ -73,7 +73,6 @@
 }
 
 .grabber {
-    cursor: grab;
     user-select: none;
     height: 100%;
     flex-basis: 25px;
@@ -81,6 +80,10 @@
     justify-content: center;
     align-items: center;
     color: var(--crimson);
+}
+
+.grab-cursor {
+    cursor: grab;
 }
 
 .entity-instance {

@@ -1,10 +1,10 @@
 // import { useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
-import { useEffect } from "react";
 import "./App.css";
 import { Canvas } from "./components/Canvas";
 import { CharacterMarkers } from "./components/CharacterMarkers/CharacterMarkers";
 import { DurationBar } from "./components/DurationBar";
+import { useEffect } from "react";
 
 function App() {
     // const [greetMsg, setGreetMsg] = useState("");

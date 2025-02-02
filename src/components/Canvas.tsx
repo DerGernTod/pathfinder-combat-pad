@@ -1,5 +1,14 @@
-import React, { useRef, useState, useEffect, useCallback, useLayoutEffect, CSSProperties, forwardRef, useImperativeHandle } from "react";
-import "./Canvas.css";
+import "./Canvas.css"; 
+import React, {
+    CSSProperties,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useLayoutEffect,
+    useRef,
+    useState
+} from "react";
 
 export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSProperties }>(({ style }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);

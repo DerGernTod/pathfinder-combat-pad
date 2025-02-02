@@ -5,7 +5,7 @@ const nums: unknown[] = Array(10);
 export function DurationBar(): JSX.Element {
     return (
         <>
-            <div className="pad"></div>
+            <div className="pad" />
             <div className="duration-bar">
                 <div className="duration-label">
                     <div className="rotated-text">DURATION</div>

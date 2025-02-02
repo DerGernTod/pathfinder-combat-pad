@@ -1,5 +1,5 @@
 import { Entity, useEntityStore } from "../../../../../store/useEntityStore";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 interface StatusSlotProps {
     children: string | JSX.Element;
@@ -15,13 +15,22 @@ export function StatusSlot({
 }: StatusSlotProps): JSX.Element {
     const { draggedEntityId, setStatus, swapEntities } = useEntityStore();
     const elemRef = useRef<HTMLDivElement | null>(null);
-    const [boundingRect, setBoundingRect] = useState<DOMRect | null>(null);
 
-    const moveEntityInstance = useCallback(
-        function moveEntityInstanceCallback(e: PointerEvent) {
+    useLayoutEffect(() => {
+        if (draggedEntityId === null) {
+            return;
+        }
+        const boundingRect = elemRef.current?.getBoundingClientRect();
+        
+        window.addEventListener("pointermove", moveEntityInstance);
+        return () => {
+            window.removeEventListener("pointermove", moveEntityInstance);
+        };
+
+        function moveEntityInstance(e: PointerEvent) {
             if (
                 !entity ||
-                draggedEntityId === undefined ||
+                draggedEntityId === null ||
                 !isWithinBounds(e.clientX, e.clientY, boundingRect)
             ) {
                 return;
@@ -31,20 +40,8 @@ export function StatusSlot({
                 return;
             }
             setStatus(draggedEntityId, status);
-        },
-        [entity, draggedEntityId, boundingRect, setStatus, status, swapEntities]
-    );
-
-    useLayoutEffect(() => {
-        if (draggedEntityId === null) {
-            return;
         }
-        setBoundingRect(elemRef.current?.getBoundingClientRect() ?? null);
-        window.addEventListener("pointermove", moveEntityInstance);
-        return () => {
-            window.removeEventListener("pointermove", moveEntityInstance);
-        };
-    }, [draggedEntityId, moveEntityInstance]);
+    }, [entity, draggedEntityId, setStatus, status, swapEntities]);
 
     return (
         <div ref={elemRef} className={className}>
@@ -56,7 +53,7 @@ export function StatusSlot({
 function isWithinBounds(
     x: number,
     y: number,
-    boundingRect: DOMRect | null
+    boundingRect: DOMRect | undefined
 ): boolean {
     if (!boundingRect) {
         return false;
