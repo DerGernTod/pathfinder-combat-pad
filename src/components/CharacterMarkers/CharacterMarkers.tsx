@@ -2,7 +2,7 @@ import "./CharacterMarkers.css";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
 import { useEntityStore } from "../../store/useEntityStore";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 export function CharacterMarkers() {
     const { entities } = useEntityStore();
 

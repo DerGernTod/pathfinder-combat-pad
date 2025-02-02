@@ -6,6 +6,7 @@
     position: absolute;
     width: 15rem;
     height: 3rem;
+    left: 87px;
 }
 .status-1 {
     left: 130px;
@@ -44,4 +45,7 @@
 }
 .instance-kind-3 {
     background-color: var(--haz-d);
+}
+.dragging {
+    opacity: .9;
 }

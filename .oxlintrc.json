@@ -1,0 +1,19 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["import", "typescript", "unicorn", "react", "react-hooks"],
+    "env": {
+        "browser": true
+    },
+    "settings": {},
+    "categories": {
+        "correctness": "error",
+        "style": "error",
+        "perf": "warn"
+    },
+    "rules": {
+        "eqeqeq": "error",
+        "import/no-cycle": "error",
+        "quotes": ["error", "double"],
+        "unicorn/filename-case": ["off"]
+    }
+}

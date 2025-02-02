@@ -1,7 +1,7 @@
 import { Entity } from "../../../../store/useEntityStore";
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
-import { EntitySlot } from "./components/EntitySlot";
+import { EntityInstance } from "./components/EntityInstance";
 import { StatusSlot } from "./components/StatusSlot";
 
 interface InitSlotProps {
@@ -11,14 +11,15 @@ interface InitSlotProps {
 export function InitSlot({ entity }: InitSlotProps): JSX.Element {
     let slot: JSX.Element;
     if (entity) {
-        slot = <EntitySlot entity={entity} />;
+        slot = <EntityInstance entity={entity} />;
     } else {
         slot = <CreateSlot />;
     }
 
     return (
         <div className="init-slot-container">
-            <StatusSlot entity={entity} className="init-slot" status={0}>{slot}</StatusSlot>
+            <StatusSlot entity={entity} className="init-slot" status={0}>&nbsp;</StatusSlot>
+            {slot}
             <div className="init-content-status">
                 <StatusSlot entity={entity} status={1}>O</StatusSlot>
                 <StatusSlot entity={entity} status={2}>💀</StatusSlot>

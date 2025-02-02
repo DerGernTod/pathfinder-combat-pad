@@ -1,14 +1,16 @@
-import { useCallback } from "react";
+import "./CreateSlot.css";
+import { Canvas } from "../../../../Canvas";
+import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
 import {
     EntityKind,
     useEntityStore,
 } from "../../../../../store/useEntityStore";
-import { Canvas } from "../../../../Canvas";
-import { useRef } from "react";
-import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
-import { useState } from "react";
-import { useMemo } from "react";
-import "./CreateSlot.css";
+import {
+    useCallback,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 
 const canvasStyle = {
     flexBasis: "200px",
@@ -31,9 +33,9 @@ export function CreateSlot(): JSX.Element {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
         addEntity({
-            name: canvasRef.current?.toDataURL("image/webp") || "",
             kind,
             level: 1,
+            name: canvasRef.current?.toDataURL("image/webp") ?? "",
             status: 0
         });
         canvasRef.current
@@ -44,7 +46,7 @@ export function CreateSlot(): JSX.Element {
                 canvasRef.current.width,
                 canvasRef.current.height
             );
-    }, [addEntity, kind, canvasRef.current]);
+    }, [addEntity, kind]);
     const selectOptions = useMemo(() => {
         return EntityOptions.map(toCustomSelectOption) as [CustomSelectOption, ...CustomSelectOption[]];
     }, []);

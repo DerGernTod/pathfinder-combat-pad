@@ -1,5 +1,5 @@
 import "./EntityInstance.css";
-import { useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Entity, EntityKind, useEntityStore } from "../../../../../store/useEntityStore";
 import { motion } from "motion/react";
 import { PointerEventHandler } from "react";
@@ -7,6 +7,9 @@ import { PointerEventHandler } from "react";
 interface EntityInstanceProps {
     entity: Entity;
 }
+const transparentImage = new Image();
+transparentImage.src =
+    "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
 const KIND_LOOKUP = {
     [EntityKind.PlayerCharacter]: "PC",
@@ -18,27 +21,34 @@ const KIND_LOOKUP = {
 export const EntityInstance = ({
     entity
 }: EntityInstanceProps): JSX.Element => {
-    const { removeEntity, entities } = useEntityStore();
+    const { removeEntity, entities, setDraggedEntityId } = useEntityStore();
+    const draggableRef = useRef(null);
     const { id, name, kind, status, level } = entity;
-    const handleRemove = useCallback(
+    const [isDragging, setIsDragging] = useState(false);
+    const handlePointerDown = useCallback(
         (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
             if ((e.pointerType === "pen" && e.button === 5) || e.shiftKey) {
                 removeEntity(id);
+            } else {
+                setDraggedEntityId(id);
+                setIsDragging(true);
+                window.addEventListener("pointerup", () => {
+                    setIsDragging(false);
+                    setDraggedEntityId(null);
+                }, { once: true });
             }
         },
-        [removeEntity, id]
+        [removeEntity, id, setDraggedEntityId]
     );
+
     return (
         <motion.div
+            ref={draggableRef}
             layoutDependency={entities}
             layoutId={String(id)}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            }}
-            onPointerDown={handleRemove}
+            onPointerDown={handlePointerDown}
             layout
-            className={`entity-instance entity-instance-type-${kind} status-${status}`}
+            className={`entity-instance entity-instance-type-${kind} status-${status} ${isDragging ? "dragging" : ""}`}
         >
             <div className="label-wrapper">
                 <img src={name} />
@@ -49,7 +59,7 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
-            <div draggable className="grabber">
+            <div className="grabber">
                 ⋮
             </div>
         </motion.div>

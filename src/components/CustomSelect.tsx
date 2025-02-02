@@ -24,7 +24,7 @@ export function CustomSelect({ options, className, selectedIndex }: CustomSelect
         setDropdownOpen(false);
     }, []);
     return (
-        <div className={`custom-select ${className || ""}`}>
+        <div className={`custom-select ${className ?? ""}`}>
             <div
                 className="selected-option"
                 onClick={() => setDropdownOpen(!dropdownOpen)}

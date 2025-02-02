@@ -18,14 +18,14 @@ export const enum EntityKind {
 
 interface EntityStore {
     entities: Entity[];
-    addEntity(entity: Omit<Entity, "id">): void;
-    removeEntity(id: number): void;
-    swapEntities(id1: number, id2: number): void;
+    addEntity(this: void, entity: Omit<Entity, "id">): void;
+    removeEntity(this: void, id: number): void;
+    swapEntities(this: void, id1: number, id2: number): void;
 
     draggedEntityId: number | null;
-    setDraggedEntityId(id: number | null): void;
+    setDraggedEntityId(this: void, id: number | null): void;
 
-    setStatus(id: number, status: number): void;
+    setStatus(this: void, id: number, status: number): void;
 }
 
 let curId = 0;
@@ -33,7 +33,7 @@ let curId = 0;
 export const useEntityStore = create<EntityStore>()((set) => ({
     entities: [],
     draggedEntityId: null,
-    addEntity(entity: Omit<Entity, "id" | "priority">) {
+    addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities.push({
                 ...entity,
@@ -41,15 +41,16 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             });
         }));
     },
-    removeEntity(id: number): void {
+    removeEntity(this: void, id: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
         }));
     },
-    swapEntities(id1: number, id2: number): void {
+    swapEntities(this: void, id1: number, id2: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             const entityIndex1 = recipe.entities.findIndex(entity => entity.id === id1);
             const entityIndex2 = recipe.entities.findIndex(entity => entity.id === id2);
+            console.warn("swapping entities", id1, id2, "got indices", entityIndex1, entityIndex2);
             if (entityIndex1 !== -1 && entityIndex2 !== -1) {
                 const temp = recipe.entities[entityIndex1];
                 recipe.entities[entityIndex1] = recipe.entities[entityIndex2];
@@ -57,10 +58,10 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             }
         }));
     },
-    setDraggedEntityId(id: number | null): void {
+    setDraggedEntityId(this: void, id: number | null): void {
         set({ draggedEntityId: id });
     },
-    setStatus(id: number, status: number): void {
+    setStatus(this: void, id: number, status: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             const entity = recipe.entities.find(entity => entity.id === id);
             if (!entity) {

@@ -13,7 +13,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
     const resizeCurrentCanvas = useCallback(() => {
         if (!canvasRef.current || !canvasHiddenRef.current) return;
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
-    }, [canvasRef.current, saveDrawing, restoreDrawing]);
+    }, []);
 
 
     useEffect(() => {
@@ -27,7 +27,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
                 contextRef.current = context;
             }
         }
-    }, [canvasRef.current]);
+    }, []);
 
     useLayoutEffect(() => {
         resizeCurrentCanvas();
@@ -53,7 +53,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
                 event.nativeEvent.offsetY
             );
         }
-    }, [contextRef.current]);
+    }, []);
 
     const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         setDrawing(false);
@@ -63,7 +63,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
         if (contextRef.current) {
             contextRef.current.closePath();
         }
-    }, [canvasRef.current, contextRef.current]);
+    }, []);
 
     const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
         if (!drawing || !contextRef.current) return;
