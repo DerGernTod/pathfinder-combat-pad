@@ -4,7 +4,7 @@ import {
     EntityKind,
     useEntityStore,
 } from "../../../../../store/useEntityStore";
-import { PointerEventHandler, useCallback, useRef, useState } from "react";
+import { PointerEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
 interface EntityInstanceProps {
@@ -24,7 +24,7 @@ const KIND_LOOKUP = {
 export const EntityInstance = ({
     entity,
 }: EntityInstanceProps): JSX.Element => {
-    const { removeEntity, entities, setDraggedEntityId } = useEntityStore();
+    const { removeEntity, entities, setDraggedEntityId, draggedEntityId } = useEntityStore();
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const { id, name, kind, status, level } = entity;
@@ -53,6 +53,13 @@ export const EntityInstance = ({
         },
         [removeEntity, id, setDraggedEntityId]
     );
+    useEffect(() => {
+        if (draggedEntityId === null) {
+            grabber.current?.classList.add("grab-cursor");
+        } else {
+            grabber.current?.classList.remove("grab-cursor");
+        }
+    }, [draggedEntityId]);
     return (
         <motion.div
             ref={draggableRef}
