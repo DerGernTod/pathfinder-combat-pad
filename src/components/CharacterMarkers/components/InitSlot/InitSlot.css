@@ -9,6 +9,7 @@
     text-align: center;
     gap: var(--grid-gap);
     color: var(--parchment);
+    overflow: hidden;
 }
 
 .init-slot {
@@ -88,19 +89,21 @@
 
 .entity-instance {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     width: 90%;
     height: 80%;
     margin-right: 10px;
     border-radius: 15px;
+    padding: 5px 0 5px 5px;
+    gap: 5px;
 }
 
 .label-wrapper {
-    flex-basis: 180px;
+    flex-basis: 175px;
     flex-grow: 0;
     flex-shrink: 0;
-    height: 85%;
+    height: 100%;
     border-radius: var(--label-border-radius) 0 0 var(--label-border-radius);
 
     box-sizing: border-box;
@@ -110,6 +113,11 @@
     justify-content: space-around;
     align-items: center;
     background-color: #fffd;
+}
+
+.label-wrapper > img {
+    height: 100%;
+    opacity: 80%;
 }
 
 .entity-instance-type-0 {
