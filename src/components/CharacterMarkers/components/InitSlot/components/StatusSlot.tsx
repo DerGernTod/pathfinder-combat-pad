@@ -1,5 +1,6 @@
-import { Entity, useEntityStore } from "../../../../../store/useEntityStore";
 import { useCallback, useEffect, useRef } from "react";
+import { Entity } from "../../../../../constants";
+import { useEntityStore } from "../../../../../store/useEntityStore";
 
 interface StatusSlotProps {
     children: string | JSX.Element;

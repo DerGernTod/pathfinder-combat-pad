@@ -1,20 +1,6 @@
+import { Entity } from "../constants";
 import { create } from "zustand";
 import { produce } from "immer";
-
-export interface Entity {
-    id: number;
-    name: string;
-    kind: EntityKind;
-    level: number;
-    status: number;
-}
-
-export const enum EntityKind {
-    PlayerCharacter = 0,
-    NonPlayerCharacter = 1,
-    Monster = 2,
-    Hazard = 3
-}
 
 interface EntityStore {
     entities: Entity[];
@@ -47,7 +33,6 @@ export const useEntityStore = create<EntityStore>()((set) => ({
         }));
     },
     setDraggedEntityId(this: void, id: number | null): void {
-        console.warn("setting dragged entity to", id);
         set({ draggedEntityId: id });
     },
     setStatus(this: void, id: number, status: number): void {
@@ -63,7 +48,6 @@ export const useEntityStore = create<EntityStore>()((set) => ({
         set(produce(function updateState(recipe: EntityStore): void {
             const entityIndex1 = recipe.entities.findIndex(entity => entity.id === id1);
             const entityIndex2 = recipe.entities.findIndex(entity => entity.id === id2);
-            console.warn("swapping entities", id1, id2, "got indices", entityIndex1, entityIndex2);
             if (entityIndex1 !== -1 && entityIndex2 !== -1) {
                 const temp = recipe.entities[entityIndex1];
                 recipe.entities[entityIndex1] = recipe.entities[entityIndex2];

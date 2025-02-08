@@ -1,17 +1,16 @@
 import "./CreateSlot.css";
 import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
-import {
-    EntityKind,
-    useEntityStore,
-} from "../../../../../store/useEntityStore";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Canvas } from "../../../../Canvas";
+import { EntityKind } from "../../../../../constants";
+import SlotNumberInput from "./SlotMachineInput";
+import { useEntityStore } from "../../../../../store/useEntityStore";
 
 const canvasStyle = {
-    flexBasis: "200px",
+    flexBasis: "175px",
     flexGrow: 0,
     flexShrink: 0,
-    height: "80%",
+    height: "100%",
 };
 
 const EntityOptions = [
@@ -24,14 +23,13 @@ const EntityOptions = [
 export function CreateSlot(): JSX.Element {
     const initialEntityKind = 0;
     const { addEntity } = useEntityStore();
-    const [kind, setKind] = useState<EntityKind>(
-        EntityOptions[initialEntityKind]
-    );
+    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
+    const [level, setLevel] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
         addEntity({
             kind,
-            level: 1,
+            level,
             name: canvasRef.current?.toDataURL("image/webp") ?? "",
             status: 0,
         });
@@ -43,7 +41,7 @@ export function CreateSlot(): JSX.Element {
                 canvasRef.current.width,
                 canvasRef.current.height
             );
-    }, [addEntity, kind]);
+    }, [addEntity, kind, level]);
     const selectOptions = useMemo(() => {
         return EntityOptions.map(toCustomSelectOption) as [
             CustomSelectOption,
@@ -52,13 +50,18 @@ export function CreateSlot(): JSX.Element {
     }, []);
 
     return (
-        <div className="entity-slot">
-            <Canvas style={canvasStyle} ref={canvasRef} />
-            <CustomSelect
-                options={selectOptions}
-                selectedIndex={initialEntityKind}
-            />
-            <button onClick={createEntity}>+</button>
+        <div className="create-slot">
+            <div className={`entity-instance entity-instance-type-${kind}`}>
+                <Canvas style={canvasStyle} ref={canvasRef} />
+                <SlotNumberInput onChange={setLevel} />
+                <CustomSelect
+                    options={selectOptions}
+                    selectedIndex={initialEntityKind}
+                />
+            </div>
+            <div className="button">
+                <button onClick={createEntity}>✚</button>
+            </div>
         </div>
     );
 

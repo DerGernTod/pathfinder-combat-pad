@@ -1,11 +1,9 @@
 import "./EntityInstance.css";
-import {
-    Entity,
-    EntityKind,
-    useEntityStore,
-} from "../../../../../store/useEntityStore";
 import { PointerEventHandler, useCallback, useEffect, useRef, useState } from "react";
+import { Entity } from "../../../../../constants";
+import { KIND_LOOKUP } from "./constants";
 import { motion } from "motion/react";
+import { useEntityStore } from "../../../../../store/useEntityStore";
 
 interface EntityInstanceProps {
     entity: Entity;
@@ -13,13 +11,6 @@ interface EntityInstanceProps {
 const transparentImage = new Image();
 transparentImage.src =
     "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
-
-const KIND_LOOKUP = {
-    [EntityKind.PlayerCharacter]: "PC",
-    [EntityKind.NonPlayerCharacter]: "NPC",
-    [EntityKind.Monster]: "MON",
-    [EntityKind.Hazard]: "HAZ",
-};
 
 export const EntityInstance = ({
     entity,

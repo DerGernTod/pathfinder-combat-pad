@@ -2,7 +2,7 @@
     --crimson: #4f1b1a;
     --crimson-light: #7f2b2a;
     --parchment: #eed2b0;
-    --parchment-light: #e2caac;
+    --parchment-light: #f0dac0;
     --gold: #b28340;
     --grid-gap: 2px;
 }
@@ -96,4 +96,24 @@ canvas {
 
 .grabbing {
     cursor: grabbing !important;
+}
+
+button {
+    background-color: var(--crimson);
+    color: var(--parchment);
+    border: 2px solid var(--parchment);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--crimson-light);
+    color: var(--parchment-light);
+}
+
+button:active {
+    background-color: var(--crimson);
+    color: white;
+    border-color: var(--parchment-light);
 }

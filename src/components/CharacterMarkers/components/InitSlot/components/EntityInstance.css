@@ -3,6 +3,13 @@
     width: 15rem;
     height: 3rem;
     left: 87px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 10px;
+    border-radius: 15px;
+    padding: 5px 0 5px 5px;
+    gap: 5px;
 }
 .status-1 {
     left: 130px;

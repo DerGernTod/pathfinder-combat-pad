@@ -7,12 +7,16 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: var(--grid-gap);
     color: var(--parchment);
     overflow: hidden;
 }
 
+.init-slot-container:nth-child(2n) .init-slot {
+    background-color: var(--crimson-light);
+}
+
 .init-slot {
+    transition: background-color .25s .25s;
     background-color: var(--crimson);
     height: 100%;
 }
@@ -45,10 +49,6 @@
 
 .init-content-status > div:nth-child(4) {
     background-color: #2b2828;
-}
-
-.init-content > *:nth-child(2n) .init-slot {
-    background-color: var(--crimson-light);
 }
 
 .entity-slot {
@@ -87,18 +87,6 @@
     cursor: grab;
 }
 
-.entity-instance {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%;
-    height: 80%;
-    margin-right: 10px;
-    border-radius: 15px;
-    padding: 5px 0 5px 5px;
-    gap: 5px;
-}
-
 .label-wrapper {
     flex-basis: 175px;
     flex-grow: 0;
@@ -134,4 +122,8 @@
 
 .entity-instance-type-3 {
     background-color: var(--haz);
+}
+
+.grid-gap {
+    gap: var(--grid-gap);
 }
