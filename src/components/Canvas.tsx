@@ -40,14 +40,29 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
 
     useLayoutEffect(() => {
         resizeCurrentCanvas();
+        window.addEventListener("keydown", setErasing);
+        window.addEventListener("keyup", resetErasing);
         window.addEventListener("resize", resizeCurrentCanvas);
         return () => {
+            window.removeEventListener("keydown", setErasing);
+            window.removeEventListener("keyup", resetErasing);
             window.removeEventListener("resize", resizeCurrentCanvas);
         };
+
+        function setErasing(e: globalThis.KeyboardEvent) {
+            if (e.key === "Shift") {
+                setIsErasing(true);
+            }
+        }
+
+        function resetErasing(e: globalThis.KeyboardEvent) {
+            if (e.key === "Shift") {
+                setIsErasing(false);
+            }
+        }
     }, [resizeCurrentCanvas]);
 
     const startDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-
         if (event.pointerType === "pen") {
             setIsErasing(event.button === 5);
         }
@@ -61,10 +76,24 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
                 event.nativeEvent.offsetX,
                 event.nativeEvent.offsetY
             );
+            drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
         }
     }, []);
 
+    const draw = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+        if (!drawing || !contextRef.current) return;
+        if (isErasing) {
+            contextRef.current.globalCompositeOperation = "destination-out";
+            contextRef.current.lineWidth = 15;
+        } else {
+            contextRef.current.globalCompositeOperation = "source-over";
+            contextRef.current.lineWidth = 5;
+        }
+        drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+    }, [drawing, isErasing]);
+
     const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+        draw(event);
         setDrawing(false);
         if (canvasRef.current) {
             canvasRef.current.setPointerCapture(event.pointerId);
@@ -72,33 +101,18 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
         if (contextRef.current) {
             contextRef.current.closePath();
         }
-    }, []);
+    }, [draw]);
 
-    const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
-        if (!drawing || !contextRef.current) return;
-        if (isErasing) {
-            contextRef.current.globalCompositeOperation = "destination-out";
-            contextRef.current.lineWidth = 10;
-        } else {
-            contextRef.current.globalCompositeOperation = "source-over";
-            contextRef.current.lineWidth = 5;
-        }
-        contextRef.current.lineTo(
-            event.nativeEvent.offsetX,
-            event.nativeEvent.offsetY
-        );
-        contextRef.current.stroke();
-        contextRef.current.beginPath();
-        contextRef.current.moveTo(
-            event.nativeEvent.offsetX,
-            event.nativeEvent.offsetY
-        );
-    };
+    let erasingClass = "";
+    if (isErasing) {
+        erasingClass = "erasing";
+    }
+
     return (
         <>
             <div className="drawing-container" style={style}>
                 <canvas
-                    className="drawing-canvas"
+                    className={`drawing-canvas ${erasingClass}`}
                     ref={canvasRef}
                     onPointerDown={startDrawing}
                     onPointerUp={endDrawing}
@@ -135,4 +149,11 @@ function restoreDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasEleme
     if (context && contextHidden) {
         context.drawImage(canvasHidden, 0, 0, canvasHidden.width, canvasHidden.height);
     }
+}
+
+function drawLineAndMove(context: CanvasRenderingContext2D, x: number, y: number) {
+    context.lineTo(x, y);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(x, y);
 }

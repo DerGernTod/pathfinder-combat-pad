@@ -26,3 +26,7 @@ canvas.drawing-canvas {
 canvas {
     display: block;
 }
+
+.drawing-canvas.erasing {
+    cursor: pointer;
+}

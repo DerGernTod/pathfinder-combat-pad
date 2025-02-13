@@ -10,6 +10,8 @@
     border-radius: 15px;
     padding: 5px 0 5px 5px;
     gap: 5px;
+    box-shadow: 0;
+    transition: box-shadow .4s, translate .2s;
 }
 .status-1 {
     left: 130px;
@@ -50,5 +52,6 @@
     background-color: var(--haz-d);
 }
 .dragging {
-    opacity: .9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    translate: -2px -2px;
 }

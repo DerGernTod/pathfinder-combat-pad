@@ -117,3 +117,7 @@ button:active {
     color: white;
     border-color: var(--parchment-light);
 }
+
+.hidden {
+    display: none;
+}

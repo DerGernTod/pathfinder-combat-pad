@@ -4,7 +4,11 @@ import "./App.css";
 import { Canvas } from "./components/Canvas";
 import { CharacterMarkers } from "./components/CharacterMarkers/CharacterMarkers";
 import { DurationBar } from "./components/DurationBar";
+import { Magnet } from "./components/MagnetStash/Magnet";
+import { MagnetStash } from "./components/MagnetStash/MagnetStash";
 import { useEffect } from "react";
+import { useMagnetStore } from "./store/useMagnetStore";
+import { AnimatePresence } from "motion/react";
 
 function App() {
     // const [greetMsg, setGreetMsg] = useState("");
@@ -27,8 +31,15 @@ function App() {
         }
     }, []);
 
+    const { magnets } = useMagnetStore();
     return (
         <div className="container">
+            <AnimatePresence>
+                {
+                    magnets.map(magnet => (<Magnet key={magnet.id} magnet={magnet} />))
+                }
+            </AnimatePresence>
+            <MagnetStash />
             <header>Pathfinder Combat Pad</header>
             <main>
                 <Canvas style={{flexBasis: "75px", flexGrow: 0}} />
@@ -54,7 +65,9 @@ function App() {
                     <p>{greetMsg}</p>
                 </div> */}
             </main>
-            <footer>Non-magnetic initiative tracker pad</footer>
+            <footer>
+                Non-magnetic initiative tracker pad
+            </footer>
         </div>
     );
 }
