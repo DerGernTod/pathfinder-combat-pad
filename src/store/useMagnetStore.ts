@@ -8,6 +8,7 @@ interface MagnetStore {
     deleteMagnet(this: void, magnetId: number): void;
     dragMagnet(this: void, magnetId: number): void;
     dropMagnet(this: void, magnetId: number): void;
+    rotateMagnet(this: void, magnetId: number): void;
     setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void;
 }
 
@@ -19,8 +20,7 @@ export const useMagnetStore = create<MagnetStore>()((set) => ({
             const newMagnetId = curId++;
             recipe.magnets.push({
                 ...magnetData,
-                id: newMagnetId,
-                isDragging: true
+                id: newMagnetId
             });
         }));
     },
@@ -50,6 +50,15 @@ export const useMagnetStore = create<MagnetStore>()((set) => ({
         }));
     },
     magnets: [],
+    rotateMagnet(this: void, magnetId: number): void {
+        set(produce(function updateState(recipe: MagnetStore) {
+            const magnet = recipe.magnets.find(magnet => magnet.id === magnetId);
+            if (!magnet) {
+                throw new Error(`Couldn't find magnet with id ${magnetId} while trying to rotate!`);
+            }
+            magnet.rotation = magnet.rotation + 90;
+        }))
+    },
     setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void {
         set(produce(function updateState(recipe: MagnetStore) {
             const magnet = recipe.magnets.find(magnet => magnet.id === magnetId);

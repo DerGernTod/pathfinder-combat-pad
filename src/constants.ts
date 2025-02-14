@@ -8,6 +8,7 @@ export interface MagnetData {
         left: number;
         top: number;
     },
+    rotation: number;
     kind: MagnetKind;
     isDragging: boolean;
 }

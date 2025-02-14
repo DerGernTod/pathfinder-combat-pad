@@ -14,41 +14,51 @@ const magnetKindStartOffset = {
 
 export function Magnet({ magnet }: MagnetProps): JSX.Element {
     const magnetRef = useRef<HTMLDivElement>(null);
-    const { setMagnetLocation, dragMagnet, dropMagnet, deleteMagnet } = useMagnetStore();
+    const { setMagnetLocation, dragMagnet, dropMagnet, deleteMagnet, rotateMagnet } = useMagnetStore();
     const [ startOffset, setStartOffset ] = useState(magnetKindStartOffset[magnet.kind]);
+    const [draggingAllowed, setDraggingAllowed] = useState(magnet.isDragging);
     
     const updateLocation = useCallback(function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
+        if (!magnet.isDragging && draggingAllowed) {
+            dragMagnet(magnet.id);
+        }
+        if (!magnet.isDragging) {
+            return;
+        }
         setMagnetLocation(magnet.id, {
             left: moveEvent.clientX - startOffset.left,
             top: moveEvent.clientY - startOffset.top
         });
-    }, [magnet.id, setMagnetLocation, startOffset]);
+    }, [dragMagnet, draggingAllowed, magnet.id, magnet.isDragging, setMagnetLocation, startOffset.left, startOffset.top]);
     
-    const stopDragging = useCallback(function stopDraggingCallback() {
-        dropMagnet(magnet.id);
+    const stopDragging = useCallback(function stopDraggingCallback(e: globalThis.PointerEvent) {
         window.removeEventListener("pointermove", updateLocation);
-    }, [dropMagnet, magnet.id, updateLocation]);
+        if (!magnet.isDragging) {
+            if (isEraserEvent(e)) {
+                deleteMagnet(magnet.id);
+            } else if (!magnet.isDragging) {
+                rotateMagnet(magnet.id);
+            }
+        } else {
+            dropMagnet(magnet.id);
+        }
+        setDraggingAllowed(false);
+    }, [deleteMagnet, dropMagnet, magnet.id, magnet.isDragging, rotateMagnet, updateLocation]);
 
-    const startDragging = useCallback(function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {
-        if (!magnetRef.current || isEraserEvent(e)) {
+    const allowDragging = useCallback(function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {
+        if (!magnetRef.current) {
             return;
         }
-        dragMagnet(magnet.id);
         const bounds = magnetRef.current.getBoundingClientRect();
         setStartOffset({
             left: e.clientX - bounds.left,
             top: e.clientY - bounds.top
         });
-    }, [dragMagnet, magnet.id]);
-
-    const remove = useCallback(function removeCallback(e: PointerEvent<HTMLDivElement>) {
-        if (isEraserEvent(e)) {
-            deleteMagnet(magnet.id);
-        }
-    }, [deleteMagnet, magnet.id]);
+        setDraggingAllowed(true);
+    }, []);
 
     useEffect(() => {
-        if (!magnet.isDragging) {
+        if (!draggingAllowed) {
             return;
         }
         window.addEventListener("pointermove", updateLocation);
@@ -58,7 +68,7 @@ export function Magnet({ magnet }: MagnetProps): JSX.Element {
             window.removeEventListener("pointermove", updateLocation);
             window.removeEventListener("pointerup", stopDragging);
         };
-    }, [magnet.isDragging, magnet.id, stopDragging, updateLocation]);
+    }, [stopDragging, updateLocation, draggingAllowed]);
 
     let draggingClass = "";
     if (magnet.isDragging) {
@@ -66,16 +76,15 @@ export function Magnet({ magnet }: MagnetProps): JSX.Element {
     }
 
     return (
-        <motion.div ref={magnetRef} className="magnet" style={magnet.location} onPointerDown={startDragging} onClick={remove}
-            animate={
-                { opacity: 1 }
-            }
-            initial={
-                { opacity: 0 }
-            }
-            exit={
-                { opacity: 0 }
-            }>
+        <motion.div
+            ref={magnetRef}
+            className="magnet"
+            style={magnet.location}
+            onPointerDown={allowDragging}
+            animate={ { rotate: magnet.rotation, scale: 1 } }
+            initial={ { scale: 0 } }
+            exit={ { scale: 0 } }
+        >
             <svg width="50" height="50" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <polygon className={draggingClass} points="50,10 90,90 50,70 10,90" fill="gray" />
             </svg>
@@ -83,6 +92,6 @@ export function Magnet({ magnet }: MagnetProps): JSX.Element {
     );
 }
 
-function isEraserEvent(e: PointerEvent<HTMLDivElement>) {
+function isEraserEvent(e: globalThis.PointerEvent) {
     return e.shiftKey || e.pointerType === "pen" && e.button === 5;
 }
