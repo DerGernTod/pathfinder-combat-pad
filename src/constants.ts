@@ -1,5 +1,6 @@
 export const enum MagnetKind {
-    Arrow = 0
+    Arrow = 0,
+    Condition = 1
 }
 
 export interface MagnetData {

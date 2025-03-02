@@ -1,5 +1,6 @@
 import { Entity } from "../constants";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
 interface EntityStore {
@@ -16,7 +17,7 @@ interface EntityStore {
 
 let curId = 0;
 
-export const useEntityStore = create<EntityStore>()((set) => ({
+export const useEntityStore = create<EntityStore>()(persist((set) => ({
     addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities.push({
@@ -55,4 +56,4 @@ export const useEntityStore = create<EntityStore>()((set) => ({
             }
         }));
     }
-}));
+}), { name: "entity-store" }));

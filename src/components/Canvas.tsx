@@ -1,4 +1,5 @@
 import "./Canvas.css"; 
+import { CanvasStore, useCanvasStore } from "../store/useCanvasStore";
 import React, {
     CSSProperties,
     forwardRef,
@@ -9,13 +10,22 @@ import React, {
     useRef,
     useState
 } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSProperties }>(({ style }, ref) => {
+interface CanvasProps {
+    style: CSSProperties;
+    storeId?: string;
+}
+
+export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, storeId }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [drawing, setDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
+    const { canvasContent, updateCanvas } = useCanvasStore(useShallow(function extractSpecificCanvas(state: CanvasStore) {
+        return extractCanvasDataFromState(storeId, state);
+    }));
 
     useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
 
@@ -24,19 +34,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
     }, []);
 
-
     useEffect(() => {
-        const canvas = canvasRef.current;
-        if (canvas) {
-            const context = canvas.getContext("2d");
-            if (context) {
-                context.lineCap = "round";
-                context.strokeStyle = "black";
-                context.lineWidth = 5;
-                contextRef.current = context;
-            }
-        }
-    }, []);
+        configureCanvas(canvasRef, contextRef, canvasContent);
+    }, [canvasContent]);
 
     useLayoutEffect(() => {
         resizeCurrentCanvas();
@@ -95,13 +95,20 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
     const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         draw(event);
         setDrawing(false);
-        if (canvasRef.current) {
-            canvasRef.current.setPointerCapture(event.pointerId);
-        }
         if (contextRef.current) {
             contextRef.current.closePath();
         }
-    }, [draw]);
+        if (canvasRef.current) {
+            canvasRef.current.setPointerCapture(event.pointerId);
+            if (storeId) {
+                updateCanvas(storeId, canvasRef.current.toDataURL("image/webp"));
+            }
+        }
+    }, [
+        draw,
+        storeId,
+        updateCanvas
+    ]);
 
     let erasingClass = "";
     if (isErasing) {
@@ -126,14 +133,47 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, { style: CSSPropertie
     );
 });
 
-function resizeCanvas(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement) {
+function configureCanvas(
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>,
+    canvasContent: string | undefined
+): void {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+        return;
+    }
+    const context = canvas.getContext("2d");
+    if (!context) {
+        return;
+    }
+    context.lineCap = "round";
+    context.strokeStyle = "black";
+    context.lineWidth = 5;
+    contextRef.current = context;
+    if (canvasContent) {
+        restoreCanvasFromBase64(canvas, canvasContent);
+    }
+}
+
+function extractCanvasDataFromState(storeId: string | undefined, state: CanvasStore) {
+    let canvasContent: string | undefined = undefined;
+    if (storeId) {
+        canvasContent = state.canvases[storeId || ""];
+    }
+    return {
+        canvasContent,
+        updateCanvas: state.updateCanvas
+    };
+}
+
+function resizeCanvas(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement): void {
     saveDrawing(canvas, canvasHidden);
     canvas.width = canvas.parentElement!.offsetWidth;
     canvas.height = canvas.parentElement!.offsetHeight;
     restoreDrawing(canvas, canvasHidden);
 }
 
-function saveDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement) {
+function saveDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement): void {
     const context = canvas.getContext("2d");
     const contextHidden = canvasHidden.getContext("2d");
     canvasHidden.width = canvas.width;
@@ -143,7 +183,7 @@ function saveDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement)
     }
 }
 
-function restoreDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement) {
+function restoreDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement): void {
     const context = canvas.getContext("2d");
     const contextHidden = canvasHidden.getContext("2d");
     if (context && contextHidden) {
@@ -151,9 +191,20 @@ function restoreDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasEleme
     }
 }
 
-function drawLineAndMove(context: CanvasRenderingContext2D, x: number, y: number) {
+function drawLineAndMove(context: CanvasRenderingContext2D, x: number, y: number): void {
     context.lineTo(x, y);
     context.stroke();
     context.beginPath();
     context.moveTo(x, y);
+}
+
+function restoreCanvasFromBase64(canvas: HTMLCanvasElement, base64: string): void {
+    const img = new Image();
+    img.onload = () => {
+        const context = canvas.getContext("2d");
+        if (context) {
+            context.drawImage(img, 0, 0);
+        }
+    };
+    img.src = base64;
 }

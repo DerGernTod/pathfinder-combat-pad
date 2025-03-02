@@ -1,5 +1,6 @@
 import { MagnetData } from "../constants";
 import { create } from "zustand/react";
+import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
 interface MagnetStore {
@@ -14,7 +15,7 @@ interface MagnetStore {
 
 let curId = 0;
 
-export const useMagnetStore = create<MagnetStore>()((set) => ({
+export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData, "id">) {
         set(produce(function updateState(recipe: MagnetStore) {
             const newMagnetId = curId++;
@@ -68,4 +69,4 @@ export const useMagnetStore = create<MagnetStore>()((set) => ({
             magnet.location = location;
         }));
     }
-}));
+}), { name: "magnet-store" }));

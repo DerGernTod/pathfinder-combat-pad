@@ -11,6 +11,6 @@
     cursor: grabbing;
     filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.3));
 }
-.magnet svg polygon {
+.magnet .apply-transitions {
     transition: filter .3s, translate .15s;
 }
