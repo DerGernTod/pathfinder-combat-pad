@@ -12,6 +12,7 @@ export interface MagnetData {
     rotation: number;
     kind: MagnetKind;
     isDragging: boolean;
+    details?: unknown;
 }
 
 export interface Entity {

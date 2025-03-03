@@ -14,10 +14,11 @@ import { useShallow } from "zustand/react/shallow";
 
 interface CanvasProps {
     style: CSSProperties;
+    penSize?: number;
     storeId?: string;
 }
 
-export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, storeId }, ref) => {
+export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, storeId, penSize = 5 }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -63,6 +64,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     }, [resizeCurrentCanvas]);
 
     const startDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+        event.stopPropagation();
         if (event.pointerType === "pen") {
             setIsErasing(event.button === 5);
         }
@@ -87,7 +89,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
             contextRef.current.lineWidth = 15;
         } else {
             contextRef.current.globalCompositeOperation = "source-over";
-            contextRef.current.lineWidth = 5;
+            contextRef.current.lineWidth = penSize;
         }
         drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
     }, [drawing, isErasing]);

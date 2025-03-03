@@ -14,7 +14,7 @@ export function MagnetStash(): JSX.Element {
                 location: { left: e.clientX - 25, top: e.clientY - 25 },
                 rotation: 0
             })}>
-                {createElement(MagnetKinds[MagnetKind.Arrow].children, { className: "" })}
+                {createElement(MagnetKinds[MagnetKind.Arrow].preview, { className: "" })}
             </div>
             <div onPointerDown={(e) => createAndDragMagnet({
                 isDragging: true,
@@ -22,7 +22,7 @@ export function MagnetStash(): JSX.Element {
                 location: { left: e.clientX - 25, top: e.clientY - 25 },
                 rotation: 0
             })}>
-                {createElement(MagnetKinds[MagnetKind.Condition].children, { className: "" })}
+                {createElement(MagnetKinds[MagnetKind.Condition].preview, { className: "" })}
             </div>
         </div>
     );

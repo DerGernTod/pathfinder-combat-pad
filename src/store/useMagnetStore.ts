@@ -11,6 +11,7 @@ interface MagnetStore {
     dropMagnet(this: void, magnetId: number): void;
     rotateMagnet(this: void, magnetId: number): void;
     setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void;
+    setMagnetImage(this: void, magnetId: number, image: string): void;
 }
 
 let curId = 0;
@@ -59,6 +60,15 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             }
             magnet.rotation = magnet.rotation + 90;
         }))
+    },
+    setMagnetImage(this: void, magnetId: number, image: string): void {
+        set(produce(function updateState(recipe: MagnetStore) {
+            const magnet = recipe.magnets.find(magnet => magnet.id === magnetId);
+            if (!magnet) {
+                throw new Error(`Couldn't find magnet with id ${magnetId} while trying to update image!`);
+            }
+            magnet.details = image;
+        }));
     },
     setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void {
         set(produce(function updateState(recipe: MagnetStore) {

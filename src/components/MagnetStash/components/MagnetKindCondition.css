@@ -1,0 +1,71 @@
+.condition-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 25px;
+    margin-right: 5px;
+    border-radius: 10px;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
+    padding: 0;
+}
+
+.condition-marker.preview {
+    width: 100px;
+}
+
+.condition-marker > * {
+    padding: 5px 10px;
+    font-size: 9pt;
+}
+
+.condition-marker .condition-label {
+    background-color: var(--crimson-light);
+    border-radius: 10px 0 0 10px;
+    color: white;
+}
+
+.condition-marker .condition-text {
+    background-color: white;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    height: 23px;
+    padding: 0;
+}
+
+.condition-marker .condition-text img {
+    pointer-events: none;
+    padding: 0;
+    margin: 0;
+}
+
+.condition-marker .condition-text.editing {
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    padding: 0;
+}
+
+.condition-marker .condition-edit {
+    background-color: white;
+    border-radius: 0 10px 10px 0;
+    flex-basis: 30px;
+    padding: 3px 4px 4px;
+    border-left: 1px dotted lightgray;
+    cursor: default;
+    transition: .2s;
+}
+.condition-marker .condition-edit:hover {
+    background-color: var(--crimson-light);
+    color: white;
+}
+
+.condition-marker .condition-edit:active {
+    background-color: var(--crimson);
+    color: white;
+}
+
+.condition-marker.dragging {
+    cursor: grabbing;
+    filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+}

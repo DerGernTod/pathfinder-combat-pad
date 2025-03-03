@@ -11,6 +11,7 @@ interface MagnetProps {
 
 const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
+
 export function Magnet({ magnet }: MagnetProps): JSX.Element {
     const magnetRef = useRef<HTMLDivElement>(null);
     let draggingClass = "";
@@ -29,7 +30,7 @@ export function Magnet({ magnet }: MagnetProps): JSX.Element {
             initial={ INITIAL_MAGNET_STYLE }
             exit={ EXIT_MAGNET_STYLE }
         >
-            {createElement(MagnetKinds[magnet.kind].children, { className: draggingClass })} 
+            {createElement(MagnetKinds[magnet.kind].children, { className: draggingClass, details: magnet.details, id: magnet.id })} 
         </motion.div>
     );
 }
