@@ -24,7 +24,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const [drawing, setDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
-    const { canvasContent, updateCanvas } = useCanvasStore(useShallow(function extractSpecificCanvas(state: CanvasStore) {
+    const { updateCanvas } = useCanvasStore(useShallow(function extractSpecificCanvas(state: CanvasStore) {
         return extractCanvasDataFromState(storeId, state);
     }));
 
@@ -36,8 +36,8 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     }, []);
 
     useEffect(() => {
-        configureCanvas(canvasRef, contextRef, canvasContent);
-    }, [canvasContent]);
+        configureCanvas(canvasRef, contextRef, storeId);
+    }, [storeId]);
 
     useLayoutEffect(() => {
         resizeCurrentCanvas();
@@ -92,7 +92,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
             contextRef.current.lineWidth = penSize;
         }
         drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-    }, [drawing, isErasing]);
+    }, [drawing, isErasing, penSize]);
 
     const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         draw(event);
@@ -138,7 +138,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 function configureCanvas(
     canvasRef: React.RefObject<HTMLCanvasElement>,
     contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>,
-    canvasContent: string | undefined
+    storeId?: string
 ): void {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -151,7 +151,13 @@ function configureCanvas(
     context.lineCap = "round";
     context.strokeStyle = "black";
     context.lineWidth = 5;
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
     contextRef.current = context;
+    if (typeof storeId !== "string") {
+        return;
+    }
+    const canvasContent = useCanvasStore.getState().canvases[storeId];
     if (canvasContent) {
         restoreCanvasFromBase64(canvas, canvasContent);
     }

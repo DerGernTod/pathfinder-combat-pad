@@ -14,12 +14,10 @@ interface MagnetStore {
     setMagnetImage(this: void, magnetId: number, image: string): void;
 }
 
-let curId = 0;
-
 export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData, "id">) {
         set(produce(function updateState(recipe: MagnetStore) {
-            const newMagnetId = curId++;
+            const newMagnetId = findHighestId(recipe) + 1;
             recipe.magnets.push({
                 ...magnetData,
                 id: newMagnetId
@@ -80,3 +78,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
         }));
     }
 }), { name: "magnet-store" }));
+
+function findHighestId(store: MagnetStore): number {
+    return store.magnets.reduce((acc, magnet) => Math.max(acc, magnet.id), 0);
+}

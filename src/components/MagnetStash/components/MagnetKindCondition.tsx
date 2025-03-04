@@ -58,7 +58,7 @@ function renderEditChar(isEditing: boolean) {
 
 function renderDetails(details: string, isEditing: boolean, ref: RefObject<HTMLCanvasElement>) {
     if (isEditing) {
-        return <Canvas ref={ref} style={canvasStyle} penSize={3} />;
+        return <Canvas ref={ref} style={canvasStyle} penSize={2} />;
     }
     if (details.length > 0) {
         return <img src={details} alt="condition" />;
