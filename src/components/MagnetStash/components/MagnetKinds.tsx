@@ -1,6 +1,6 @@
-import { MagnetKindCondition, MagnetKindConditionPreview } from "./MagnetKindCondition";
+import { MagnetKindArrow, MagnetKindArrowProps } from "./MagnetKindArrow";
+import { MagnetKindCondition, MagnetKindConditionPreview, MagnetKindConditionProps } from "./MagnetKindCondition";
 import { MagnetKind } from "../../../constants";
-import { MagnetKindArrow } from "./MagnetKindArrow";
 
 export const MagnetKinds: MagnetKindDescriptors = {
     [MagnetKind.Arrow]: {
@@ -17,16 +17,17 @@ export const MagnetKinds: MagnetKindDescriptors = {
     }
 };
 
-export interface MagnetKindDescriptor {
+export interface MagnetKindDescriptor<PROPS> {
     allowRotate: boolean;
-    children: React.ComponentType<MagnetKindProps>;
+    children: React.ComponentType<PROPS>;
     preview: React.ComponentType<any>;
     offset: Offset;
 }
 
-export type MagnetKindDescriptors = {
-    [key in MagnetKind]: MagnetKindDescriptor;
-};
+export interface MagnetKindDescriptors {
+    [MagnetKind.Arrow]: MagnetKindDescriptor<MagnetKindArrowProps>;
+    [MagnetKind.Condition]: MagnetKindDescriptor<MagnetKindConditionProps>;
+}
 
 export interface MagnetKindProps {
     className: string;

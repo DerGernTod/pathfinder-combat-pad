@@ -7,6 +7,10 @@ import { useShallow } from "zustand/react/shallow";
 
 const canvasStyle = { height: "21px", width: "100%" };
 
+export interface MagnetKindConditionProps extends MagnetKindProps {
+    details: string;
+}
+
 export function MagnetKindCondition({ className, details = "", id }: MagnetKindProps) {
     const [isEditing, setIsEditing] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
