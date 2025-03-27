@@ -1,21 +1,21 @@
-import { MagnetData } from "../constants";
+import { MagnetData, MagnetKind } from "../components/MagnetStash/components/MagnetKinds";
 import { create } from "zustand/react";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
 interface MagnetStore {
-    magnets: MagnetData[];
-    createAndDragMagnet(this: void, magnetData: Omit<MagnetData, "id">): void;
+    magnets: MagnetData<MagnetKind>[];
+    createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">): void;
     deleteMagnet(this: void, magnetId: number): void;
     dragMagnet(this: void, magnetId: number): void;
     dropMagnet(this: void, magnetId: number): void;
     rotateMagnet(this: void, magnetId: number): void;
-    setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void;
+    setMagnetLocation(this: void, magnetId: number, location: MagnetData<MagnetKind>["location"]): void;
     setMagnetImage(this: void, magnetId: number, image: string): void;
 }
 
 export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
-    createAndDragMagnet(this: void, magnetData: Omit<MagnetData, "id">) {
+    createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">) {
         set(produce(function updateState(recipe: MagnetStore) {
             const newMagnetId = findHighestId(recipe) + 1;
             recipe.magnets.push({
@@ -68,7 +68,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             magnet.details = image;
         }));
     },
-    setMagnetLocation(this: void, magnetId: number, location: MagnetData["location"]): void {
+    setMagnetLocation(this: void, magnetId: number, location: MagnetData<MagnetKind>["location"]): void {
         set(produce(function updateState(recipe: MagnetStore) {
             const magnet = recipe.magnets.find(magnet => magnet.id === magnetId);
             if (!magnet) {

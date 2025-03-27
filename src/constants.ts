@@ -1,20 +1,3 @@
-export const enum MagnetKind {
-    Arrow = 0,
-    Condition = 1
-}
-
-export interface MagnetData {
-    id: number;
-    location: {
-        left: number;
-        top: number;
-    },
-    rotation: number;
-    kind: MagnetKind;
-    isDragging: boolean;
-    details?: unknown;
-}
-
 export interface Entity {
     id: number;
     name: string;

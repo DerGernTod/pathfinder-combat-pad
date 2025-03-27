@@ -1,18 +1,17 @@
 import "./Magnet.css";
-import { MagnetKinds, Offset } from "./MagnetKinds";
+import { MagnetData, MagnetKind, MagnetKinds, Offset } from "./MagnetKinds";
 import { PointerEvent, createElement, useCallback, useEffect, useRef, useState } from "react";
-import { MagnetData } from "../../../constants";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 
-interface MagnetProps {
-    magnet: MagnetData;
+export interface MagnetProps<T extends MagnetKind> {
+    magnet: MagnetData<T>;
 }
 
 const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 
-export function Magnet({ magnet }: MagnetProps): JSX.Element {
+export function Magnet<T extends MagnetKind>({ magnet }: MagnetProps<T>): JSX.Element {
     const magnetRef = useRef<HTMLDivElement>(null);
     let draggingClass = "";
     if (magnet.isDragging) {
@@ -35,7 +34,7 @@ export function Magnet({ magnet }: MagnetProps): JSX.Element {
     );
 }
 
-function useAllowDragging(magnet: MagnetData, magnetRef: React.RefObject<HTMLDivElement>) {
+function useAllowDragging<T extends MagnetKind>(magnet: MagnetData<T>, magnetRef: React.RefObject<HTMLDivElement>) {
     const { setMagnetLocation, dragMagnet, dropMagnet, deleteMagnet, rotateMagnet } = useMagnetStore();
 
     const [startOffset, setStartOffset] = useState<Offset>(MagnetKinds[magnet.kind].offset);

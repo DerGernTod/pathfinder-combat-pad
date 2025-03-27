@@ -1,6 +1,5 @@
 import "./MagnetStash.css";
-import { MagnetKind } from "../../constants";
-import { MagnetKinds } from "./components/MagnetKinds";
+import { MagnetKind, MagnetKinds } from "./components/MagnetKinds";
 import { createElement } from "react";
 import { useMagnetStore } from "../../store/useMagnetStore";
 
@@ -36,6 +35,7 @@ export function MagnetStash(): JSX.Element {
                 {createElement(MagnetKinds[MagnetKind.Arrow].preview, { className: "", details: "#61749c" })}
             </div>
             <div onPointerDown={(e) => createAndDragMagnet({
+                details: "",
                 isDragging: true,
                 kind: MagnetKind.Condition,
                 location: { left: e.clientX - 25, top: e.clientY - 25 },
