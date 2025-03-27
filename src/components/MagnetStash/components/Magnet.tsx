@@ -1,6 +1,13 @@
 import "./Magnet.css";
 import { MagnetData, MagnetKind, MagnetKinds, Offset } from "./MagnetKinds";
-import { PointerEvent, createElement, useCallback, useEffect, useRef, useState } from "react";
+import {
+    PointerEvent,
+    createElement,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 
@@ -11,7 +18,9 @@ export interface MagnetProps<T extends MagnetKind> {
 const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 
-export function Magnet<T extends MagnetKind>({ magnet }: MagnetProps<T>): JSX.Element {
+export function Magnet<T extends MagnetKind>({
+    magnet,
+}: MagnetProps<T>): JSX.Element {
     const magnetRef = useRef<HTMLDivElement>(null);
     let draggingClass = "";
     if (magnet.isDragging) {
@@ -25,61 +34,98 @@ export function Magnet<T extends MagnetKind>({ magnet }: MagnetProps<T>): JSX.El
             className="magnet"
             style={magnet.location}
             onPointerDown={allowDragging}
-            animate={ { rotate: magnet.rotation, scale: 1 } }
-            initial={ INITIAL_MAGNET_STYLE }
-            exit={ EXIT_MAGNET_STYLE }
+            animate={{ rotate: magnet.rotation, scale: 1 }}
+            initial={INITIAL_MAGNET_STYLE}
+            exit={EXIT_MAGNET_STYLE}
         >
-            {createElement(MagnetKinds[magnet.kind].children, { className: draggingClass, details: magnet.details, id: magnet.id })} 
+            {createElement(MagnetKinds[magnet.kind].children, {
+                className: draggingClass,
+                details: magnet.details,
+                id: magnet.id,
+            })}
         </motion.div>
     );
 }
 
-function useAllowDragging<T extends MagnetKind>(magnet: MagnetData<T>, magnetRef: React.RefObject<HTMLDivElement>) {
-    const { setMagnetLocation, dragMagnet, dropMagnet, deleteMagnet, rotateMagnet } = useMagnetStore();
+function useAllowDragging<T extends MagnetKind>(
+    magnet: MagnetData<T>,
+    magnetRef: React.RefObject<HTMLDivElement>
+) {
+    const {
+        setMagnetLocation,
+        dragMagnet,
+        dropMagnet,
+        deleteMagnet,
+        rotateMagnet,
+    } = useMagnetStore();
 
-    const [startOffset, setStartOffset] = useState<Offset>(MagnetKinds[magnet.kind].offset);
+    const [startOffset, setStartOffset] = useState<Offset>(
+        MagnetKinds[magnet.kind].offset
+    );
     const [draggingAllowed, setDraggingAllowed] = useState(magnet.isDragging);
 
-    const updateLocation = useCallback(function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
-        if (!magnet.isDragging && draggingAllowed) {
-            dragMagnet(magnet.id);
-        }
-        if (!magnet.isDragging) {
-            return;
-        }
-        setMagnetLocation(magnet.id, {
-            left: moveEvent.clientX - startOffset.left,
-            top: moveEvent.clientY - startOffset.top
-        });
-    }, [dragMagnet, draggingAllowed, magnet.id, magnet.isDragging, setMagnetLocation, startOffset.left, startOffset.top]);
-
-    const stopDragging = useCallback(function stopDraggingCallback(e: globalThis.PointerEvent) {
-        const { id, isDragging, kind } = magnet;
-        window.removeEventListener("pointermove", updateLocation);
-        if (!isDragging) {
-            if (isEraserEvent(e)) {
-                deleteMagnet(id);
-            } else if (!magnet.isDragging && MagnetKinds[kind].allowRotate) {
-                rotateMagnet(id);
+    const updateLocation = useCallback(
+        function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
+            const movementTotal =
+                Math.abs(moveEvent.movementX) + Math.abs(moveEvent.movementY);
+            if (!magnet.isDragging && draggingAllowed && movementTotal > 2) {
+                dragMagnet(magnet.id);
             }
-        } else {
-            dropMagnet(id);
-        }
-        setDraggingAllowed(false);
-    }, [deleteMagnet, dropMagnet, magnet, rotateMagnet, updateLocation]);
+            if (!magnet.isDragging) {
+                return;
+            }
+            setMagnetLocation(magnet.id, {
+                left: moveEvent.clientX - startOffset.left,
+                top: moveEvent.clientY - startOffset.top,
+            });
+        },
+        [
+            dragMagnet,
+            draggingAllowed,
+            magnet.id,
+            magnet.isDragging,
+            setMagnetLocation,
+            startOffset.left,
+            startOffset.top,
+        ]
+    );
 
-    const allowDragging = useCallback(function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {
-        if (!magnetRef.current) {
-            return;
-        }
-        const bounds = magnetRef.current.getBoundingClientRect();
-        setStartOffset({
-            left: e.clientX - bounds.left,
-            top: e.clientY - bounds.top
-        });
-        setDraggingAllowed(true);
+    const stopDragging = useCallback(
+        function stopDraggingCallback(e: globalThis.PointerEvent) {
+            const { id, isDragging, kind } = magnet;
+            window.removeEventListener("pointermove", updateLocation);
+            if (!isDragging) {
+                if (isEraserEvent(e)) {
+                    deleteMagnet(id);
+                } else if (
+                    !magnet.isDragging &&
+                    MagnetKinds[kind].allowRotate
+                ) {
+                    rotateMagnet(id);
+                }
+            } else {
+                dropMagnet(id);
+            }
+            setDraggingAllowed(false);
+        },
+        [deleteMagnet, dropMagnet, magnet, rotateMagnet, updateLocation]
+    );
+
+    const allowDragging = useCallback(
+        function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {
+            if (!magnetRef.current) {
+                return;
+            }
+            const bounds = magnetRef.current.getBoundingClientRect();
+            setStartOffset({
+                left: e.clientX - bounds.left,
+                top: e.clientY - bounds.top,
+            });
+            setDraggingAllowed(true);
+        },
         // eslint-disable-next-line react-hooks/exhaustive-deps -- ref doesn't need to be in the dependency array
-    }, []);
+        []
+    );
 
     useEffect(() => {
         if (!draggingAllowed) {
@@ -98,5 +144,5 @@ function useAllowDragging<T extends MagnetKind>(magnet: MagnetData<T>, magnetRef
 }
 
 function isEraserEvent(e: globalThis.PointerEvent) {
-    return e.shiftKey || e.pointerType === "pen" && e.button === 5;
+    return e.shiftKey || (e.pointerType === "pen" && e.button === 5);
 }

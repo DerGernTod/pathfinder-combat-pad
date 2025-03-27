@@ -23,7 +23,9 @@ const EntityOptions = [
 export function CreateSlot(): JSX.Element {
     const initialEntityKind = 0;
     const { addEntity } = useEntityStore();
-    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
+    const [kind, setKind] = useState<EntityKind>(
+        EntityOptions[initialEntityKind]
+    );
     const [level, setLevel] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
@@ -52,7 +54,7 @@ export function CreateSlot(): JSX.Element {
     return (
         <div className="create-slot">
             <div className={`entity-instance entity-instance-type-${kind}`}>
-                <Canvas style={canvasStyle} ref={canvasRef} />
+                <Canvas style={canvasStyle} ref={canvasRef} penSize={2} />
                 <SlotNumberInput onChange={setLevel} />
                 <CustomSelect
                     options={selectOptions}

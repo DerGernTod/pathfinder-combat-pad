@@ -9,6 +9,7 @@
     gap: var(--grid-gap);
     background-color: var(--parchment);
     height: 100%;
+    touch-action: none;
 }
 
 .character-marker-header-bg {
@@ -29,6 +30,7 @@
     height: 100%;
     overflow: auto;
     background-color: var(--parchment);
+    touch-action: none;
 }
 
 .init-content > *:last-child {
