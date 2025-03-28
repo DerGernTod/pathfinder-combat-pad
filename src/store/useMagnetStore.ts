@@ -1,4 +1,4 @@
-import { MagnetData, MagnetKind } from "../components/MagnetStash/components/MagnetKinds";
+import { MagnetData, MagnetKind } from "../components/MagnetStash/components/magnet-kind-types";
 import { create } from "zustand/react";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
@@ -56,7 +56,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             if (!magnet) {
                 throw new Error(`Couldn't find magnet with id ${magnetId} while trying to rotate!`);
             }
-            magnet.rotation = magnet.rotation + 90;
+            magnet.rotation += 90;
         }))
     },
     setMagnetImage(this: void, magnetId: number, image: string): void {

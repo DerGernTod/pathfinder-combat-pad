@@ -13,6 +13,8 @@
     "rules": {
         "eqeqeq": "error",
         "import/no-cycle": "error",
+        "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+        "exports-last": "off",
         "quotes": ["error", "double"],
         "unicorn/filename-case": ["off"],
         "no-magic-numbers": ["off"],

@@ -1,5 +1,6 @@
 import "./MagnetStash.css";
-import { MagnetKind, MagnetKinds } from "./components/MagnetKinds";
+import { MagnetKind } from "./components/magnet-kind-types";
+import { MagnetKinds } from "./components/MagnetKinds";
 import { createElement } from "react";
 import { useMagnetStore } from "../../store/useMagnetStore";
 

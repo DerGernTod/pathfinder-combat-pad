@@ -1,15 +1,11 @@
 import "./MagnetKindCondition.css";
 import { PointerEvent, RefObject, useCallback, useRef, useState } from "react";
 import { Canvas } from "../../Canvas";
-import { MagnetKindProps } from "./MagnetKinds";
+import { MagnetKindProps } from "./magnet-kind-types";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 import { useShallow } from "zustand/react/shallow";
 
 const canvasStyle = { height: "21px", width: "100%" };
-
-export interface MagnetKindConditionProps extends MagnetKindProps {
-    details: string;
-}
 
 export function MagnetKindCondition({ className, details = "", id }: MagnetKindProps) {
     const [isEditing, setIsEditing] = useState(false);

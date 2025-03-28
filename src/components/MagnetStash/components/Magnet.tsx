@@ -1,5 +1,5 @@
 import "./Magnet.css";
-import { MagnetData, MagnetKind, MagnetKinds, Offset } from "./MagnetKinds";
+import { MagnetData, MagnetKind, Offset } from "./magnet-kind-types";
 import {
     PointerEvent,
     createElement,
@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from "react";
+import { MagnetKinds } from "./MagnetKinds";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 

@@ -1,8 +1,4 @@
-import { MagnetKindProps } from "./MagnetKinds";
-
-export interface MagnetKindArrowProps extends MagnetKindProps {
-    details: string;
-}
+import { MagnetKindArrowProps } from "./magnet-kind-types";
 
 export function MagnetKindArrow({ className, details }: MagnetKindArrowProps): JSX.Element {
     return (
