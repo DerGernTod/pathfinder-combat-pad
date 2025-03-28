@@ -18,6 +18,7 @@ export interface MagnetProps<T extends MagnetKind> {
 
 const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
+const DRAG_MOVE_TOLERANCE = 5;
 
 export function Magnet<T extends MagnetKind>({
     magnet,
@@ -60,16 +61,19 @@ function useAllowDragging<T extends MagnetKind>(
         rotateMagnet,
     } = useMagnetStore();
 
-    const [startOffset, setStartOffset] = useState<Offset>(
-        MagnetKinds[magnet.kind].offset
-    );
+    const [startOffset, setStartOffset] = useState<Offset>(MagnetKinds[magnet.kind].offset);
+    const [pointerDownStart, setPointerDownStart] = useState({ x: 0, y: 0 });
     const [draggingAllowed, setDraggingAllowed] = useState(magnet.isDragging);
 
     const updateLocation = useCallback(
         function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
-            const movementTotal =
-                Math.abs(moveEvent.movementX) + Math.abs(moveEvent.movementY);
-            if (!magnet.isDragging && draggingAllowed && movementTotal > 2) {
+
+            const totalOffset = {
+                left: moveEvent.clientX - pointerDownStart.x,
+                top: moveEvent.clientY - pointerDownStart.y,
+            };
+            const movementTotal = Math.abs(totalOffset.left) + Math.abs(totalOffset.top);
+            if (!magnet.isDragging && draggingAllowed && movementTotal > DRAG_MOVE_TOLERANCE) {
                 dragMagnet(magnet.id);
             }
             if (!magnet.isDragging) {
@@ -88,6 +92,8 @@ function useAllowDragging<T extends MagnetKind>(
             setMagnetLocation,
             startOffset.left,
             startOffset.top,
+            pointerDownStart.x,
+            pointerDownStart.y,
         ]
     );
 
@@ -122,6 +128,7 @@ function useAllowDragging<T extends MagnetKind>(
                 left: e.clientX - bounds.left,
                 top: e.clientY - bounds.top,
             });
+            setPointerDownStart({ x: e.clientX, y: e.clientY });
             setDraggingAllowed(true);
         },
         // eslint-disable-next-line react-hooks/exhaustive-deps -- ref doesn't need to be in the dependency array

@@ -15,14 +15,13 @@ interface EntityStore {
     setStatus(this: void, id: number, status: number): void;
 }
 
-let curId = 0;
-
 export const useEntityStore = create<EntityStore>()(persist((set) => ({
     addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
+            const newEntityId = findHighestId(recipe) + 1;
             recipe.entities.push({
                 ...entity,
-                id: curId++,
+                id: newEntityId,
             });
         }));
     },
@@ -57,3 +56,7 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
         }));
     }
 }), { name: "entity-store" }));
+
+function findHighestId(store: EntityStore): number {
+    return store.entities.reduce((acc, entity) => Math.max(acc, entity.id), 0);
+}
