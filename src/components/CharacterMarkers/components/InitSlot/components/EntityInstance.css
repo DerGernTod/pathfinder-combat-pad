@@ -2,7 +2,7 @@
     position: absolute;
     width: 15rem;
     height: 3rem;
-    left: 87px;
+    left: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -12,18 +12,19 @@
     gap: 5px;
     box-shadow: 0;
     transition: box-shadow .4s, translate .2s;
+    z-index: 10;
 }
 .status-1 {
-    left: 130px;
+    left: 54px;
 }
 .status-2 {
-    left: 164px;
+    left: 87px;
 }
 .status-3 {
-    left: 197px;
+    left: 120px;
 }
 .status-4 {
-    left: 231px;
+    left: 153px;
 }
 .instance-kind-container {
     font-size: 8pt;

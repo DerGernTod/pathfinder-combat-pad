@@ -49,9 +49,7 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
             const entityIndex1 = recipe.entities.findIndex(entity => entity.id === id1);
             const entityIndex2 = recipe.entities.findIndex(entity => entity.id === id2);
             if (entityIndex1 !== -1 && entityIndex2 !== -1) {
-                const temp = recipe.entities[entityIndex1];
-                recipe.entities[entityIndex1] = recipe.entities[entityIndex2];
-                recipe.entities[entityIndex2] = temp;
+                [recipe.entities[entityIndex1], recipe.entities[entityIndex2]] = [recipe.entities[entityIndex2], recipe.entities[entityIndex1]];
             }
         }));
     }

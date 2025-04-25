@@ -8,7 +8,7 @@
     justify-content: center;
     text-align: center;
     color: var(--parchment);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .init-slot-container:nth-child(2n) .init-slot {
@@ -126,4 +126,10 @@
 
 .grid-gap {
     gap: var(--grid-gap);
+}
+
+.slot-holder {
+    position: relative;
+    display: flex;
+    align-items: center;
 }

@@ -53,13 +53,15 @@ export function CreateSlot(): JSX.Element {
 
     return (
         <div className="create-slot">
-            <div className={`entity-instance entity-instance-type-${kind}`}>
-                <Canvas style={canvasStyle} ref={canvasRef} penSize={2} />
-                <SlotNumberInput onChange={setLevel} />
-                <CustomSelect
-                    options={selectOptions}
-                    selectedIndex={initialEntityKind}
-                />
+            <div className="slot-holder">
+                <div className={`entity-instance entity-instance-type-${kind}`}>
+                    <Canvas style={canvasStyle} ref={canvasRef} penSize={2} />
+                    <SlotNumberInput onChange={setLevel} />
+                    <CustomSelect
+                        options={selectOptions}
+                        selectedIndex={initialEntityKind}
+                    />
+                </div>
             </div>
             <div className="button">
                 <button onClick={createEntity}>✚</button>

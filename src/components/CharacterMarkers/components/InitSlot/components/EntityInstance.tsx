@@ -53,13 +53,14 @@ export const EntityInstance = ({
     }, [draggedEntityId]);
     return (
         <motion.div
+            key={String(id)}
             ref={draggableRef}
             layoutDependency={entities}
-            layoutId={String(id)}
+            layoutId={String(entity.id)}
             onPointerDown={handlePointerDown}
             animate={{ opacity: 1, transition: { delay: .15 } }}
             initial={{ opacity: 0 }}
-            exit={{ left: 0, opacity: 0, transition: { delay: .15 } }}
+            exit={{ left: -250, opacity: 0, transition: { delay: .15 } }}
             layout
             className={`entity-instance entity-instance-type-${kind} status-${status} ${draggingClass}`}
         >

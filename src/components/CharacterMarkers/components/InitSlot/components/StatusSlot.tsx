@@ -44,7 +44,10 @@ export function StatusSlot({
     }, [draggedEntityId, moveEntityInstance]);
 
     return (
-        <div ref={elemRef} className={className}>
+        <div
+            ref={elemRef}
+            className={className}
+        >
             {children}
         </div>
     );

@@ -9,52 +9,56 @@ interface InitSlotProps {
     entity?: Entity;
 }
 
+const exitOptions = { height: 0, transition: { delay: .35 } };
+const initialOptions = { height: 0 };
+const animateOptions = { height: "4rem" };
+
 export function InitSlot({ entity }: InitSlotProps): JSX.Element {
-    let slot: JSX.Element;
-    let gapClass = "";
-    if (entity) {
-        gapClass = "grid-gap";
-        slot = (
-            <>
-                <StatusSlot entity={entity} className="init-slot" status={0}>
-                    &nbsp;
-                </StatusSlot>
-                <EntityInstance entity={entity} />            
-                <div className="init-content-status">
-                    <StatusSlot entity={entity} status={1}>
-                        O
-                    </StatusSlot>
-                    <StatusSlot entity={entity} status={2}>
-                        💀
-                    </StatusSlot>
-                    <StatusSlot entity={entity} status={3}>
-                        💀
-                    </StatusSlot>
-                    <StatusSlot entity={entity} status={4}>
-                        💀
-                    </StatusSlot>
-                </div>
-            </>
-        );
-    } else {
-        slot = <CreateSlot />;
-    }
+    const gapClass = getGapClass(entity);
 
     return (
         <motion.div
             key={entity?.id}
             className={`init-slot-container ${gapClass}`}
-            animate={
-                { height: "4rem" }
-            }
-            initial={
-                { height: 0 }
-            }
-            exit={
-                { height: 0, transition: { delay: .35 } }
-            }>
-            {slot}
-
+            animate={animateOptions}
+            initial={initialOptions}
+            exit={exitOptions}
+        >
+            <EntitySlot entity={entity} />
         </motion.div>
     );
+}
+
+function EntitySlot({ entity }: { entity: Entity | undefined }): JSX.Element {
+    if (!entity) {
+        return <CreateSlot />;
+    }
+    return (
+        <>
+            <StatusSlot entity={entity} className="init-slot slot-holder" status={0}>
+                <EntityInstance entity={entity} />
+            </StatusSlot>
+            <div className="init-content-status">
+                <StatusSlot entity={entity} status={1}>
+                    O
+                </StatusSlot>
+                <StatusSlot entity={entity} status={2}>
+                    💀
+                </StatusSlot>
+                <StatusSlot entity={entity} status={3}>
+                    💀
+                </StatusSlot>
+                <StatusSlot entity={entity} status={4}>
+                    💀
+                </StatusSlot>
+            </div>
+        </>
+    );
+}
+
+function getGapClass(entity: Entity | undefined) {
+    if (entity) {
+        return "grid-gap";
+    }
+    return "";
 }
