@@ -1,7 +1,5 @@
-import "./Canvas.css"; 
-import { CanvasStore, useCanvasStore } from "../store/useCanvasStore";
-import React, {
-    CSSProperties,
+import "./Canvas.css";
+import {
     forwardRef,
     useCallback,
     useEffect,
@@ -10,6 +8,9 @@ import React, {
     useRef,
     useState
 } from "react";
+import type { CSSProperties } from "react";
+import type { CanvasStore } from "../store/useCanvasStore";
+import { useCanvasStore } from "../store/useCanvasStore";
 import { useShallow } from "zustand/react/shallow";
 
 interface CanvasProps {
@@ -31,7 +32,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
 
     const resizeCurrentCanvas = useCallback(() => {
-        if (!canvasRef.current || !canvasHiddenRef.current) return;
+        if (!canvasRef.current || !canvasHiddenRef.current) { return; }
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
     }, []);
 
@@ -41,13 +42,13 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 
     useLayoutEffect(() => {
         resizeCurrentCanvas();
-        window.addEventListener("keydown", setErasing);
-        window.addEventListener("keyup", resetErasing);
-        window.addEventListener("resize", resizeCurrentCanvas);
+        globalThis.addEventListener("keydown", setErasing);
+        globalThis.addEventListener("keyup", resetErasing);
+        globalThis.addEventListener("resize", resizeCurrentCanvas);
         return () => {
-            window.removeEventListener("keydown", setErasing);
-            window.removeEventListener("keyup", resetErasing);
-            window.removeEventListener("resize", resizeCurrentCanvas);
+            globalThis.removeEventListener("keydown", setErasing);
+            globalThis.removeEventListener("keyup", resetErasing);
+            globalThis.removeEventListener("resize", resizeCurrentCanvas);
         };
 
         function setErasing(e: globalThis.KeyboardEvent) {
@@ -83,7 +84,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     }, []);
 
     const draw = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        if (!drawing || !contextRef.current) return;
+        if (!drawing || !contextRef.current) { return; }
         if (isErasing) {
             contextRef.current.globalCompositeOperation = "destination-out";
             contextRef.current.lineWidth = 15;

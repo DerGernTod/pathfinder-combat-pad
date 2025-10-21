@@ -1,7 +1,8 @@
 import "./EntityInstance.css";
-import { PointerEventHandler, useCallback, useEffect, useRef, useState } from "react";
-import { Entity } from "../../../../../constants";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Entity } from "../../../../../constants";
 import { KIND_LOOKUP } from "./constants";
+import type { PointerEventHandler } from "react";
 import { motion } from "motion/react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
@@ -30,7 +31,7 @@ export const EntityInstance = ({
                 setDraggingClass("dragging");
                 document.body.classList.add("grabbing");
                 grabber.current?.classList.remove("grab-cursor");
-                window.addEventListener(
+                globalThis.addEventListener(
                     "pointerup",
                     () => {
                         setDraggingClass("");
@@ -45,11 +46,7 @@ export const EntityInstance = ({
         [removeEntity, id, setDraggedEntityId]
     );
     useEffect(() => {
-        if (draggedEntityId === null) {
-            grabber.current?.classList.add("grab-cursor");
-        } else {
-            grabber.current?.classList.remove("grab-cursor");
-        }
+        grabber.current?.classList.toggle("grab-cursor", draggedEntityId === null);
     }, [draggedEntityId]);
     return (
         <motion.div

@@ -3,9 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
 
-interface CanvasContents {
-    [key: string]: string;
-}
+type CanvasContents = Record<string, string>;
 
 export interface CanvasStore {
     canvases: CanvasContents;

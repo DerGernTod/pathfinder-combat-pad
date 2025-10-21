@@ -1,7 +1,8 @@
 import "./MagnetKindCondition.css";
-import { PointerEvent, RefObject, useCallback, useRef, useState } from "react";
+import type { PointerEvent, RefObject} from "react";
+import { useCallback, useRef, useState } from "react";
 import { Canvas } from "../../Canvas";
-import { MagnetKindProps } from "./magnet-kind-types";
+import type { MagnetKindProps } from "./magnet-kind-types";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 import { useShallow } from "zustand/react/shallow";
 

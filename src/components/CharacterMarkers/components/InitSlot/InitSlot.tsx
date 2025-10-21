@@ -1,6 +1,6 @@
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
-import { Entity } from "../../../../constants";
+import type { Entity } from "../../../../constants";
 import { EntityInstance } from "./components/EntityInstance";
 import { StatusSlot } from "./components/StatusSlot";
 import { motion } from "motion/react";

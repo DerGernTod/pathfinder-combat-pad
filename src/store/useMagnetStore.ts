@@ -1,4 +1,4 @@
-import { MagnetData, MagnetKind } from "../components/MagnetStash/components/magnet-kind-types";
+import type { MagnetData, MagnetKind } from "../components/MagnetStash/components/magnet-kind-types";
 import { create } from "zustand/react";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";

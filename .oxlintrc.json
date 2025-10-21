@@ -13,12 +13,17 @@
     "rules": {
         "eqeqeq": "error",
         "import/no-cycle": "error",
+        "import/group-exports": ["off"],
+        "no-duplicate-imports": ["error", { "allowSeparateTypeImports": true }],
         "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
         "exports-last": "off",
         "quotes": ["error", "double"],
         "unicorn/filename-case": ["off"],
         "no-magic-numbers": ["off"],
         "yoda": ["error", "never"],
-        "unicorn/no-null": ["off"]
+        "unicorn/no-null": ["off"],
+        "no-named-export": ["off"],
+        "prefer-default-export": ["off"],
+        "id-length": ["off"]
     }
 }

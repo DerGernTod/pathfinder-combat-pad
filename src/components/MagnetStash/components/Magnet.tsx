@@ -1,7 +1,6 @@
 import "./Magnet.css";
-import { MagnetData, MagnetKind, Offset } from "./magnet-kind-types";
+import type { MagnetData, MagnetKind, Offset } from "./magnet-kind-types";
 import {
-    PointerEvent,
     createElement,
     useCallback,
     useEffect,
@@ -9,6 +8,7 @@ import {
     useState,
 } from "react";
 import { MagnetKinds } from "./MagnetKinds";
+import type { PointerEvent } from "react";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 
@@ -100,7 +100,7 @@ function useAllowDragging<T extends MagnetKind>(
     const stopDragging = useCallback(
         function stopDraggingCallback(e: globalThis.PointerEvent) {
             const { id, isDragging, kind } = magnet;
-            window.removeEventListener("pointermove", updateLocation);
+            globalThis.removeEventListener("pointermove", updateLocation);
             if (!isDragging) {
                 if (isEraserEvent(e)) {
                     deleteMagnet(id);
@@ -131,7 +131,7 @@ function useAllowDragging<T extends MagnetKind>(
             setPointerDownStart({ x: e.clientX, y: e.clientY });
             setDraggingAllowed(true);
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- ref doesn't need to be in the dependency array
+        // oxlint-disable-next-line react-hooks/exhaustive-deps -- ref doesn't need to be in the dependency array
         []
     );
 
@@ -139,12 +139,12 @@ function useAllowDragging<T extends MagnetKind>(
         if (!draggingAllowed) {
             return;
         }
-        window.addEventListener("pointermove", updateLocation);
-        window.addEventListener("pointerup", stopDragging, { once: true });
+        globalThis.addEventListener("pointermove", updateLocation);
+        globalThis.addEventListener("pointerup", stopDragging, { once: true });
 
         return () => {
-            window.removeEventListener("pointermove", updateLocation);
-            window.removeEventListener("pointerup", stopDragging);
+            globalThis.removeEventListener("pointermove", updateLocation);
+            globalThis.removeEventListener("pointerup", stopDragging);
         };
     }, [stopDragging, updateLocation, draggingAllowed]);
 
@@ -154,3 +154,6 @@ function useAllowDragging<T extends MagnetKind>(
 function isEraserEvent(e: globalThis.PointerEvent) {
     return e.shiftKey || (e.pointerType === "pen" && e.button === 5);
 }
+
+
+

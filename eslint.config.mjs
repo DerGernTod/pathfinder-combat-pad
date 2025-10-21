@@ -16,7 +16,7 @@ const config = tseslint.config(
     tseslint.configs.recommendedTypeChecked,
     tseslint.configs.stylisticTypeChecked,
     {
-        ignores: ["src-tauri/**"]
+        ignores: ["src-tauri/**", "dist"]
     },
     {
         languageOptions: {

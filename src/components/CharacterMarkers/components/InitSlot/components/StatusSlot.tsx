@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { Entity } from "../../../../../constants";
+import type { Entity } from "../../../../../constants";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
 interface StatusSlotProps {
@@ -34,12 +34,12 @@ export function StatusSlot({
 
     useEffect(() => {
         if (draggedEntityId !== null) {
-            window.addEventListener("pointermove", moveEntityInstance);
+            globalThis.addEventListener("pointermove", moveEntityInstance);
         } else {
-            window.removeEventListener("pointermove", moveEntityInstance);
+            globalThis.removeEventListener("pointermove", moveEntityInstance);
         }
         return () => {
-            window.removeEventListener("pointermove", moveEntityInstance);
+            globalThis.removeEventListener("pointermove", moveEntityInstance);
         }
     }, [draggedEntityId, moveEntityInstance]);
 

@@ -1,6 +1,8 @@
-import { MagnetKind, MagnetKindDescriptors } from "./magnet-kind-types";
 import { MagnetKindCondition, MagnetKindConditionPreview } from "./MagnetKindCondition";
+import { MagnetKind } from "./magnet-kind-types";
 import { MagnetKindArrow } from "./MagnetKindArrow";
+import type { MagnetKindDescriptors } from "./magnet-kind-types";
+import { MagnetKindMonsterToken } from "./MagnetKindMonsterToken";
 
 export const MagnetKinds: MagnetKindDescriptors = {
     [MagnetKind.Arrow]: {
@@ -14,6 +16,12 @@ export const MagnetKinds: MagnetKindDescriptors = {
         children: MagnetKindCondition,
         offset: { left: 25, top: 25 },
         preview: MagnetKindConditionPreview,
+    },
+    [MagnetKind.MonsterToken]: {
+        allowRotate: false,
+        children: MagnetKindMonsterToken,
+        offset: { left: 25, top: 25 },
+        preview: MagnetKindMonsterToken
     }
 };
 

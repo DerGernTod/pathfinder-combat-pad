@@ -1,6 +1,7 @@
 import "./SlotMachineInput.css";
-import { PanInfo, animate, motion, useMotionValue, useTransform } from "motion/react";
+import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { PanInfo } from "motion/react";
 
 const NUMBERS = Array.from({ length: 20 }, (_, i) => i + 1); // Adjust range as needed
 
@@ -14,11 +15,11 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
     const [itemHeight, setItemHeight] = useState(0);
     const slotContainerRef = useRef<HTMLDivElement>(null);
     const y = useMotionValue(0);
-    
+
     const translateY = useTransform(y, function snap(){
         return snapToIndex(itemHeight, selectedIndex);
     });
-    
+
     const dragCallback = useCallback(function handleDrag(_: unknown, info: PanInfo) {
         const delta = dragStartIndex - Math.round(info.offset.y / itemHeight);
         const newIndex = Math.min(NUMBERS.length - 1, Math.max(0, (delta)));
@@ -41,14 +42,12 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
         const roundedHeight = getPixelPerfectSlotHeight(slotContainerRef.current);
         setItemHeight(roundedHeight);
     }, []);
-    
-    const itemStyle = useMemo(() => {
-        return {
-            fontSize: `${itemHeight}px`,
-            height: `${itemHeight}px`,
-        };
-    }, [itemHeight])
-    
+
+    const itemStyle = useMemo(() => ({
+        fontSize: `${itemHeight}px`,
+        height: `${itemHeight}px`,
+    }), [itemHeight])
+
     return (
         <div className="number-slot" ref={slotContainerRef}>
             <motion.div

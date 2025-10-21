@@ -1,7 +1,8 @@
 import "./CreateSlot.css";
-import CustomSelect, { CustomSelectOption } from "../../../../CustomSelect";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Canvas } from "../../../../Canvas";
+import CustomSelect from "../../../../CustomSelect";
+import type { CustomSelectOption } from "../../../../CustomSelect";
 import { EntityKind } from "../../../../../constants";
 import SlotNumberInput from "./SlotMachineInput";
 import { useEntityStore } from "../../../../../store/useEntityStore";
@@ -44,12 +45,10 @@ export function CreateSlot(): JSX.Element {
                 canvasRef.current.height
             );
     }, [addEntity, kind, level]);
-    const selectOptions = useMemo(() => {
-        return EntityOptions.map(toCustomSelectOption) as [
-            CustomSelectOption,
-            ...CustomSelectOption[]
-        ];
-    }, []);
+    const selectOptions = useMemo(() => EntityOptions.map(toCustomSelectOption) as [
+        CustomSelectOption,
+        ...CustomSelectOption[]
+    ], []);
 
     return (
         <div className="create-slot">

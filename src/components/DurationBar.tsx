@@ -12,7 +12,7 @@ export function DurationBar(): JSX.Element {
                 </div>
                 <div className="duration-numbers">
                     {[...nums].map((_, i) => (
-                        <div key={i} className="duration-number">
+                        <div key={`${i}`} className="duration-number">
                             {10 - i}
                         </div>
                     ))}
@@ -21,3 +21,4 @@ export function DurationBar(): JSX.Element {
         </>
     );
 }
+

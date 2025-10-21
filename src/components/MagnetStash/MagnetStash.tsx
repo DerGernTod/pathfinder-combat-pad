@@ -44,6 +44,15 @@ export function MagnetStash(): JSX.Element {
             })}>
                 {createElement(MagnetKinds[MagnetKind.Condition].preview, { className: "" })}
             </div>
+            <div onPointerDown={(e) => createAndDragMagnet({
+                details: "",
+                isDragging: true,
+                kind: MagnetKind.MonsterToken,
+                location: { left: e.clientX - 25, top: e.clientY - 25 },
+                rotation: 0
+            })}>
+                {createElement(MagnetKinds[MagnetKind.MonsterToken].preview, { className: "" })}
+            </div>
         </div>
     );
 }
