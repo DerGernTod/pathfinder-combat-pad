@@ -55,7 +55,7 @@
     position: absolute;
     left: 75px;
     height: 4rem;
-    width: calc(400px * 2 / 3);
+    width: calc(500px * 2 / 3);
     display: flex;
     justify-content: space-around;
     align-items: center;

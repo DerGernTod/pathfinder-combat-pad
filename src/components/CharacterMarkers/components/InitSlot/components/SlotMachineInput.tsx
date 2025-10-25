@@ -3,14 +3,16 @@ import { animate, motion, useMotionValue, useTransform } from "motion/react";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PanInfo } from "motion/react";
 
-const NUMBERS = Array.from({ length: 20 }, (_, i) => i + 1); // Adjust range as needed
 
 interface SlotNumberInputProps {
     onChange(this: void, num: number): void;
+    max: number;
+    value: number;
 }
 
-export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+export default function SlotNumberInput({ onChange, max, value }: SlotNumberInputProps) {
+    const numbers = Array.from({ length: max }, (_, i) => i);
+    const [selectedIndex, setSelectedIndex] = useState(value);
     const [dragStartIndex, setDragStartIndex] = useState(0);
     const [itemHeight, setItemHeight] = useState(0);
     const slotContainerRef = useRef<HTMLDivElement>(null);
@@ -22,9 +24,9 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
 
     const dragCallback = useCallback(function handleDrag(_: unknown, info: PanInfo) {
         const delta = dragStartIndex - Math.round(info.offset.y / itemHeight);
-        const newIndex = Math.min(NUMBERS.length - 1, Math.max(0, (delta)));
+        const newIndex = Math.min(numbers.length - 1, Math.max(0, (delta)));
         setSelectedIndex(newIndex);
-    }, [dragStartIndex, itemHeight]);
+    }, [dragStartIndex, itemHeight, numbers]);
 
     const dragStartCallback = useCallback(function handleDragStart() {
         setDragStartIndex(selectedIndex);
@@ -32,7 +34,7 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
 
     const dragEndCallback = useCallback(function handleDragEnd() {
         animate(translateY, [translateY.get(), snapToIndex(itemHeight, selectedIndex)]);
-        onChange(selectedIndex + 1);
+        onChange(selectedIndex);
     }, [selectedIndex, translateY, itemHeight, onChange]);
 
     useLayoutEffect(() => {
@@ -52,7 +54,7 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
         <div className="number-slot" ref={slotContainerRef}>
             <motion.div
                 drag="y"
-                dragConstraints={{ bottom: -itemHeight / 2, top: -(itemHeight / 2) -itemHeight * (NUMBERS.length - 1) }}
+                dragConstraints={{ bottom: -itemHeight / 2, top: -(itemHeight / 2) -itemHeight * (numbers.length - 1) }}
                 onDrag={dragCallback}
                 onDragStart={dragStartCallback}
                 onDragEnd={dragEndCallback}
@@ -62,7 +64,7 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
                 <motion.div key={0} className="item" style={itemStyle}>
                     &nbsp;
                 </motion.div>
-                {NUMBERS.map((num, index) => {
+                {numbers.map((num, index) => {
                     let selectedClass = "";
                     if (index === selectedIndex) {
                         selectedClass = "selected";
@@ -73,7 +75,7 @@ export default function SlotNumberInput({ onChange }: SlotNumberInputProps) {
                         </motion.div>
                     );
                 })}
-                <motion.div key={NUMBERS.length} className="item" style={itemStyle}>
+                <motion.div key={numbers.length} className="item" style={itemStyle}>
                     &nbsp;
                 </motion.div>
             </motion.div>

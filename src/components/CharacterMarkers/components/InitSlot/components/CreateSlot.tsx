@@ -31,6 +31,7 @@ export function CreateSlot(): JSX.Element {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = useCallback(() => {
         addEntity({
+            damageTaken: 0,
             kind,
             level,
             name: canvasRef.current?.toDataURL("image/webp") ?? "",
@@ -55,7 +56,7 @@ export function CreateSlot(): JSX.Element {
             <div className="slot-holder">
                 <div className={`entity-instance entity-instance-type-${kind}`}>
                     <Canvas style={canvasStyle} ref={canvasRef} penSize={2} />
-                    <SlotNumberInput onChange={setLevel} />
+                    <SlotNumberInput onChange={setLevel} max={20} value={level} />
                     <CustomSelect
                         options={selectOptions}
                         selectedIndex={initialEntityKind}

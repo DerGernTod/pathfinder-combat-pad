@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Entity } from "../../../../../constants";
 import { KIND_LOOKUP } from "./constants";
 import type { PointerEventHandler } from "react";
+import SlotMachineInput from "./SlotMachineInput";
 import { motion } from "motion/react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
@@ -16,17 +17,18 @@ transparentImage.src =
 export const EntityInstance = ({
     entity,
 }: EntityInstanceProps): JSX.Element => {
-    const { removeEntity, entities, setDraggedEntityId, draggedEntityId } = useEntityStore();
+    const { removeEntity, entities, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore();
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
-    const { id, name, kind, status, level } = entity;
+    const { id, name, kind, status, level, damageTaken } = entity;
     const [draggingClass, setDraggingClass] = useState("");
+    const handleDamageTakenChanged = useCallback((damage: number) => setDamageTaken(id, damage), [id, setDamageTaken]);
     const handlePointerDown = useCallback(
         (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
             const isPenErase = e.pointerType === "pen" && e.button === 5;
             if (e.shiftKey || isPenErase) {
                 removeEntity(id);
-            } else {
+            } else if (grabber.current?.contains(e.target as Node)) {
                 setDraggedEntityId(id);
                 setDraggingClass("dragging");
                 document.body.classList.add("grabbing");
@@ -70,7 +72,10 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
+            <SlotMachineInput onChange={handleDamageTakenChanged} value={damageTaken} max={150} />
             <div ref={grabber} className="grabber grab-cursor">⋮</div>
         </motion.div>
     );
 };
+
+

@@ -4,6 +4,7 @@ export interface Entity {
     kind: EntityKind;
     level: number;
     status: number;
+    damageTaken: number;
 }
 
 export const enum EntityKind {

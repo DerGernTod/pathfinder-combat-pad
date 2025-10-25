@@ -12,6 +12,7 @@ interface EntityStore {
     draggedEntityId: number | null;
     setDraggedEntityId(this: void, id: number | null): void;
 
+    setDamageTaken(this: void, id: number, damageTaken: number): void;
     setStatus(this: void, id: number, status: number): void;
 }
 
@@ -30,6 +31,15 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
     removeEntity(this: void, id: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
+        }));
+    },
+    setDamageTaken(this: void, id: number, damageTaken: number): void {
+        set(produce(function updateState(recipe: EntityStore): void {
+            const entity = recipe.entities.find(entity => entity.id === id);
+            if (!entity) {
+                throw new Error(`Tried to set damage taken for non-existing Entity ${id}`);
+            }
+            entity.damageTaken = damageTaken;
         }));
     },
     setDraggedEntityId(this: void, id: number | null): void {
@@ -52,7 +62,7 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
                 [recipe.entities[entityIndex1], recipe.entities[entityIndex2]] = [recipe.entities[entityIndex2], recipe.entities[entityIndex1]];
             }
         }));
-    }
+    },
 }), { name: "entity-store" }));
 
 function findHighestId(store: EntityStore): number {
