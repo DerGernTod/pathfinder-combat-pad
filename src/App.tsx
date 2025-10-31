@@ -9,6 +9,7 @@ import { Magnet } from "./components/MagnetStash/components/Magnet";
 import { MagnetStash } from "./components/MagnetStash/MagnetStash";
 import { useEffect } from "react";
 import { useMagnetStore } from "./store/useMagnetStore";
+import { EncounterStarter } from "./components/EncounterStarter/EncounterStarter";
 
 const SIDE_CANVAS_STYLE = { flexBasis: "75px", flexGrow: 0 };
 const MAIN_CANVAS_STYLE = { flexGrow: 8 };
@@ -68,7 +69,8 @@ function App() {
                 </div> */}
             </main>
             <footer>
-                Non-magnetic initiative tracker pad
+                <div>Non-magnetic initiative tracker pad</div>
+                <EncounterStarter />
             </footer>
         </div>
     );

@@ -8,9 +8,25 @@ The goal is to move damage tracking off the scratch pad and into the initiative 
 * [x] Optimize the field for **pen-input number recognition** (allowing the user to write the damage directly).
 * [ ] **(Optional)** Add support for **simple mathematical operations** (e.g., writing "$-5$" automatically subtracts 5 from the displayed number).
 
+### 2. Encounter Setup Popup
+
+The goal is to streamline encounter initialization by providing a dedicated interface for adding and ordering combatants before starting combat.
+
+* [ ] Implement a **"Start Encounter" button** that opens a popup dialog.
+* [ ] In the popup, display a **list of all current participants** (combatants already present).
+* [ ] Provide an **input field** to add additional participants:
+    * [ ] Allow entry of a **monster name** and a **quantity**.
+    * [ ] Include an **"Add" button** to add the specified number of monsters to the encounter.
+    * [ ] Support adding multiple different monsters before starting the encounter.
+* [ ] Allow **tapping and dragging** (or tapping up/down arrows) on each entry to **set the initiative order** interactively.
+* [ ] At the bottom of the popup, include a **"Start Encounter" button** that:
+    * [ ] Creates all entities as specified.
+    * [ ] Sets the initiative order as arranged.
+    * [ ] Automatically creates tokens for each monster on the map.
+
 ---
 
-### 2. Linking Initiative and Map Tokens
+### 3. Linking Initiative and Map Tokens
 
 The goal is to eliminate the manual mapping between the initiative list and the tokens on the combat grid.
 
@@ -23,7 +39,7 @@ The goal is to eliminate the manual mapping between the initiative list and the 
 
 ---
 
-### 3. Streamlined Condition/Status Tracking
+### 4. Streamlined Condition/Status Tracking
 
 The goal is to make applying and tracking conditions easier and less cluttering than tiny draggable "magnets."
 
@@ -34,7 +50,7 @@ The goal is to make applying and tracking conditions easier and less cluttering 
 
 ---
 
-### 4. Scratch Pad Refinement
+### 5. Scratch Pad Refinement
 
 The goal is to dedicate the large scratch pad solely to temporary, spatial information.
 
@@ -48,7 +64,7 @@ Here is the new section to add to your existing to-do list:
 
 ---
 
-### 5. Map Area Mode Switching
+### 6. Map Area Mode Switching
 
 The goal is to cleanly toggle the function of the main tablet area between a free-form scratchpad and a structured combat field that works with your physical table map.
 

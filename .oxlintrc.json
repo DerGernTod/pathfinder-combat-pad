@@ -24,6 +24,9 @@
         "unicorn/no-null": ["off"],
         "no-named-export": ["off"],
         "prefer-default-export": ["off"],
-        "id-length": ["off"]
+        "id-length": ["off"],
+        "no-ternary": ["off"],
+        "sort-imports": ["off"],
+        "sort-keys": ["off"]
     }
 }

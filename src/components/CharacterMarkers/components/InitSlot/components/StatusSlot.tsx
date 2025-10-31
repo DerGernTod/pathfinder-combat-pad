@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { Entity } from "../../../../../constants";
+import type { ReactElement} from "react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
 interface StatusSlotProps {
-    children: string | JSX.Element;
+    children: string | ReactElement;
     className?: string;
     status: number;
     entity?: Entity;
@@ -13,7 +14,7 @@ export function StatusSlot({
     className,
     status,
     entity,
-}: StatusSlotProps): JSX.Element {
+}: StatusSlotProps): ReactElement {
     const { draggedEntityId, setStatus, swapEntities } = useEntityStore();
     const elemRef = useRef<HTMLDivElement | null>(null);
 

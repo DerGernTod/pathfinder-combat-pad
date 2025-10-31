@@ -4,11 +4,12 @@ import { Canvas } from "../../../../Canvas";
 import CustomSelect from "../../../../CustomSelect";
 import type { CustomSelectOption } from "../../../../CustomSelect";
 import { EntityKind } from "../../../../../constants";
+import type { ReactElement} from "react";
 import SlotNumberInput from "./SlotMachineInput";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
 const canvasStyle = {
-    flexBasis: "175px",
+    flexBasis: "200px",
     flexGrow: 0,
     flexShrink: 0,
     height: "100%",
@@ -21,7 +22,7 @@ const EntityOptions = [
     EntityKind.Hazard,
 ] as const;
 
-export function CreateSlot(): JSX.Element {
+export function CreateSlot(): ReactElement {
     const initialEntityKind = 0;
     const { addEntity } = useEntityStore();
     const [kind, setKind] = useState<EntityKind>(
@@ -80,6 +81,6 @@ export function CreateSlot(): JSX.Element {
     }
 }
 
-function KindOption({ kind }: { kind: EntityKind }): JSX.Element {
+function KindOption({ kind }: { kind: EntityKind }): ReactElement {
     return <div className={`kind-option kind-option-${kind}`}>●</div>;
 }

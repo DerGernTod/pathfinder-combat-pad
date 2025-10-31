@@ -100,25 +100,58 @@ canvas {
 }
 
 button {
-    background-color: var(--crimson);
-    color: var(--parchment);
-    border: 2px solid var(--parchment);
-    font-size: 1.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    background-color: var(--btn-background-color);
+    color: var(--btn-color);
+    border: var(--btn-border);
+    font-size: var(--btn-font-size);
+    cursor: var(--btn-cursor);
+    transition: var(--btn-transition);
+    font: unset;
 }
 
 button:hover {
-    background-color: var(--crimson-light);
-    color: var(--parchment-light);
+    background-color: var(--btn-hover-background-color);
+    color: var(--btn-hover-color);
 }
 
 button:active {
-    background-color: var(--crimson);
-    color: white;
-    border-color: var(--parchment-light);
+    background-color: var(--btn-active-background-color);
+    color: var(--btn-active-color);
+    border-color: var(--btn-active-border-color);
 }
 
 .hidden {
     display: none;
+}
+
+:root {
+    --btn-background-color: var(--crimson);
+    --btn-color: var(--parchment);
+    --btn-border: 2px solid var(--parchment);
+    --btn-font-size: 1.5rem;
+    --btn-cursor: pointer;
+    --btn-transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+
+    --btn-hover-background-color: var(--crimson-light);
+    --btn-hover-color: var(--parchment-light);
+
+    --btn-active-background-color: var(--crimson);
+    --btn-active-color: white;
+    --btn-active-border-color: var(--parchment-light);
+}
+
+.start-encounter-button {
+/* Button's initial styles */
+    height: 50px; /* Initial button height */
+    width: 250px;
+    margin: 0 auto; /* Center the button */
+    background-color: #5d3535; /* Example colour */
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+    z-index: 100;
+
+    /* Apply transitions to properties that will change */
+    transition: all 0.4s ease-in-out;
 }

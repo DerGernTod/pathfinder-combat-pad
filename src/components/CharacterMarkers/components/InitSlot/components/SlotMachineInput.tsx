@@ -1,6 +1,6 @@
 import "./SlotMachineInput.css";
 import { animate, motion, useMotionValue, useTransform } from "motion/react";
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { PanInfo } from "motion/react";
 
 
@@ -10,7 +10,9 @@ interface SlotNumberInputProps {
     value: number;
 }
 
-export default function SlotNumberInput({ onChange, max, value }: SlotNumberInputProps) {
+export default memo(SlotNumberInputMemo);
+
+function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
     const numbers = Array.from({ length: max }, (_, i) => i);
     const [selectedIndex, setSelectedIndex] = useState(value);
     const [dragStartIndex, setDragStartIndex] = useState(0);

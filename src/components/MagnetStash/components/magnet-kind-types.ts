@@ -18,6 +18,7 @@ export interface MagnetData<T extends MagnetKind> {
 export interface MagnetKindDescriptor<PROPS> {
     allowRotate: boolean;
     children: React.ComponentType<PROPS>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- allow any for preview components
     preview: React.ComponentType<any>;
     offset: Offset;
 }

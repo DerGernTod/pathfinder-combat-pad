@@ -1,8 +1,8 @@
 import "./EntityInstance.css";
+import type { PointerEventHandler, ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Entity } from "../../../../../constants";
 import { KIND_LOOKUP } from "./constants";
-import type { PointerEventHandler } from "react";
 import SlotMachineInput from "./SlotMachineInput";
 import { motion } from "motion/react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
@@ -16,7 +16,7 @@ transparentImage.src =
 
 export const EntityInstance = ({
     entity,
-}: EntityInstanceProps): JSX.Element => {
+}: EntityInstanceProps): ReactElement => {
     const { removeEntity, entities, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore();
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);

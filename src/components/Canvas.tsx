@@ -137,7 +137,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 });
 
 function configureCanvas(
-    canvasRef: React.RefObject<HTMLCanvasElement>,
+    canvasRef: React.RefObject<HTMLCanvasElement | null>,
     contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>,
     storeId?: string
 ): void {
