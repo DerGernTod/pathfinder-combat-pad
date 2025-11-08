@@ -32,7 +32,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
 
     const resizeCurrentCanvas = useCallback(() => {
-        if (!canvasRef.current || !canvasHiddenRef.current) { return; }
+        if (!canvasRef.current || !canvasHiddenRef.current) {
+            return; 
+        }
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
     }, []);
 
@@ -84,7 +86,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
     }, []);
 
     const draw = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
-        if (!drawing || !contextRef.current) { return; }
+        if (!drawing || !contextRef.current) {
+            return; 
+        }
         if (isErasing) {
             contextRef.current.globalCompositeOperation = "destination-out";
             contextRef.current.lineWidth = 15;

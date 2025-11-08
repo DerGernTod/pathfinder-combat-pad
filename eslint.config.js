@@ -1,18 +1,17 @@
 // @ts-check
 
-import { defineConfig } from 'eslint/config';
-import eslint from '@eslint/js';
+import { defineConfig } from "eslint/config";
+import eslint from "@eslint/js";
 import oxlint from "eslint-plugin-oxlint";
-import reactHooks from "eslint-plugin-react-hooks";
-import tseslint from 'typescript-eslint';
+import tseslint from "typescript-eslint";
+import stylistic from "@stylistic/eslint-plugin"
 
-const indent = 4;
 const config = defineConfig(
     eslint.configs.recommended,
     tseslint.configs.recommendedTypeChecked,
     tseslint.configs.stylisticTypeChecked,
     {
-        ignores: ["src-tauri/**", "dist"]
+        ignores: ["src-tauri/**", "dist", "node_modules"]
     },
     {
         languageOptions: {
@@ -25,16 +24,17 @@ const config = defineConfig(
         }
     },
     {
-        files: ['**/*.{ts,tsx}'],
+        files: ["**/*.{ts,tsx,js}"],
         plugins: {
-            'react-hooks': reactHooks
+            "@stylistic": stylistic
         },
         rules: {
-            ...reactHooks.configs.recommended.rules,
             "@typescript-eslint/no-unsafe-assignment": ["off"],
             "@typescript-eslint/prefer-nullish-coalescing": ["off"],
-            "indent": ["error", indent],
-            'quotes': ["error", "double"],
+            "quotes": ["error", "double"],
+            "brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+            "@stylistic/indent": ["error", 4],
+            "@stylistic/object-curly-spacing": ["error", "always"],
         }
     },
     ...oxlint.buildFromOxlintConfigFile("./.oxlintrc.json"),

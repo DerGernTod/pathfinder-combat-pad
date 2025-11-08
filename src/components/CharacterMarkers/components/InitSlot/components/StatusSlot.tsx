@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { Entity } from "../../../../../constants";
-import type { ReactElement} from "react";
+import type { ReactElement } from "react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 
 interface StatusSlotProps {

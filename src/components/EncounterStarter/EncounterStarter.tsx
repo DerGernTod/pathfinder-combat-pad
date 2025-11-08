@@ -1,7 +1,7 @@
 import { useEntityStore } from "../../store/useEntityStore.ts";
 import { bodySeparator, buttonText, encounterButton, encounterSelectionBody, encounterSelectionBodyChild, headerText, horizontalBarStyle, modalBody, modalContainer, sectionsSeparatorStyle, startEncounterButtonSectionStyle, startEncounterButtonStyle, verticalBarStyle } from "./EncounterStarter.css.ts";
-import { EncounterActiveList } from "./components/EncounterActiveList.tsx";
-import { EncounterSelectionList } from "./components/EncounterSelectionList.tsx";
+import { EncounterParticipantsList } from "./components/EncounterParticipantsList.tsx";
+import { EncounterCreaturesList } from "./components/EncounterCreaturesList.tsx";
 import type { ReactElement } from "react";
 import { useState } from "react";
 
@@ -18,14 +18,17 @@ export function EncounterStarter(): ReactElement {
 
             <div className={modalBody[variant]}>
                 <div className={encounterSelectionBody}>
-                    <EncounterSelectionList className={encounterSelectionBodyChild} onEntitySelect={(id) => { console.log("entity id", id); }} />
+                    <EncounterCreaturesList className={encounterSelectionBodyChild} onEntitySelect={(id) => {
+                        console.log("entity id", id); 
+                    }} />
                     <div className={`${bodySeparator} ${encounterSelectionBodyChild}`}>
+                        <h3>&nbsp;</h3>
                         <div className={verticalBarStyle} />
                         <div>&gt;</div>
                         <div>&lt;</div>
                         <div className={verticalBarStyle} />
                     </div>
-                    <EncounterActiveList className={encounterSelectionBodyChild} />
+                    <EncounterParticipantsList className={encounterSelectionBodyChild} />
                 </div>
                 <div className={startEncounterButtonSectionStyle}>
                     <button className={startEncounterButtonStyle[variant]}>Start Encounter</button>

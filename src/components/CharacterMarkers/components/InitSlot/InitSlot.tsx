@@ -2,6 +2,7 @@ import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
 import type { Entity } from "../../../../constants";
 import { EntityInstance } from "./components/EntityInstance";
+import type { ReactElement } from "react";
 import { StatusSlot } from "./components/StatusSlot";
 import { motion } from "motion/react";
 
@@ -13,7 +14,7 @@ const exitOptions = { height: 0, transition: { delay: .35 } };
 const initialOptions = { height: 0 };
 const animateOptions = { height: "4rem" };
 
-export function InitSlot({ entity }: InitSlotProps): JSX.Element {
+export function InitSlot({ entity }: InitSlotProps): ReactElement {
     const gapClass = getGapClass(entity);
 
     return (
@@ -29,7 +30,7 @@ export function InitSlot({ entity }: InitSlotProps): JSX.Element {
     );
 }
 
-function EntitySlot({ entity }: { entity: Entity | undefined }): JSX.Element {
+function EntitySlot({ entity }: { entity: Entity | undefined }): ReactElement {
     if (!entity) {
         return <CreateSlot />;
     }

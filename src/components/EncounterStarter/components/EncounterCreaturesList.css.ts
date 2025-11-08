@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css";
 
-export const encounterSelectionListStyle = style({
+export const encounterCreaturesListStyle = style({
     display: "flex",
     flexDirection: "column",
     height: "100%",

@@ -18,6 +18,7 @@
         "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
         "exports-last": "off",
         "quotes": ["error", "double"],
+        "object-curly-spacing": ["error", "always"],
         "unicorn/filename-case": ["off"],
         "no-magic-numbers": ["off"],
         "yoda": ["error", "never"],

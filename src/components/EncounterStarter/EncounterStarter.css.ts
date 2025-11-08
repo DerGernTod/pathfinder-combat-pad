@@ -2,6 +2,8 @@ import { style, styleVariants } from "@vanilla-extract/css";
 
 export const modalHeight = "80vh";
 
+const easeTime = 0.2;
+
 const sharedModalContainer = {
     alignItems: "center",
     bottom: `calc(-1 * ${modalHeight} + 50px)`,
@@ -11,7 +13,7 @@ const sharedModalContainer = {
     justifyContent: "flex-start",
     overflow: "hidden",
     position: "fixed",
-    transition: "all 0.4s ease-in-out",
+    transition: `all ${easeTime}s ease-in-out`,
     width: "70vw",
     zIndex: 1000,
 } as const;
@@ -33,7 +35,7 @@ const sharedEncounterButton = {
     display: "flex",
     justifyContent: "center",
     textAlign: "center",
-    transition: "all 0.4s ease-in-out",
+    transition: `all ${easeTime}s ease-in-out`,
     zIndex: 100,
 } as const;
 
@@ -84,13 +86,13 @@ export const headerText = styleVariants({
         ...sharedText,
         fontSize: "2.5rem",
         scale: 1,
-        transition: "scale 0.4s ease-in",
+        transition: `scale ${easeTime}s ease-in`,
     },
     default: {
         ...sharedText,
         fontSize: "2.5rem",
         scale: 0,
-        transition: "scale 0.4s ease-out",
+        transition: `scale ${easeTime}s ease-out`,
     },
 });
 
@@ -113,7 +115,7 @@ const sharedModalBody = {
     gap: "1rem",
     justifyContent: "center",
     transformOrigin: "top",
-    transition: "all 0.4s ease-in-out",
+    transition: `all ${easeTime}s ease-in-out`,
     zIndex: 99,
     overflow: "hidden",
 } as const;
@@ -134,7 +136,6 @@ export const modalBody = styleVariants({
 export const encounterSelectionBody = style({
     display: "flex",
     flexDirection: "row",
-    gap: "1rem",
     justifyContent: "space-around",
     width: "100%",
     height: "100%",
@@ -148,6 +149,14 @@ export const encounterSelectionBodyChild = style({
     margin: "0 1rem",
     /* allow children to shrink below their content size so overflow works */
     minHeight: 0,
+    selectors: {
+        "&:first-child": {
+            marginRight: ".5rem",
+        },
+        "&:last-child": {
+            marginLeft: ".5rem",
+        },
+    },
 });
 
 export const bodySeparator = style({
@@ -158,6 +167,7 @@ export const bodySeparator = style({
     flexBasis: "3rem",
     flexShrink: 1,
     flexGrow: 0,
+    margin: 0
 });
 
 export const horizontalBarStyle = style({
@@ -187,12 +197,12 @@ export const startEncounterButtonStyle = styleVariants({
     active: {
         ...startEncounterButton,
         opacity: 1,
-        transition: "opacity 0.2s 0.2s ease-in",
+        transition: `opacity ${easeTime / 2}s ${easeTime / 2}s ease-in`,
     },
     default: {
         ...startEncounterButton,
         opacity: 0,
-        transition: "opacity 0.3s ease-out",
+        transition: `opacity ${easeTime * 0.75}s ease-out`,
     },
 });
 

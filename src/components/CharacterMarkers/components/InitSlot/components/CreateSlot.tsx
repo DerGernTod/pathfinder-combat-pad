@@ -4,7 +4,7 @@ import { Canvas } from "../../../../Canvas";
 import CustomSelect from "../../../../CustomSelect";
 import type { CustomSelectOption } from "../../../../CustomSelect";
 import { EntityKind } from "../../../../../constants";
-import type { ReactElement} from "react";
+import type { ReactElement } from "react";
 import SlotNumberInput from "./SlotMachineInput";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 

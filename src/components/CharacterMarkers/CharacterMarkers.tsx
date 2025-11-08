@@ -4,6 +4,7 @@ import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
 import { useEntityStore } from "../../store/useEntityStore";
 import { useEffect, useRef, useState } from "react";
+import { debounce } from "es-toolkit";
 
 export function CharacterMarkers() {
     const { entities } = useEntityStore();
@@ -30,21 +31,25 @@ export function CharacterMarkers() {
             setShowBottom(el.scrollTop + el.clientHeight < el.scrollHeight - 2);
         };
 
+        const debouncedUpdate = debounce(update, 250);
+
         // listeners and observers
-        const ro = new ResizeObserver(update);
+        const ro = new ResizeObserver(debouncedUpdate);
         ro.observe(content);
 
-        const mo = new MutationObserver(update);
+        const mo = new MutationObserver(debouncedUpdate);
         mo.observe(content, { childList: true, subtree: true, characterData: true });
 
-        content.addEventListener("scroll", update, { passive: true });
-        // initial check
-        update();
+        content.addEventListener("scroll", debouncedUpdate, { passive: true });
+
+        // Wait for fonts to load before initial check
+        document.fonts.ready.then(debouncedUpdate).catch(debouncedUpdate);
 
         return () => {
             ro.disconnect();
             mo.disconnect();
-            content.removeEventListener("scroll", update);
+            content.removeEventListener("scroll", debouncedUpdate);
+            debouncedUpdate.cancel();
         };
     }, []);
 
@@ -58,7 +63,9 @@ export function CharacterMarkers() {
 
     const scrollToBottom = () => {
         const el = contentRef.current;
-        if (!el) return;
+        if (!el) {
+            return;
+        }
         el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
     };
 

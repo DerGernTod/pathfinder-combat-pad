@@ -2,17 +2,17 @@ import { EntityInstanceButton } from "./EntityInstanceButton";
 import type { ReactElement } from "react";
 import { useEntityStore } from "../../../store/useEntityStore";
 import { encounterHeaderStyle, horizontalBarStyle, scrollableListStyle } from "../EncounterStarter.css";
-import { encounterSelectionListStyle } from "./EncounterSelectionList.css";
+import { encounterCreaturesListStyle } from "./EncounterCreaturesList.css";
 
-interface EncounterSelectionListProps {
+interface EncounterCreaturesListProps {
     onEntitySelect: (entityId: number) => void;
     className?: string;
 }
 
-export function EncounterSelectionList(props: EncounterSelectionListProps): ReactElement {
+export function EncounterCreaturesList(props: EncounterCreaturesListProps): ReactElement {
     const entities = useEntityStore((state) => state.entities);
     return (
-        <div className={`${props.className} ${encounterSelectionListStyle}`}>
+        <div className={`${props.className} ${encounterCreaturesListStyle}`}>
             <h3 className={encounterHeaderStyle}>Creatures</h3>
             <div className={horizontalBarStyle} />
             <div className={scrollableListStyle}>

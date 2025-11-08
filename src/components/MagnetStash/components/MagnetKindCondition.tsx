@@ -1,5 +1,5 @@
 import "./MagnetKindCondition.css";
-import type { PointerEvent, RefObject} from "react";
+import type { PointerEvent, RefObject } from "react";
 import { useCallback, useRef, useState } from "react";
 import { Canvas } from "../../Canvas";
 import type { MagnetKindProps } from "./magnet-kind-types";
