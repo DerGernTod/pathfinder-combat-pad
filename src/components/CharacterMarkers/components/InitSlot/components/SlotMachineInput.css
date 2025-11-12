@@ -26,3 +26,12 @@
 .slot-list .item.selected {
     opacity: 1;
 }
+
+.number-slot .value-view {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    color: black;
+    cursor: pointer;
+    width: 100%;
+}
