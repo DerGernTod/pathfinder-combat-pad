@@ -33,7 +33,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 
     const resizeCurrentCanvas = useCallback(() => {
         if (!canvasRef.current || !canvasHiddenRef.current) {
-            return; 
+            return;
         }
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
     }, []);
@@ -87,7 +87,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 
     const draw = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
         if (!drawing || !contextRef.current) {
-            return; 
+            return;
         }
         if (isErasing) {
             contextRef.current.globalCompositeOperation = "destination-out";
@@ -191,7 +191,7 @@ function saveDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement)
     const contextHidden = canvasHidden.getContext("2d");
     canvasHidden.width = canvas.width;
     canvasHidden.height = canvas.height;
-    if (context && contextHidden) {
+    if (context && contextHidden && canvas.width > 0 && canvas.height > 0) {
         contextHidden.drawImage(canvas, 0, 0);
     }
 }
@@ -199,7 +199,7 @@ function saveDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement)
 function restoreDrawing(canvas: HTMLCanvasElement, canvasHidden: HTMLCanvasElement): void {
     const context = canvas.getContext("2d");
     const contextHidden = canvasHidden.getContext("2d");
-    if (context && contextHidden) {
+    if (context && contextHidden && canvasHidden.width > 0 && canvasHidden.height > 0) {
         context.drawImage(canvasHidden, 0, 0, canvasHidden.width, canvasHidden.height);
     }
 }

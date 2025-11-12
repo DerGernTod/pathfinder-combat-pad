@@ -100,6 +100,19 @@ export const scrollOverlay = style({
     transition: "opacity 0.3s ease",
 });
 
+export const scrollOverlayButtonVariants = styleVariants({
+    top: {
+        borderBottom: "var(--btn-border)",
+    },
+    bottom: {
+        borderTop: "var(--btn-border)",
+    },
+});
+
+export const hidden = style({
+    opacity: 0,
+});
+
 export const scrollOverlayButton = style({
     pointerEvents: "auto",
     padding: "12px 16px",
@@ -108,14 +121,10 @@ export const scrollOverlayButton = style({
     userSelect: "none",
     width: "100%",
     border: 0,
-});
-
-export const scrollOverlayButtonVariants = styleVariants({
-    top: {
-        borderBottom: "var(--btn-border)",
-    },
-    bottom: {
-        borderTop: "var(--btn-border)",
+    selectors: {
+        [`${hidden} &`]: {
+            pointerEvents: "none",
+        },
     },
 });
 
@@ -126,10 +135,6 @@ export const scrollOverlayVariants = styleVariants({
     bottom: {
         alignItems: "flex-end",
     },
-});
-
-export const hidden = style({
-    opacity: 0,
 });
 
 // Global styles for initContent children
