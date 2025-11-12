@@ -9,15 +9,11 @@ import {
     dying,
     dyingCount,
     dyingCountItem,
-    scrollOverlay,
-    scrollOverlayButton,
-    scrollOverlayButtonVariants,
-    scrollOverlayVariants,
-    hidden,
 } from "./CharacterMarkers.css.ts";
 import { AnimatePresence } from "motion/react";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
+import { ScrollButton } from "./components/ScrollButton";
 import { useEntityStore } from "../../store/useEntityStore";
 import { useEffect, useRef, useState } from "react";
 import { debounce } from "es-toolkit";
@@ -108,35 +104,16 @@ export function CharacterMarkers() {
                 </AnimatePresence>
                 <InitSlot />
             </div>
-            <div
-                className={`${scrollOverlay} ${scrollOverlayVariants.top} ${showTop ? "" : hidden}`}
-                aria-hidden={!showTop}
-            >
-                <button
-                    type="button"
-                    className={`${scrollOverlayButton} ${scrollOverlayButtonVariants.top}`}
-                    onClick={scrollToTop}
-                    aria-label="Scroll to top"
-                    title="Scroll to top"
-                >
-                    ▲ Scroll
-                </button>
-            </div>
-
-            <div
-                className={`${scrollOverlay} ${scrollOverlayVariants.bottom} ${showBottom ? "" : hidden}`}
-                aria-hidden={!showBottom}
-            >
-                <button
-                    type="button"
-                    className={`${scrollOverlayButton} ${scrollOverlayButtonVariants.bottom}`}
-                    onClick={scrollToBottom}
-                    aria-label="Scroll to bottom"
-                    title="Scroll to bottom"
-                >
-                    ▼ Scroll
-                </button>
-            </div>
+            <ScrollButton
+                direction="top"
+                onClick={scrollToTop}
+                show={showTop}
+            />
+            <ScrollButton
+                direction="bottom"
+                onClick={scrollToBottom}
+                show={showBottom}
+            />
         </div>
     );
 }
