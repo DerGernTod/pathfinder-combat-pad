@@ -1,4 +1,20 @@
-import "./CharacterMarkers.css";
+import {
+    characterMarkers,
+    characterMarkerHeaderBg,
+    initHeading,
+    initContent,
+    statusHeading,
+    delay,
+    rotatedText,
+    dying,
+    dyingCount,
+    dyingCountItem,
+    scrollOverlay,
+    scrollOverlayButton,
+    scrollOverlayButtonVariants,
+    scrollOverlayVariants,
+    hidden,
+} from "./CharacterMarkers.css.ts";
 import { AnimatePresence } from "motion/react";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
@@ -70,21 +86,21 @@ export function CharacterMarkers() {
     };
 
     return (
-        <div className="character-markers">
-            <div className="character-marker-header-bg" />
-            <MarkerHeading classes="init-heading">INITIATIVE</MarkerHeading>
-            <MarkerHeading classes="status-heading">
-                <div className="delay">
-                    <div className="rotated-text">DELAY</div>
+        <div className={characterMarkers}>
+            <div className={characterMarkerHeaderBg} />
+            <MarkerHeading classes={initHeading}>INITIATIVE</MarkerHeading>
+            <MarkerHeading classes={statusHeading}>
+                <div className={delay}>
+                    <div className={rotatedText}>DELAY</div>
                 </div>
-                <div className="dying">DYING</div>
-                <div className="dying-count">
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
+                <div className={dying}>DYING</div>
+                <div className={dyingCount}>
+                    <div className={dyingCountItem}>1</div>
+                    <div className={dyingCountItem}>2</div>
+                    <div className={dyingCountItem}>3</div>
                 </div>
             </MarkerHeading>
-            <div className="init-content" ref={contentRef}>
+            <div className={initContent} ref={contentRef}>
                 <AnimatePresence>
                     {entities.map((entity) => (
                         <InitSlot key={entity.id} entity={entity} />
@@ -92,9 +108,13 @@ export function CharacterMarkers() {
                 </AnimatePresence>
                 <InitSlot />
             </div>
-            <div className={`scroll-overlay top ${showTop ? "" : "hidden"}`} aria-hidden={!showTop}>
+            <div
+                className={`${scrollOverlay} ${scrollOverlayVariants.top} ${showTop ? "" : hidden}`}
+                aria-hidden={!showTop}
+            >
                 <button
                     type="button"
+                    className={`${scrollOverlayButton} ${scrollOverlayButtonVariants.top}`}
                     onClick={scrollToTop}
                     aria-label="Scroll to top"
                     title="Scroll to top"
@@ -103,9 +123,13 @@ export function CharacterMarkers() {
                 </button>
             </div>
 
-            <div className={`scroll-overlay bottom ${showBottom ? "" : "hidden"}`} aria-hidden={!showBottom}>
+            <div
+                className={`${scrollOverlay} ${scrollOverlayVariants.bottom} ${showBottom ? "" : hidden}`}
+                aria-hidden={!showBottom}
+            >
                 <button
                     type="button"
+                    className={`${scrollOverlayButton} ${scrollOverlayButtonVariants.bottom}`}
                     onClick={scrollToBottom}
                     aria-label="Scroll to bottom"
                     title="Scroll to bottom"

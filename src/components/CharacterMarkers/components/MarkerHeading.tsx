@@ -1,8 +1,8 @@
-import "./MarkerHeading.css";
+import { markerHeading } from "./MarkerHeading.css.ts";
 import type { ReactElement } from "react";
 
-export function MarkerHeading({ classes, children }: { classes: string, children: string | ReactElement | ReactElement[] }): ReactElement {
+export function MarkerHeading({ classes, children }: { classes?: string, children: string | ReactElement | ReactElement[] }): ReactElement {
     return (
-        <h1 className={`marker-heading ${classes}`}>{children}</h1>
+        <h1 className={`${markerHeading} ${classes || ""}`}>{children}</h1>
     );
 }
