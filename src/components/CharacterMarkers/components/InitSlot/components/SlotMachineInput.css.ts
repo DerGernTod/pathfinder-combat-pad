@@ -1,19 +1,33 @@
 import { style, styleVariants } from "@vanilla-extract/css";
 
-export const numberSlot = style({
-    alignItems: "flex-start",
-    backgroundColor: "#f3f3f3",
-    border: "1px solid gray",
-    borderRadius: "8px",
-    display: "flex",
-    height: "100%",
-    overflow: "hidden",
+export const numberSlot = styleVariants({
+    collapsed: {
+        alignItems: "flex-start",
+        backgroundColor: "#f3f3f3",
+        border: "1px solid gray",
+        borderRadius: "8px",
+        display: "flex",
+        height: "100%",
+        overflow: "hidden",
+        width: "2rem"
+    },
+    expanded: {
+        alignItems: "flex-start",
+        backgroundColor: "#f3f3f3",
+        border: "1px solid gray",
+        borderRadius: "8px",
+        display: "flex",
+        height: "5rem",
+        overflow: "hidden",
+        width: "2rem",
+    }
 });
 
 export const slotList = style({
     alignItems: "center",
     display: "flex",
     flexDirection: "column",
+    height: "fit-content"
 });
 
 export const item = style({
@@ -36,4 +50,10 @@ export const valueView = style({
     color: "black",
     cursor: "pointer",
     width: "100%",
+    height: "100%",
+    selectors: {
+        "&:hover": {
+            backgroundColor: "#e0e0e0",
+        },
+    },
 });
