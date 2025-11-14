@@ -8,8 +8,15 @@ import {
 import { animate, motion, useMotionValue, AnimatePresence } from "motion/react";
 import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import type { PanInfo } from "motion/react";
+import type { PanInfo, MotionValue } from "motion/react";
 
+// Constants
+const ANIMATION_DURATION = 0.25;
+const SNAP_OFFSET = 20;
+const COLLAPSED_HEIGHT = "2.5rem";
+const EXPANDED_HEIGHT = "5rem";
+const PORTAL_Z_INDEX = 1000;
+const DRAG_CONSTRAINT_DIVISOR = 2;
 
 interface SlotNumberInputProps {
     onChange(this: void, num: number): void;
@@ -17,12 +24,25 @@ interface SlotNumberInputProps {
     value: number;
 }
 
+interface ExpandedSlotMachineProps {
+    isExpanded: boolean;
+    portalPosition: { top: number; left: number } | null;
+    itemHeight: number;
+    selectedIndex: number;
+    numbers: number[];
+    translateY: MotionValue<number>;
+    onDrag: (event: unknown, info: PanInfo) => void;
+    onDragStart: () => void;
+    onDragEnd: () => void;
+    itemStyle: { fontSize: string; height: string };
+    onExitComplete: () => void;
+}
+
 export default memo(SlotNumberInputMemo);
 
 function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
     const numbers = Array.from({ length: max }, (_, i) => i);
     const [selectedIndex, setSelectedIndex] = useState(value);
-    const [dragStartIndex, setDragStartIndex] = useState(-1);
     const [itemHeight, setItemHeight] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
     const [showPortal, setShowPortal] = useState(false);
@@ -31,36 +51,15 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
     const translateY = useMotionValue(0);
     const entranceDoneRef = useRef(false);
 
-    // useEffect(() => {
-    //     if (translateY.isAnimating() || (showPortal && !isExpanded)) {
-    //         return;
-    //     }
-    //     translateY.set(snapToIndex(itemHeight, selectedIndex));
-    // }, [itemHeight, selectedIndex, portalPosition, translateY, isExpanded, showPortal]);
-
-    const dragCallback = useCallback(function handleDrag(_: unknown, info: PanInfo) {
-        if (!isExpanded) {
-            return;
-        }
-        const delta = dragStartIndex - Math.round(info.offset.y / itemHeight);
-        const newIndex = Math.min(numbers.length - 1, Math.max(0, (delta)));
-        setSelectedIndex(newIndex);
-    }, [dragStartIndex, itemHeight, numbers, isExpanded]);
-
-    const dragStartCallback = useCallback(function handleDragStart() {
-        if (!isExpanded) {
-            return;
-        }
-        setDragStartIndex(selectedIndex);
-    }, [selectedIndex, isExpanded]);
-
-    const dragEndCallback = useCallback(function handleDragEnd() {
-        if (!isExpanded) {
-            return;
-        }
-        animate(translateY, [translateY.get(), snapToIndex(itemHeight, selectedIndex)]);
-        onChange(selectedIndex);
-    }, [selectedIndex, translateY, itemHeight, onChange, isExpanded]);
+    const { dragCallback, dragStartCallback, dragEndCallback } = useSlotMachineDrag({
+        isExpanded,
+        itemHeight,
+        numbers,
+        selectedIndex,
+        setSelectedIndex,
+        translateY,
+        onChange
+    });
 
     const handleValueClick = useCallback(() => {
         setIsExpanded(true);
@@ -75,7 +74,7 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
         if (!slotContainerRef.current) {
             return;
         }
-        const roundedHeight = getPixelPerfectSlotHeight(slotContainerRef.current);
+        const roundedHeight = calculateSlotItemHeight(slotContainerRef.current);
         setItemHeight(roundedHeight);
     }, []);
 
@@ -94,16 +93,16 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
         if (showPortal && isExpanded && !entranceDoneRef.current) {
             void animate(
                 translateY,
-                [snapToIndex(itemHeight, selectedIndex) - 20, snapToIndex(itemHeight, selectedIndex)],
-                { duration: 0.25 }
+                [calculateSnapPosition(itemHeight, selectedIndex) - SNAP_OFFSET, calculateSnapPosition(itemHeight, selectedIndex)],
+                { duration: ANIMATION_DURATION }
             ).finished.then(() => {
                 entranceDoneRef.current = true;
             });
         } else if (!isExpanded) {
             // Reset when closing, just in case
-            translateY.set(snapToIndex(itemHeight, selectedIndex));
+            translateY.set(calculateSnapPosition(itemHeight, selectedIndex));
         }
-    }, [itemHeight, selectedIndex, translateY, isExpanded, showPortal, dragStartIndex]);
+    }, [itemHeight, selectedIndex, translateY, isExpanded, showPortal]);
 
     useEffect(() => {
         if (isExpanded) {
@@ -117,7 +116,9 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
         height: `${itemHeight}px`,
     }), [itemHeight]);
 
-    console.log("translateY:", translateY.get());
+    const handleExitComplete = useCallback(() => {
+        setShowPortal(false);
+    }, []);
 
     return (
         <div className={numberSlot.collapsed} ref={slotContainerRef} tabIndex={0} onBlur={handleBlur}>
@@ -129,66 +130,143 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
                 {numbers[selectedIndex]}
             </div>
             {showPortal && createPortal(
-                <AnimatePresence onExitComplete={() => setShowPortal(false)}>
-                    {isExpanded && (
-                        <motion.div
-                            className={numberSlot.expanded}
-                            initial={{ height: "2.5rem", top: (portalPosition?.top || 0) }}
-                            animate={{ height: "5rem", top: (portalPosition?.top || 0) - 20 }}
-                            exit={{ height: "2.5rem", top: (portalPosition?.top || 0) }}
-                            transition={{ duration: 0.25 }}
-                            tabIndex={0}
-                            onBlur={handleBlur}
-                            style={{ position: "absolute", left: portalPosition?.left || 0, zIndex: 1000 }}
-                        >
-                            <motion.div
-                                key="expanded"
-                                className={slotList}
-                                drag="y"
-                                style={{ y: translateY }}
-                                exit={{ y: snapToIndex(itemHeight, selectedIndex) - 20 }}
-                                transition={{ duration: 0.25 }}
-                                dragConstraints={{ bottom: -itemHeight / 2, top: -(itemHeight / 2) -itemHeight * (numbers.length - 1) }}
-                                onDrag={dragCallback}
-                                onDragStart={dragStartCallback}
-                                onDragEnd={dragEndCallback}
-                            >
-                                <motion.div key={0} className={item} style={itemStyle}>
-                                    &nbsp;
-                                </motion.div>
-                                {numbers.map((num, index) => {
-                                    let selectedClass = "";
-                                    if (index === selectedIndex) {
-                                        selectedClass = selected;
-                                    }
-                                    return (
-                                        <motion.div key={num} style={itemStyle} className={`${item} ${selectedClass}`}>
-                                            {num}
-                                        </motion.div>
-                                    );
-                                })}
-                                <motion.div key={numbers.length} className={item} style={itemStyle}>
-                                    &nbsp;
-                                </motion.div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>,
+                <ExpandedSlotMachine
+                    isExpanded={isExpanded}
+                    portalPosition={portalPosition}
+                    itemHeight={itemHeight}
+                    selectedIndex={selectedIndex}
+                    numbers={numbers}
+                    translateY={translateY}
+                    onDrag={dragCallback}
+                    onDragStart={dragStartCallback}
+                    onDragEnd={dragEndCallback}
+                    itemStyle={itemStyle}
+                    onExitComplete={handleExitComplete}
+                />,
                 document.body
             )}
         </div>
     );
 }
 
-function getPixelPerfectSlotHeight(parent: HTMLDivElement): number {
-    const bounds = parent.getBoundingClientRect();
-    const roundedHeight = Math.round(bounds.height / 2);
-    if (roundedHeight % 2 === 0) {
+function useSlotMachineDrag({
+    isExpanded,
+    itemHeight,
+    numbers,
+    selectedIndex,
+    setSelectedIndex,
+    translateY,
+    onChange
+}: {
+    isExpanded: boolean;
+    itemHeight: number;
+    numbers: number[];
+    selectedIndex: number;
+    setSelectedIndex: (index: number) => void;
+    translateY: MotionValue<number>;
+    onChange: (num: number) => void;
+}) {
+    const [dragStartIndex, setDragStartIndex] = useState(-1);
+
+    const dragCallback = useCallback((_: unknown, info: PanInfo) => {
+        if (!isExpanded) {
+            return;
+        }
+        const delta = dragStartIndex - Math.round(info.offset.y / itemHeight);
+        const newIndex = Math.min(numbers.length - 1, Math.max(0, delta));
+        setSelectedIndex(newIndex);
+    }, [dragStartIndex, itemHeight, numbers, isExpanded, setSelectedIndex]);
+
+    const dragStartCallback = useCallback(() => {
+        if (!isExpanded) {
+            return;
+        }
+        setDragStartIndex(selectedIndex);
+    }, [selectedIndex, isExpanded]);
+
+    const dragEndCallback = useCallback(() => {
+        if (!isExpanded) {
+            return;
+        }
+        animate(translateY, [translateY.get(), calculateSnapPosition(itemHeight, selectedIndex)]);
+        onChange(selectedIndex);
+    }, [selectedIndex, translateY, itemHeight, onChange, isExpanded]);
+
+    return {
+        dragCallback,
+        dragStartCallback,
+        dragEndCallback
+    };
+}
+
+function calculateSlotItemHeight(container: HTMLDivElement): number {
+    const bounds = container.getBoundingClientRect();
+    const roundedHeight = Math.round(bounds.height / DRAG_CONSTRAINT_DIVISOR);
+    if (roundedHeight % DRAG_CONSTRAINT_DIVISOR === 0) {
         return roundedHeight;
     }
     return roundedHeight - 1;
 }
 
-function snapToIndex(itemHeight: number, selectedIndex: number): number {
-    return 20 + -itemHeight / 2 -selectedIndex * itemHeight
+function calculateSnapPosition(itemHeight: number, selectedIndex: number): number {
+    return SNAP_OFFSET + -itemHeight / DRAG_CONSTRAINT_DIVISOR - selectedIndex * itemHeight;
 }
+
+const ExpandedSlotMachine = memo<ExpandedSlotMachineProps>(({
+    isExpanded,
+    portalPosition,
+    itemHeight,
+    selectedIndex,
+    numbers,
+    translateY,
+    onDrag,
+    onDragStart,
+    onDragEnd,
+    itemStyle,
+    onExitComplete
+}) => (
+    <AnimatePresence onExitComplete={onExitComplete}>
+        {isExpanded && (
+            <motion.div
+                className={numberSlot.expanded}
+                initial={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
+                animate={{ height: EXPANDED_HEIGHT, top: (portalPosition?.top || 0) - SNAP_OFFSET }}
+                exit={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
+                transition={{ duration: ANIMATION_DURATION }}
+                tabIndex={0}
+                style={{ position: "absolute", left: portalPosition?.left || 0, zIndex: PORTAL_Z_INDEX }}
+            >
+                <motion.div
+                    key="expanded"
+                    className={slotList}
+                    drag="y"
+                    style={{ y: translateY }}
+                    exit={{ y: calculateSnapPosition(itemHeight, selectedIndex) - SNAP_OFFSET }}
+                    transition={{ duration: ANIMATION_DURATION }}
+                    dragConstraints={{ bottom: -itemHeight / DRAG_CONSTRAINT_DIVISOR, top: -(itemHeight / DRAG_CONSTRAINT_DIVISOR) -itemHeight * (numbers.length - 1) }}
+                    onDrag={onDrag}
+                    onDragStart={onDragStart}
+                    onDragEnd={onDragEnd}
+                >
+                    <motion.div key={0} className={item} style={itemStyle}>
+                        &nbsp;
+                    </motion.div>
+                    {numbers.map((num, index) => {
+                        let selectedClass = "";
+                        if (index === selectedIndex) {
+                            selectedClass = selected;
+                        }
+                        return (
+                            <motion.div key={num} style={itemStyle} className={`${item} ${selectedClass}`}>
+                                {num}
+                            </motion.div>
+                        );
+                    })}
+                    <motion.div key={numbers.length} className={item} style={itemStyle}>
+                        &nbsp;
+                    </motion.div>
+                </motion.div>
+            </motion.div>
+        )}
+    </AnimatePresence>
+));
