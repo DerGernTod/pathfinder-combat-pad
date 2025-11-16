@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactElement } from "react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
 import { useShallow } from "zustand/react/shallow";
@@ -22,7 +22,7 @@ export function StatusSlot({
     })));
     const elemRef = useRef<HTMLDivElement | null>(null);
 
-    const moveEntityInstance = useCallback(function moveEntityInstanceCallback(e: PointerEvent) {
+    const moveEntityInstance = function moveEntityInstanceCallback(e: PointerEvent) {
         const boundingRect = elemRef.current?.getBoundingClientRect();
         if (
             !entityId ||
@@ -35,7 +35,7 @@ export function StatusSlot({
             swapEntities(draggedEntityId, entityId);
         }
         setStatus(draggedEntityId, status);
-    }, [entityId, draggedEntityId, setStatus, status, swapEntities]);
+    };
 
     useEffect(() => {
         if (draggedEntityId !== null) {

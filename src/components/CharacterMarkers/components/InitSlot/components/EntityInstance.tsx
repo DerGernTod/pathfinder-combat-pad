@@ -17,18 +17,17 @@ transparentImage.src =
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement => {
-    const { removeEntity, entities, entityIds, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
+    const { removeEntity, setDraggedEntityId, draggedEntityId, setDamageTaken, entity } = useEntityStore(useShallow(store => ({
         removeEntity: store.removeEntity,
-        // entityIds: store.entities.map(entity => entity.id),
-        entities: store.entities,
         setDraggedEntityId: store.setDraggedEntityId,
         draggedEntityId: store.draggedEntityId,
         setDamageTaken: store.setDamageTaken,
+        entity: store.entities.find(e => e.id === entityId),
     })));
-    const entity = entities.find(e => e.id === entityId)!;
+    const entityIds = useEntityStore(useShallow(state => state.entities.map(e => e.id)));
+    const { id, name, kind, status, level, damageTaken } = entity!;
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
-    const { id, name, kind, status, level, damageTaken } = entity;
     const [draggingClass, setDraggingClass] = useState("");
     const handlePointerDown = (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
         const isPenErase = e.pointerType === "pen" && e.button === 5;
@@ -58,8 +57,8 @@ export const EntityInstance = ({
         <motion.div
             key={String(id)}
             ref={draggableRef}
-            layoutDependency={entities}
-            layoutId={String(entity.id)}
+            layoutDependency={entityIds}
+            layoutId={String(entity!.id)}
             onPointerDown={handlePointerDown}
             animate={{ opacity: 1, transition: { delay: .15 } }}
             initial={{ opacity: 0 }}
