@@ -1,52 +1,56 @@
 import "./EntityInstance.css";
 import type { PointerEventHandler, ReactElement } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { Entity } from "../../../../../constants";
+import { useEffect, useRef, useState } from "react";
 import { KIND_LOOKUP } from "./constants";
 import SlotMachineInput from "./SlotMachineInput";
 import { motion } from "motion/react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
+import { useShallow } from "zustand/react/shallow";
 
 interface EntityInstanceProps {
-    entity: Entity;
+    entityId: number;
 }
 const transparentImage = new Image();
 transparentImage.src =
     "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
 export const EntityInstance = ({
-    entity,
+    entityId,
 }: EntityInstanceProps): ReactElement => {
-    const { removeEntity, entities, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore();
+    const { removeEntity, entities, entityIds, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
+        removeEntity: store.removeEntity,
+        // entityIds: store.entities.map(entity => entity.id),
+        entities: store.entities,
+        setDraggedEntityId: store.setDraggedEntityId,
+        draggedEntityId: store.draggedEntityId,
+        setDamageTaken: store.setDamageTaken,
+    })));
+    const entity = entities.find(e => e.id === entityId)!;
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const { id, name, kind, status, level, damageTaken } = entity;
     const [draggingClass, setDraggingClass] = useState("");
-    const handleDamageTakenChanged = useCallback((damage: number) => setDamageTaken(id, damage), [id, setDamageTaken]);
-    const handlePointerDown = useCallback(
-        (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
-            const isPenErase = e.pointerType === "pen" && e.button === 5;
-            if (e.shiftKey || isPenErase) {
-                removeEntity(id);
-            } else if (grabber.current?.contains(e.target as Node)) {
-                setDraggedEntityId(id);
-                setDraggingClass("dragging");
-                document.body.classList.add("grabbing");
-                grabber.current?.classList.remove("grab-cursor");
-                globalThis.addEventListener(
-                    "pointerup",
-                    () => {
-                        setDraggingClass("");
-                        setDraggedEntityId(null);
-                        document.body.classList.remove("grabbing");
-                        grabber.current?.classList.add("grab-cursor");
-                    },
-                    { once: true }
-                );
-            }
-        },
-        [removeEntity, id, setDraggedEntityId]
-    );
+    const handlePointerDown = (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
+        const isPenErase = e.pointerType === "pen" && e.button === 5;
+        if (e.shiftKey || isPenErase) {
+            removeEntity(id);
+        } else if (grabber.current?.contains(e.target as Node)) {
+            setDraggedEntityId(id);
+            setDraggingClass("dragging");
+            document.body.classList.add("grabbing");
+            grabber.current?.classList.remove("grab-cursor");
+            globalThis.addEventListener(
+                "pointerup",
+                () => {
+                    setDraggingClass("");
+                    setDraggedEntityId(null);
+                    document.body.classList.remove("grabbing");
+                    grabber.current?.classList.add("grab-cursor");
+                },
+                { once: true }
+            );
+        }
+    };
     useEffect(() => {
         grabber.current?.classList.toggle("grab-cursor", draggedEntityId === null);
     }, [draggedEntityId]);
@@ -72,7 +76,7 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
-            <SlotMachineInput onChange={handleDamageTakenChanged} value={damageTaken} max={150} />
+            <SlotMachineInput onChange={(damage: number) => setDamageTaken(id, damage)} value={damageTaken} max={150} />
             <div ref={grabber} className="grabber grab-cursor">⋮</div>
         </motion.div>
     );

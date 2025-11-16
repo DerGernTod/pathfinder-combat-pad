@@ -1,6 +1,6 @@
 import "./MagnetKindCondition.css";
 import type { PointerEvent, RefObject } from "react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Canvas } from "../../Canvas";
 import type { MagnetKindProps } from "./magnet-kind-types";
 import { useMagnetStore } from "../../../store/useMagnetStore";
@@ -17,14 +17,14 @@ export function MagnetKindCondition({ className, details = "", id }: MagnetKindP
         throw new Error("MagnetKindCondition details must be a string");
     }
 
-    const toggleEditing = useCallback((e: PointerEvent<HTMLDivElement>) => {
+    const toggleEditing = (e: PointerEvent<HTMLDivElement>) => {
         e.stopPropagation();
         const imageUrl = canvasRef.current?.toDataURL("image/webp");
         if (isEditing && imageUrl) {
             setMagnetImage(id, imageUrl);
         }
         setIsEditing(!isEditing);
-    }, [isEditing, id, setMagnetImage]);
+    };
 
     return (
         <div className={`condition-marker apply-transitions ${className || ""}`}>
@@ -57,7 +57,7 @@ function renderEditChar(isEditing: boolean) {
     return "✎";
 }
 
-function renderDetails(details: string, isEditing: boolean, ref: RefObject<HTMLCanvasElement>) {
+function renderDetails(details: string, isEditing: boolean, ref: RefObject<HTMLCanvasElement | null>) {
     if (isEditing) {
         return <Canvas ref={ref} style={canvasStyle} penSize={2} />;
     }

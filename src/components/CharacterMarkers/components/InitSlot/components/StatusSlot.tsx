@@ -1,37 +1,41 @@
 import { useCallback, useEffect, useRef } from "react";
-import type { Entity } from "../../../../../constants";
 import type { ReactElement } from "react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
+import { useShallow } from "zustand/react/shallow";
 
 interface StatusSlotProps {
     children: string | ReactElement;
     className?: string;
     status: number;
-    entity?: Entity;
+    entityId?: number;
 }
 export function StatusSlot({
     children,
     className,
     status,
-    entity,
+    entityId,
 }: StatusSlotProps): ReactElement {
-    const { draggedEntityId, setStatus, swapEntities } = useEntityStore();
+    const { draggedEntityId, setStatus, swapEntities } = useEntityStore(useShallow((state) => ({
+        draggedEntityId: state.draggedEntityId,
+        setStatus: state.setStatus,
+        swapEntities: state.swapEntities,
+    })));
     const elemRef = useRef<HTMLDivElement | null>(null);
 
     const moveEntityInstance = useCallback(function moveEntityInstanceCallback(e: PointerEvent) {
         const boundingRect = elemRef.current?.getBoundingClientRect();
         if (
-            !entity ||
+            !entityId ||
             draggedEntityId === null ||
             !isWithinBounds(e.clientX, e.clientY, boundingRect)
         ) {
             return;
         }
-        if (entity.id !== draggedEntityId) {
-            swapEntities(draggedEntityId, entity.id);
+        if (entityId !== draggedEntityId) {
+            swapEntities(draggedEntityId, entityId);
         }
         setStatus(draggedEntityId, status);
-    }, [entity, draggedEntityId, setStatus, status, swapEntities]);
+    }, [entityId, draggedEntityId, setStatus, status, swapEntities]);
 
     useEffect(() => {
         if (draggedEntityId !== null) {

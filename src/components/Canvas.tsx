@@ -1,7 +1,6 @@
 import "./Canvas.css";
 import {
     forwardRef,
-    useCallback,
     useEffect,
     useImperativeHandle,
     useLayoutEffect,
@@ -31,12 +30,12 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 
     useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
 
-    const resizeCurrentCanvas = useCallback(() => {
+    const resizeCurrentCanvas = () => {
         if (!canvasRef.current || !canvasHiddenRef.current) {
             return;
         }
         resizeCanvas(canvasRef.current, canvasHiddenRef.current);
-    }, []);
+    };
 
     useEffect(() => {
         configureCanvas(canvasRef, contextRef, storeId);
@@ -64,9 +63,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
                 setIsErasing(false);
             }
         }
-    }, [resizeCurrentCanvas]);
+    }, []);
 
-    const startDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+    const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
         event.stopPropagation();
         if (event.pointerType === "pen") {
             setIsErasing(event.button === 5);
@@ -83,9 +82,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
             );
             drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
         }
-    }, []);
+    };
 
-    const draw = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+    const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
         if (!drawing || !contextRef.current) {
             return;
         }
@@ -97,9 +96,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
             contextRef.current.lineWidth = penSize;
         }
         drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-    }, [drawing, isErasing, penSize]);
+    };
 
-    const endDrawing = useCallback((event: React.PointerEvent<HTMLCanvasElement>) => {
+    const endDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
         draw(event);
         setDrawing(false);
         if (contextRef.current) {
@@ -111,11 +110,7 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
                 updateCanvas(storeId, canvasRef.current.toDataURL("image/webp"));
             }
         }
-    }, [
-        draw,
-        storeId,
-        updateCanvas
-    ]);
+    };
 
     let erasingClass = "";
     if (isErasing) {

@@ -1,8 +1,9 @@
 import "./DurationBar.css"; // Assuming you will add some CSS for styling
+import type { ReactElement } from "react";
 
 const nums: unknown[] = Array(10);
 
-export function DurationBar(): JSX.Element {
+export function DurationBar(): ReactElement {
     return (
         <>
             <div className="pad" />

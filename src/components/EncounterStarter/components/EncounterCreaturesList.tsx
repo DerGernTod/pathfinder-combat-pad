@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import { useEntityStore } from "../../../store/useEntityStore";
 import { encounterHeaderStyle, horizontalBarStyle, scrollableListStyle } from "../EncounterStarter.css";
 import { encounterCreaturesListStyle } from "./EncounterCreaturesList.css";
+import { useShallow } from "zustand/react/shallow";
 
 interface EncounterCreaturesListProps {
     onEntitySelect: (entityId: number) => void;
@@ -10,7 +11,7 @@ interface EncounterCreaturesListProps {
 }
 
 export function EncounterCreaturesList(props: EncounterCreaturesListProps): ReactElement {
-    const entities = useEntityStore((state) => state.entities);
+    const entities = useEntityStore(useShallow(state => state.entities));
     return (
         <div className={`${props.className} ${encounterCreaturesListStyle}`}>
             <h3 className={encounterHeaderStyle}>Creatures</h3>

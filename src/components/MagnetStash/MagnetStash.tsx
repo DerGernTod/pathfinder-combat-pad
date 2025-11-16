@@ -2,9 +2,10 @@ import "./MagnetStash.css";
 import { MagnetKind } from "./components/magnet-kind-types";
 import { MagnetKinds } from "./components/MagnetKinds";
 import { createElement } from "react";
+import type { ReactElement } from "react";
 import { useMagnetStore } from "../../store/useMagnetStore";
 
-export function MagnetStash(): JSX.Element {
+export function MagnetStash(): ReactElement {
     const { createAndDragMagnet } = useMagnetStore();
     return (
         <div className="magnet-stash">

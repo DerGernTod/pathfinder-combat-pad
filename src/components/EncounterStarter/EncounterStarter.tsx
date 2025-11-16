@@ -1,5 +1,16 @@
-import { useEntityStore } from "../../store/useEntityStore.ts";
-import { bodySeparator, buttonText, encounterButton, encounterSelectionBody, encounterSelectionBodyChild, headerText, horizontalBarStyle, modalBody, modalContainer, sectionsSeparatorStyle, startEncounterButtonSectionStyle, startEncounterButtonStyle, verticalBarStyle } from "./EncounterStarter.css.ts";
+import {
+    bodySeparator,
+    buttonText,
+    encounterButton,
+    encounterSelectionBody,
+    encounterSelectionBodyChild,
+    headerText,
+    modalBody,
+    modalContainer,
+    startEncounterButtonSectionStyle,
+    startEncounterButtonStyle,
+    verticalBarStyle
+} from "./EncounterStarter.css.ts";
 import { EncounterParticipantsList } from "./components/EncounterParticipantsList.tsx";
 import { EncounterCreaturesList } from "./components/EncounterCreaturesList.tsx";
 import type { ReactElement } from "react";
@@ -7,7 +18,6 @@ import { useState } from "react";
 
 export function EncounterStarter(): ReactElement {
     const [isOpen, setIsOpen] = useState(false);
-    const entities = useEntityStore((state) => state.entities);
     const variant = isOpen ? "active" : "default";
     return (
         <div className={modalContainer[variant]}>
@@ -19,7 +29,7 @@ export function EncounterStarter(): ReactElement {
             <div className={modalBody[variant]}>
                 <div className={encounterSelectionBody}>
                     <EncounterCreaturesList className={encounterSelectionBodyChild} onEntitySelect={(id) => {
-                        console.log("entity id", id); 
+                        console.log("entity id", id);
                     }} />
                     <div className={`${bodySeparator} ${encounterSelectionBodyChild}`}>
                         <h3>&nbsp;</h3>

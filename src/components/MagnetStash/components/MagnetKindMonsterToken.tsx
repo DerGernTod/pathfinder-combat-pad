@@ -1,6 +1,7 @@
+import type { ReactElement } from "react";
 import type { MagnetKindProps } from "./magnet-kind-types";
 
-export function MagnetKindMonsterToken({ className, details }: MagnetKindProps): JSX.Element {
+export function MagnetKindMonsterToken({ className, details }: MagnetKindProps): ReactElement {
     return (
         <svg
             height="60"

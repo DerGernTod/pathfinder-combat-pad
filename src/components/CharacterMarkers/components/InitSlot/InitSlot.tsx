@@ -1,55 +1,54 @@
 import "./InitSlot.css";
 import { CreateSlot } from "./components/CreateSlot";
-import type { Entity } from "../../../../constants";
 import { EntityInstance } from "./components/EntityInstance";
 import type { ReactElement } from "react";
 import { StatusSlot } from "./components/StatusSlot";
 import { motion } from "motion/react";
 
 interface InitSlotProps {
-    entity?: Entity;
+    entityId?: number;
 }
 
 const exitOptions = { height: 0, transition: { delay: .35 } };
 const initialOptions = { height: 0 };
 const animateOptions = { height: "4rem" };
 
-export function InitSlot({ entity }: InitSlotProps): ReactElement {
-    const gapClass = getGapClass(entity);
+export function InitSlot({ entityId }: InitSlotProps): ReactElement {
+    const gapClass = getGapClass(!!entityId);
 
     return (
         <motion.div
-            key={entity?.id}
+            key={entityId}
             className={`init-slot-container ${gapClass}`}
             animate={animateOptions}
             initial={initialOptions}
             exit={exitOptions}
         >
-            <EntitySlot entity={entity} />
+            <EntitySlot entityId={entityId} />
         </motion.div>
     );
 }
 
-function EntitySlot({ entity }: { entity: Entity | undefined }): ReactElement {
-    if (!entity) {
+function EntitySlot({ entityId }: { entityId: number | undefined }): ReactElement {
+    if (!entityId) {
         return <CreateSlot />;
     }
     return (
         <>
-            <StatusSlot entity={entity} className="init-slot slot-holder" status={0}>
-                <EntityInstance entity={entity} />
+            <StatusSlot entityId={entityId} className="init-slot slot-holder" status={0}>
+                <EntityInstance entityId={entityId} />
             </StatusSlot>
             <div className="init-content-status">
-                <StatusSlot entity={entity} status={1}>
+                <StatusSlot entityId={entityId} status={1}>
                     O
                 </StatusSlot>
-                <StatusSlot entity={entity} status={2}>
+                <StatusSlot entityId={entityId} status={2}>
                     💀
                 </StatusSlot>
-                <StatusSlot entity={entity} status={3}>
+                <StatusSlot entityId={entityId} status={3}>
                     💀
                 </StatusSlot>
-                <StatusSlot entity={entity} status={4}>
+                <StatusSlot entityId={entityId} status={4}>
                     💀
                 </StatusSlot>
             </div>
@@ -57,8 +56,8 @@ function EntitySlot({ entity }: { entity: Entity | undefined }): ReactElement {
     );
 }
 
-function getGapClass(entity: Entity | undefined) {
-    if (entity) {
+function getGapClass(hasEntity: boolean): string {
+    if (hasEntity) {
         return "grid-gap";
     }
     return "";

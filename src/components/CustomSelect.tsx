@@ -1,10 +1,11 @@
 import "./CustomSelect.css";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import type { ReactElement } from "react";
 import { motion } from "motion/react";
 
 export interface CustomSelectOption {
     id: string;
-    element: JSX.Element;
+    element: ReactElement;
     onSelect(): void;
 }
 
@@ -18,16 +19,16 @@ export function CustomSelect({
     options,
     className,
     selectedIndex,
-}: CustomSelectProps): JSX.Element {
+}: CustomSelectProps): ReactElement {
     const [selectedOption, setSelectedOption] = useState(
         options[selectedIndex]
     );
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const handleSelect = useCallback((option: CustomSelectOption) => {
+    const handleSelect = (option: CustomSelectOption) => {
         setSelectedOption(option);
         option.onSelect();
         setDropdownOpen(false);
-    }, []);
+    };
 
     let dropdownOpenClass = "";
     if (dropdownOpen) {

@@ -1,5 +1,5 @@
 import "./CreateSlot.css";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Canvas } from "../../../../Canvas";
 import CustomSelect from "../../../../CustomSelect";
 import type { CustomSelectOption } from "../../../../CustomSelect";
@@ -7,6 +7,7 @@ import { EntityKind } from "../../../../../constants";
 import type { ReactElement } from "react";
 import SlotNumberInput from "./SlotMachineInput";
 import { useEntityStore } from "../../../../../store/useEntityStore";
+import { useShallow } from "zustand/react/shallow";
 
 const canvasStyle = {
     flexBasis: "200px",
@@ -24,13 +25,13 @@ const EntityOptions = [
 
 export function CreateSlot(): ReactElement {
     const initialEntityKind = 0;
-    const { addEntity } = useEntityStore();
+    const { addEntity } = useEntityStore(useShallow(state => ({ addEntity: state.addEntity })));
     const [kind, setKind] = useState<EntityKind>(
         EntityOptions[initialEntityKind]
     );
     const [level, setLevel] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const createEntity = useCallback(() => {
+    const createEntity = () => {
         addEntity({
             damageTaken: 0,
             kind,
@@ -46,11 +47,11 @@ export function CreateSlot(): ReactElement {
                 canvasRef.current.width,
                 canvasRef.current.height
             );
-    }, [addEntity, kind, level]);
-    const selectOptions = useMemo(() => EntityOptions.map(toCustomSelectOption) as [
+    };
+    const selectOptions = EntityOptions.map(toCustomSelectOption) as [
         CustomSelectOption,
         ...CustomSelectOption[]
-    ], []);
+    ];
 
     return (
         <div className="create-slot">

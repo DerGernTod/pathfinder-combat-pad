@@ -17,9 +17,10 @@ import { ScrollButton } from "./components/ScrollButton";
 import { useEntityStore } from "../../store/useEntityStore";
 import { useEffect, useRef, useState } from "react";
 import { debounce } from "es-toolkit";
+import { useShallow } from "zustand/react/shallow";
 
 export function CharacterMarkers() {
-    const { entities } = useEntityStore();
+    const entityIds = useEntityStore(useShallow(state => state.entities.map(entity => entity.id)));
 
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [showTop, setShowTop] = useState(false);
@@ -98,8 +99,8 @@ export function CharacterMarkers() {
             </MarkerHeading>
             <div className={initContent} ref={contentRef}>
                 <AnimatePresence>
-                    {entities.map((entity) => (
-                        <InitSlot key={entity.id} entity={entity} />
+                    {entityIds.map((id) => (
+                        <InitSlot key={id} entityId={id} />
                     ))}
                 </AnimatePresence>
                 <InitSlot />

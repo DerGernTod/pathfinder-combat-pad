@@ -31,6 +31,7 @@
         "zustand": "^5.0.3"
     },
     "devDependencies": {
+        "@babel/core": "^7.28.5",
         "@stylistic/eslint-plugin": "^5.5.0",
         "@tauri-apps/cli": "2",
         "@types/node": "^22.13.0",
@@ -38,6 +39,7 @@
         "@types/react-dom": "19.2.2",
         "@vanilla-extract/vite-plugin": "^5.1.1",
         "@vitejs/plugin-react": "5.1.0",
+        "babel-plugin-react-compiler": "^1.0.0",
         "oxlint": "1.24.0",
         "typescript": "5.9.3",
         "typescript-eslint": "8.46.2",

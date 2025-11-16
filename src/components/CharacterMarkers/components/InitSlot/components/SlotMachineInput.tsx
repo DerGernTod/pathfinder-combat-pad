@@ -6,7 +6,7 @@ import {
     valueView
 } from "./SlotMachineInput.css.ts";
 import { animate, motion, useMotionValue, AnimatePresence } from "motion/react";
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, useEffect } from "react";
+import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { PanInfo, MotionValue } from "motion/react";
 
@@ -38,7 +38,7 @@ interface ExpandedSlotMachineProps {
     onExitComplete: () => void;
 }
 
-export default memo(SlotNumberInputMemo);
+export default SlotNumberInputMemo;
 
 function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
     const numbers = Array.from({ length: max }, (_, i) => i);
@@ -61,14 +61,14 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
         onChange
     });
 
-    const handleValueClick = useCallback(() => {
+    const handleValueClick = () => {
         setIsExpanded(true);
-    }, []);
+    };
 
-    const handleBlur = useCallback(() => {
+    const handleBlur = () => {
         setIsExpanded(false);
         onChange(selectedIndex);
-    }, [onChange, selectedIndex]);
+    };
 
     useLayoutEffect(() => {
         if (!slotContainerRef.current) {
@@ -111,14 +111,14 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
         }
     }, [isExpanded]);
 
-    const itemStyle = useMemo(() => ({
+    const itemStyle = {
         fontSize: `${itemHeight}px`,
         height: `${itemHeight}px`,
-    }), [itemHeight]);
+    };
 
-    const handleExitComplete = useCallback(() => {
+    const handleExitComplete = () => {
         setShowPortal(false);
-    }, []);
+    };
 
     return (
         <div className={numberSlot.collapsed} ref={slotContainerRef} tabIndex={0} onBlur={handleBlur}>
@@ -168,29 +168,29 @@ function useSlotMachineDrag({
 }) {
     const [dragStartIndex, setDragStartIndex] = useState(-1);
 
-    const dragCallback = useCallback((_: unknown, info: PanInfo) => {
+    const dragCallback = (_: unknown, info: PanInfo) => {
         if (!isExpanded) {
             return;
         }
         const delta = dragStartIndex - Math.round(info.offset.y / itemHeight);
         const newIndex = Math.min(numbers.length - 1, Math.max(0, delta));
         setSelectedIndex(newIndex);
-    }, [dragStartIndex, itemHeight, numbers, isExpanded, setSelectedIndex]);
+    };
 
-    const dragStartCallback = useCallback(() => {
+    const dragStartCallback = () => {
         if (!isExpanded) {
             return;
         }
         setDragStartIndex(selectedIndex);
-    }, [selectedIndex, isExpanded]);
+    };
 
-    const dragEndCallback = useCallback(() => {
+    const dragEndCallback = () => {
         if (!isExpanded) {
             return;
         }
         animate(translateY, [translateY.get(), calculateSnapPosition(itemHeight, selectedIndex)]);
         onChange(selectedIndex);
-    }, [selectedIndex, translateY, itemHeight, onChange, isExpanded]);
+    };
 
     return {
         dragCallback,
@@ -212,7 +212,7 @@ function calculateSnapPosition(itemHeight: number, selectedIndex: number): numbe
     return SNAP_OFFSET + -itemHeight / DRAG_CONSTRAINT_DIVISOR - selectedIndex * itemHeight;
 }
 
-const ExpandedSlotMachine = memo<ExpandedSlotMachineProps>(({
+const ExpandedSlotMachine: React.FC<ExpandedSlotMachineProps> = ({
     isExpanded,
     portalPosition,
     itemHeight,
@@ -269,4 +269,4 @@ const ExpandedSlotMachine = memo<ExpandedSlotMachineProps>(({
             </motion.div>
         )}
     </AnimatePresence>
-));
+);

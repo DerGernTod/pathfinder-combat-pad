@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint2";
 import react from "@vitejs/plugin-react";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import { resolve } from "path";
 
 const host: string | undefined = process.env.TAURI_DEV_HOST;
 const config = defineConfig(() => ({
@@ -9,7 +10,15 @@ const config = defineConfig(() => ({
     //
     // 1. prevent vite from obscuring rust errors
     clearScreen: false,
-    plugins: [vanillaExtractPlugin(), react(), eslint()],
+    plugins: [
+        vanillaExtractPlugin(),
+        react({
+            babel: {
+                plugins: [["babel-plugin-react-compiler"]]
+            }
+        }),
+        eslint()
+    ],
     // 2. tauri expects a fixed port, fail if that port is not available
     server: {
         hmr: getHmr(host),
