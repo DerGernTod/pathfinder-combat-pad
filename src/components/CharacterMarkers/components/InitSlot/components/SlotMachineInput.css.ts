@@ -1,25 +1,31 @@
 import { style, styleVariants } from "@vanilla-extract/css";
+import type { StyleRule } from "@vanilla-extract/css";
+
+const baseNumberSlot = {
+    alignItems: "flex-start",
+    backgroundColor: "#f3f3f3",
+    border: "1px solid gray",
+    borderRadius: "8px",
+    display: "flex",
+    overflow: "hidden",
+    width: "2rem"
+} satisfies Partial<StyleRule>;
+
+const baseFlexCenter = {
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "center",
+} satisfies Partial<StyleRule>;
 
 export const numberSlot = styleVariants({
     collapsed: {
-        alignItems: "flex-start",
-        backgroundColor: "#f3f3f3",
-        border: "1px solid gray",
-        borderRadius: "8px",
-        display: "flex",
-        height: "100%",
-        overflow: "hidden",
-        width: "2rem"
+        ...baseNumberSlot,
+        height: "100%"
     },
     expanded: {
-        alignItems: "flex-start",
-        backgroundColor: "#f3f3f3",
-        border: "1px solid gray",
-        borderRadius: "8px",
-        display: "flex",
+        ...baseNumberSlot,
+        justifyContent: "center",
         height: "5rem",
-        overflow: "hidden",
-        width: "2rem",
     }
 });
 
@@ -31,9 +37,8 @@ export const slotList = style({
 });
 
 export const item = style({
-    alignItems: "center",
-    display: "flex",
-    justifyContent: "center",
+    ...baseFlexCenter,
+    width: "100%",
     transition: "opacity 0.3s",
     color: "black",
     opacity: 0.25,
@@ -44,9 +49,7 @@ export const selected = style({
 });
 
 export const valueView = style({
-    alignItems: "center",
-    display: "flex",
-    justifyContent: "center",
+    ...baseFlexCenter,
     color: "black",
     cursor: "pointer",
     width: "100%",
