@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint2";
 import react from "@vitejs/plugin-react";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
-import { resolve } from "path";
 
 const host: string | undefined = process.env.TAURI_DEV_HOST;
 const config = defineConfig(() => ({

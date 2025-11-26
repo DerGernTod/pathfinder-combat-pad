@@ -16,16 +16,28 @@ transparentImage.src =
 
 export const EntityInstance = ({
     entityId,
-}: EntityInstanceProps): ReactElement => {
-    const { removeEntity, setDraggedEntityId, draggedEntityId, setDamageTaken, entity } = useEntityStore(useShallow(store => ({
+}: EntityInstanceProps): ReactElement | null => {
+    const { removeEntity, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
         removeEntity: store.removeEntity,
         setDraggedEntityId: store.setDraggedEntityId,
         draggedEntityId: store.draggedEntityId,
         setDamageTaken: store.setDamageTaken,
-        entity: store.entities.find(e => e.id === entityId),
     })));
+    const entity = useEntityStore(useShallow(store => store.entities.find(e => e.id === entityId)));
+    const [lastKnownEntity, setLastKnownEntity] = useState(entity);
+
+    useEffect(() => {
+        if (entity) {
+            setLastKnownEntity(entity);
+        }
+    }, [entity]);
+
+    if (!lastKnownEntity) {
+        return null;
+    }
+
     const entityIds = useEntityStore(useShallow(state => state.entities.map(e => e.id)));
-    const { id, name, kind, status, level, damageTaken } = entity!;
+    const { id, name, kind, status, level, damageTaken } = lastKnownEntity;
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const [draggingClass, setDraggingClass] = useState("");
@@ -58,7 +70,7 @@ export const EntityInstance = ({
             key={String(id)}
             ref={draggableRef}
             layoutDependency={entityIds}
-            layoutId={String(entity!.id)}
+            layoutId={String(lastKnownEntity.id)}
             onPointerDown={handlePointerDown}
             animate={{ opacity: 1, transition: { delay: .15 } }}
             initial={{ opacity: 0 }}

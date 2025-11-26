@@ -36,6 +36,7 @@ interface ExpandedSlotMachineProps {
     onDragEnd: () => void;
     itemStyle: { fontSize: string; height: string };
     onExitComplete: () => void;
+    onBlur: () => void;
 }
 
 export default SlotNumberInputMemo;
@@ -121,7 +122,7 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
     };
 
     return (
-        <div className={numberSlot.collapsed} ref={slotContainerRef} tabIndex={0} onBlur={handleBlur}>
+        <div className={numberSlot.collapsed} ref={slotContainerRef} tabIndex={0}>
             <div
                 key="collapsed"
                 className={valueView}
@@ -142,6 +143,7 @@ function SlotNumberInputMemo({ onChange, max, value }: SlotNumberInputProps) {
                     onDragEnd={dragEndCallback}
                     itemStyle={itemStyle}
                     onExitComplete={handleExitComplete}
+                    onBlur={handleBlur} 
                 />,
                 document.body
             )}
@@ -223,50 +225,61 @@ const ExpandedSlotMachine: React.FC<ExpandedSlotMachineProps> = ({
     onDragStart,
     onDragEnd,
     itemStyle,
-    onExitComplete
-}) => (
-    <AnimatePresence onExitComplete={onExitComplete}>
-        {isExpanded && (
-            <motion.div
-                className={numberSlot.expanded}
-                initial={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
-                animate={{ height: EXPANDED_HEIGHT, top: (portalPosition?.top || 0) - SNAP_OFFSET }}
-                exit={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
-                transition={{ duration: ANIMATION_DURATION }}
-                tabIndex={0}
-                style={{ position: "absolute", left: portalPosition?.left || 0, zIndex: PORTAL_Z_INDEX }}
-            >
+    onExitComplete,
+    onBlur
+}) => {
+    const ref = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (isExpanded) {
+            ref.current?.focus();
+        }
+    }, [isExpanded]);
+    return (
+        <AnimatePresence onExitComplete={onExitComplete}>
+            {isExpanded && (
                 <motion.div
-                    key="expanded"
-                    className={slotList}
-                    drag="y"
-                    style={{ y: translateY }}
-                    exit={{ y: calculateSnapPosition(itemHeight, selectedIndex) - SNAP_OFFSET }}
+                    className={numberSlot.expanded}
+                    initial={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
+                    animate={{ height: EXPANDED_HEIGHT, top: (portalPosition?.top || 0) - SNAP_OFFSET }}
+                    exit={{ height: COLLAPSED_HEIGHT, top: (portalPosition?.top || 0) }}
                     transition={{ duration: ANIMATION_DURATION }}
-                    dragConstraints={{ bottom: -itemHeight / DRAG_CONSTRAINT_DIVISOR, top: -(itemHeight / DRAG_CONSTRAINT_DIVISOR) -itemHeight * (numbers.length - 1) }}
-                    onDrag={onDrag}
-                    onDragStart={onDragStart}
-                    onDragEnd={onDragEnd}
+                    tabIndex={0}
+                    style={{ position: "absolute", left: portalPosition?.left || 0, zIndex: PORTAL_Z_INDEX }}
+                    onBlur={onBlur} 
+                    ref={ref}   
                 >
-                    <motion.div key={0} className={item} style={itemStyle}>
-                        &nbsp;
-                    </motion.div>
-                    {numbers.map((num, index) => {
-                        let selectedClass = "";
-                        if (index === selectedIndex) {
-                            selectedClass = selected;
-                        }
-                        return (
-                            <motion.div key={num} style={itemStyle} className={`${item} ${selectedClass}`}>
-                                {num}
-                            </motion.div>
-                        );
-                    })}
-                    <motion.div key={numbers.length} className={item} style={itemStyle}>
-                        &nbsp;
+                    <motion.div
+                        key="expanded"
+                        className={slotList}
+                        drag="y"
+                        style={{ y: translateY }}
+                        exit={{ y: calculateSnapPosition(itemHeight, selectedIndex) - SNAP_OFFSET }}
+                        transition={{ duration: ANIMATION_DURATION }}
+                        dragConstraints={{ bottom: -itemHeight / DRAG_CONSTRAINT_DIVISOR, top: -(itemHeight / DRAG_CONSTRAINT_DIVISOR) -itemHeight * (numbers.length - 1) }}
+                        onDrag={onDrag}
+                        onDragStart={onDragStart}
+                        onDragEnd={onDragEnd}
+                    >
+                        <motion.div key={0} className={item} style={itemStyle}>
+                            &nbsp;
+                        </motion.div>
+                        {numbers.map((num, index) => {
+                            let selectedClass = "";
+                            if (index === selectedIndex) {
+                                selectedClass = selected;
+                            }
+                            return (
+                                <motion.div key={num} style={itemStyle} className={`${item} ${selectedClass}`}>
+                                    {num}
+                                </motion.div>
+                            );
+                        })}
+                        <motion.div key={numbers.length} className={item} style={itemStyle}>
+                            &nbsp;
+                        </motion.div>
                     </motion.div>
                 </motion.div>
-            </motion.div>
-        )}
-    </AnimatePresence>
-);
+            )}
+        </AnimatePresence>
+    );
+};

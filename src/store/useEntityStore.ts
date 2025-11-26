@@ -13,6 +13,7 @@ interface EntityStore {
     setDraggedEntityId(this: void, id: number | null): void;
 
     setDamageTaken(this: void, id: number, damageTaken: number): void;
+    setEntities(this: void, entities: Entity[]): void;
     setStatus(this: void, id: number, status: number): void;
 }
 
@@ -44,6 +45,9 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
     },
     setDraggedEntityId(this: void, id: number | null): void {
         set({ draggedEntityId: id });
+    },
+    setEntities(this: void, entities: Entity[]): void {
+        set({ entities });
     },
     setStatus(this: void, id: number, status: number): void {
         set(produce(function updateState(recipe: EntityStore): void {

@@ -12,17 +12,17 @@ The goal is to move damage tracking off the scratch pad and into the initiative 
 
 The goal is to streamline encounter initialization by providing a dedicated interface for adding and ordering combatants before starting combat.
 
-* [ ] Implement a **"Start Encounter" button** that opens a popup dialog.
-* [ ] In the popup, display a **list of all current participants** (combatants already present).
-* [ ] Provide an **input field** to add additional participants:
-    * [ ] Allow entry of a **monster name** and a **quantity**.
-    * [ ] Include an **"Add" button** to add the specified number of monsters to the encounter.
-    * [ ] Support adding multiple different monsters before starting the encounter.
-* [ ] Allow **tapping and dragging** (or tapping up/down arrows) on each entry to **set the initiative order** interactively.
-* [ ] At the bottom of the popup, include a **"Start Encounter" button** that:
-    * [ ] Creates all entities as specified.
-    * [ ] Sets the initiative order as arranged.
-    * [ ] Automatically creates tokens for each monster on the map.
+* [x] Implement a **"Start Encounter" button** that opens a popup dialog.
+* [x] In the popup, display a **list of all current participants** (combatants already present).
+* [x] Provide an **input field** to add additional participants:
+    * [x] Allow entry of a **monster name** and a **quantity**.
+    * [x] Include an **"Add" button** to add the specified number of monsters to the encounter.
+    * [x] Support adding multiple different monsters before starting the encounter.
+* [x] Allow **tapping and dragging** (or tapping up/down arrows) on each entry to **set the initiative order** interactively.
+* [x] At the bottom of the popup, include a **"Start Encounter" button** that:
+    * [x] Creates all entities as specified.
+    * [x] Sets the initiative order as arranged.
+    * [x] Automatically creates tokens for each monster on the map.
 
 ---
 

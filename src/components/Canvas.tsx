@@ -14,11 +14,13 @@ import { useShallow } from "zustand/react/shallow";
 
 interface CanvasProps {
     style: CSSProperties;
+    containerClassName?: string;
+    className?: string;
     penSize?: number;
     storeId?: string;
 }
 
-export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, storeId, penSize = 5 }, ref) => {
+export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, containerClassName, className, storeId, penSize = 5 }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -119,9 +121,9 @@ export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style
 
     return (
         <>
-            <div className="drawing-container" style={style}>
+            <div className={`drawing-container ${containerClassName}`} style={style}>
                 <canvas
-                    className={`drawing-canvas ${erasingClass}`}
+                    className={`drawing-canvas ${erasingClass} ${className}`}
                     ref={canvasRef}
                     onPointerDown={startDrawing}
                     onPointerUp={endDrawing}
