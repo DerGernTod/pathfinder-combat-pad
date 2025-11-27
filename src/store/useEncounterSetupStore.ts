@@ -19,7 +19,6 @@ interface EncounterSetupStore {
     removeAvailableCreature(this: void, id: string): void;
     moveToParticipants(this: void, creatureId: string): void;
     moveToAvailableCreatures(this: void, participantId: string): void;
-    reorderParticipants(this: void, startIndex: number, endIndex: number): void;
     clear(this: void): void;
 }
 
@@ -41,7 +40,7 @@ export const useEncounterSetupStore = create<EncounterSetupStore>((set) => ({
     },
     addAvailableCreature(this: void, creature: Omit<EncounterParticipant, "id">) {
         set(produce((state: EncounterSetupStore) => {
-            state.availableCreatures.push({
+            state.availableCreatures.unshift({
                 ...creature,
                 id: crypto.randomUUID(),
             });
@@ -68,12 +67,6 @@ export const useEncounterSetupStore = create<EncounterSetupStore>((set) => ({
                 state.participants = state.participants.filter(p => p.id !== participantId);
                 state.availableCreatures.push(participant);
             }
-        }));
-    },
-    reorderParticipants(this: void, startIndex: number, endIndex: number) {
-        set(produce((state: EncounterSetupStore) => {
-            const [removed] = state.participants.splice(startIndex, 1);
-            state.participants.splice(endIndex, 0, removed);
         }));
     },
     clear(this: void) {

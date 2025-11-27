@@ -10,11 +10,27 @@ export const scrollOverlay = style({
     justifyContent: "center",
     pointerEvents: "none",
     zIndex: 10,
-    transition: "opacity 0.3s ease",
+    visibility: "visible",
+    transition: "opacity 0.3s ease, visibility 0.3s ease",
+});
+
+export const scrollAttached = style({
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    pointerEvents: "none",
+    zIndex: 10,
+    visibility: "visible",
+    transition: "opacity 0.3s ease, visibility 0.3s ease",
 });
 
 export const hidden = style({
     opacity: 0,
+    visibility: "hidden",
 });
 
 export const scrollOverlayButton = style({
@@ -39,6 +55,15 @@ export const scrollOverlayButtonVariants = styleVariants({
     bottom: {
         borderTop: "var(--btn-border)",
     },
+});
+
+export const scrollOverlayButtonAttached = style({
+    height: "48px",
+    padding: "0 16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "0.8rem",
 });
 
 export const scrollOverlayVariants = styleVariants({

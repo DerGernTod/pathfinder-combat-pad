@@ -13,7 +13,6 @@ export const encounterCreateSlotStyle = style({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "var(--crimson)",
     gap: "1rem",
     padding: "5px",
     fontSize: "1rem",
@@ -49,25 +48,6 @@ export const encounterCanvasStyle = style({
     borderRadius: "var(--label-border-radius) 0 0 var(--label-border-radius)",
 });
 
-/**
- * Styles for a base list item component, providing a flexible layout with hover effects.
- *
- * This style defines a flex container for list items, including padding, borders, background, and a subtle hover transition.
- * The hover effect uses a brightness filter to slightly dim the item on interaction.
- *
- * Other color-related filter options available in CSS include:
- * - `contrast()`: Adjusts the contrast of the element (e.g., `contrast(1.2)` for increased contrast).
- * - `saturate()`: Changes the saturation level (e.g., `saturate(1.5)` for more vivid colors).
- * - `hue-rotate()`: Rotates the hue of colors (e.g., `hue-rotate(90deg)` to shift colors).
- * - `sepia()`: Applies a sepia tone (e.g., `sepia(0.5)` for a partial sepia effect).
- * - `grayscale()`: Converts to grayscale (e.g., `grayscale(1)` for full grayscale).
- * - `invert()`: Inverts colors (e.g., `invert(1)` for complete inversion).
- * - `opacity()`: Adjusts transparency (e.g., `opacity(0.8)` for 80% opacity).
- * - `blur()`: Applies a blur effect (e.g., `blur(2px)` for a 2-pixel blur).
- * - `drop-shadow()`: Adds a drop shadow (e.g., `drop-shadow(2px 2px 4px rgba(0,0,0,0.5))`).
- *
- * These can be combined in the `filter` property for more complex effects.
- */
 const baseListItemStyle = style({
     display: "flex",
     alignItems: "center",
@@ -119,4 +99,25 @@ export const creatureInfoStyle = style({
     marginLeft: "auto",
     fontSize: "0.8em",
     color: "#666",
+});
+
+export const scrollableContent = style({
+    padding: "10px",
+    overflowY: "auto",
+    flexGrow: 1,
+    position: "relative",
+    scrollbarWidth: "none",
+    selectors: {
+        "&::-webkit-scrollbar": {
+            display: "none",
+        },
+    },
+});
+
+export const creatureContainerStyle = style({
+    display: "flex",
+    flexDirection: "column",
+    height: "100%",
+    position: "relative",
+    overflow: "hidden",
 });

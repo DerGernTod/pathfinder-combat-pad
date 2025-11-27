@@ -1,9 +1,9 @@
 import type { ReactElement } from "react";
 import { useRef, useState } from "react";
 import { encounterHeaderStyle, horizontalBarStyle } from "../EncounterStarter.css";
-import { 
-    encounterCreaturesListStyle, 
-    encounterCreateSlotStyle, 
+import {
+    encounterCreaturesListStyle,
+    encounterCreateSlotStyle,
     encounterEntityInstanceStyle,
     encounterCountInputStyle,
     encounterAddButtonStyle,
@@ -11,7 +11,9 @@ import {
     encounterCanvasStyle,
     creatureListItemStyle,
     creatureImageStyle,
-    creatureInfoStyle
+    creatureInfoStyle,
+    scrollableContent,
+    creatureContainerStyle
 } from "./EncounterCreaturesList.css";
 import { useEncounterSetupStore } from "../../../store/useEncounterSetupStore";
 import { EntityKind } from "../../../constants";
@@ -20,8 +22,7 @@ import { Canvas } from "../../Canvas";
 import SlotNumberInput from "../../CharacterMarkers/components/InitSlot/components/SlotMachineInput";
 import CustomSelect from "../../CustomSelect";
 import type { CustomSelectOption } from "../../CustomSelect";
-
-interface EncounterCreaturesListProps {
+import { ScrollContainer } from "../../ScrollContainer";interface EncounterCreaturesListProps {
     className?: string;
 }
 
@@ -45,10 +46,9 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
     const availableCreatures = useEncounterSetupStore(state => state.availableCreatures);
     const participants = useEncounterSetupStore(state => state.participants);
     const existingEntities = useEntityStore(state => state.entities);
-    
+
     // New Entity State
-    const initialEntityKind = 2; // Monster
-    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
+    const [kind, setKind] = useState<EntityKind>(EntityOptions[EntityKind.Monster]);
     const [level, setLevel] = useState(1);
     const [count, setCount] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -56,7 +56,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
     // Filter out entities that are already in participants or availableCreatures (by originalId)
     const participantIds = new Set(participants.map(p => p.originalId).filter(Boolean));
     const availableCreatureIds = new Set(availableCreatures.map(c => c.originalId).filter(Boolean));
-    const availableExistingEntities = existingEntities.filter(entity => 
+    const availableExistingEntities = existingEntities.filter(entity =>
         !participantIds.has(entity.id) && !availableCreatureIds.has(entity.id)
     );
 
@@ -65,7 +65,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
         if (!name) {
             return;
         }
-        
+
         // Add multiple creatures to available creatures based on count
         for (let i = 0; i < count; i++) {
             addAvailableCreature({
@@ -81,10 +81,6 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
             context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         }
         setCount(1);
-    };
-
-    const handleClickCreature = (creatureId: string) => {
-        moveToParticipants(creatureId);
     };
 
     const handleClickExistingEntity = (entity: typeof existingEntities[0]) => {
@@ -114,7 +110,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
         <div className={`${props.className} ${encounterCreaturesListStyle}`}>
             <h3 className={encounterHeaderStyle}>Add Creature</h3>
             <div className={horizontalBarStyle} />
-            
+
             {/* New Entity Form - Encounter-specific flexbox layout */}
             <div className={encounterCreateSlotStyle}>
                 <div className={`entity-instance entity-instance-type-${kind} ${encounterEntityInstanceStyle}`}>
@@ -132,27 +128,27 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
                     <button className={encounterAddButtonInnerStyle} onClick={handleAddNew}>✚</button>
                 </div>
             </div>
+            <div className={horizontalBarStyle} />
 
             {/* Available Creatures and Existing Entities */}
-            <div style={{ padding: "10px", overflowY: "auto", flexGrow: 1 }}>
-                <h4 style={{ margin: "0 0 10px 0", fontSize: "0.9em", color: "#666" }}>Available Creatures</h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div className={creatureContainerStyle}>
+                <ScrollContainer contentClassName={scrollableContent} variant="absolute">
                     {/* Show available creatures from the store */}
                     {availableCreatures.map(creature => (
-                        <button 
-                            key={creature.id} 
-                            onClick={() => handleClickCreature(creature.id)}
+                        <button
+                            key={creature.id}
+                            onClick={() => moveToParticipants(creature.id)}
                             className={creatureListItemStyle[creature.kind]}
                         >
                             <img src={creature.name} alt="name" className={creatureImageStyle} />
                             <span className={creatureInfoStyle}>Lvl {creature.level}</span>
                         </button>
                     ))}
-                    
+
                     {/* Show existing entities that aren't in participants */}
                     {availableExistingEntities.map(entity => (
-                        <button 
-                            key={entity.id} 
+                        <button
+                            key={entity.id}
                             onClick={() => handleClickExistingEntity(entity)}
                             className={creatureListItemStyle[entity.kind]}
                         >
@@ -160,7 +156,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
                             <span className={creatureInfoStyle}>Lvl {entity.level}</span>
                         </button>
                     ))}
-                </div>
+                </ScrollContainer>
             </div>
         </div>
     );
