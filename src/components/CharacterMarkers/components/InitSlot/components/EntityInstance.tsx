@@ -5,6 +5,7 @@ import { KIND_LOOKUP } from "./constants";
 import SlotMachineInput from "./SlotMachineInput";
 import { motion } from "motion/react";
 import { useEntityStore } from "../../../../../store/useEntityStore";
+import { useMagnetStore } from "../../../../../store/useMagnetStore";
 import { useShallow } from "zustand/react/shallow";
 
 interface EntityInstanceProps {
@@ -37,7 +38,15 @@ export const EntityInstance = ({
     }
 
     const entityIds = useEntityStore(useShallow(state => state.entities.map(e => e.id)));
-    const { id, name, kind, status, level, damageTaken } = lastKnownEntity;
+    const { id, name, kind, status, level, damageTaken, color } = lastKnownEntity;
+    
+    // Check if this entity's linked magnet is being dragged
+    const draggedMagnetId = useMagnetStore(state => state.draggedMagnetId);
+    const draggedMagnet = useMagnetStore(state => 
+        state.magnets.find(m => m.id === draggedMagnetId)
+    );
+    const isMagnetBeingDragged = draggedMagnet?.linkedEntityId === id;
+    
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const [draggingClass, setDraggingClass] = useState("");
@@ -65,6 +74,14 @@ export const EntityInstance = ({
     useEffect(() => {
         grabber.current?.classList.toggle("grab-cursor", draggedEntityId === null);
     }, [draggedEntityId]);
+    
+    // Build className with magnet highlight
+    const magnetHighlightClass = isMagnetBeingDragged ? "magnet-being-dragged" : "";
+    const className = `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass}`;
+    
+    // Build inline style with entity color for dynamic border
+    const inlineStyle = color ? { "--entity-color": color } as React.CSSProperties : {};
+    
     return (
         <motion.div
             key={String(id)}
@@ -76,7 +93,8 @@ export const EntityInstance = ({
             initial={{ opacity: 0 }}
             exit={{ left: -250, opacity: 0, transition: { delay: .15 } }}
             layout
-            className={`entity-instance entity-instance-type-${kind} status-${status} ${draggingClass}`}
+            className={className}
+            style={inlineStyle}
         >
             <div className="label-wrapper">
                 <img src={name} />

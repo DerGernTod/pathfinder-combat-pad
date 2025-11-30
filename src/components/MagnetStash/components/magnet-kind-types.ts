@@ -14,6 +14,7 @@ export interface MagnetData<T extends MagnetKind> {
     kind: T;
     isDragging: boolean;
     details: string;
+    linkedEntityId?: number; // Links magnet to an entity
 }
 export interface MagnetKindDescriptor<PROPS> {
     allowRotate: boolean;

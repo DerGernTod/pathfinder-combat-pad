@@ -30,8 +30,13 @@ The goal is to streamline encounter initialization by providing a dedicated inte
 
 The goal is to eliminate the manual mapping between the initiative list and the tokens on the combat grid.
 
-* [ ] Implement a feature to assign a **unique color** to each initiative row (combatant).
-* [ ] Ensure the corresponding **map token (magnet)** automatically adopts the assigned color (e.g., border color or fill color).
+* [/] Implement a feature to assign a **unique color** to each initiative row (combatant).
+    * [/] Generate random HSV colors that avoid clashing with entity type primary colors
+    * [/] Automatically assign colors when encounters start
+    * [/] Handle existing entities without colors
+* [/] Ensure the corresponding **map token (magnet)** automatically adopts the assigned color (e.g., border color or fill color).
+    * [/] Automatically create magnets for all participants when encounter starts
+    * [/] Link magnets to entities via ID and color
 * [ ] Automatically display the combatant's **name/label** as a persistent, small label on or next to the map token.
 * [ ] Implement **Tap-to-Highlight** functionality:
     * [ ] Tapping an initiative row highlights the corresponding map token.

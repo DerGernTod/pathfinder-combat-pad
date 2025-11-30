@@ -5,6 +5,7 @@ export interface Entity {
     level: number;
     status: number;
     damageTaken: number;
+    color?: string; // Hex color for entity-magnet linking
 }
 
 export const enum EntityKind {

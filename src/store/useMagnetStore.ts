@@ -5,8 +5,10 @@ import { produce } from "immer";
 
 interface MagnetStore {
     magnets: MagnetData<MagnetKind>[];
+    draggedMagnetId: number;
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">): void;
-    deleteMagnet(this: void, magnetId: number): void;
+    createMagnetsForEntities(this: void, entities: { id: number; color: string }[]): void;
+    deleteMagnet(this: void, magnetId: number, skipLinkedDeletion?: boolean): void;
     dragMagnet(this: void, magnetId: number): void;
     dropMagnet(this: void, magnetId: number): void;
     rotateMagnet(this: void, magnetId: number): void;
@@ -24,11 +26,56 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             });
         }));
     },
-    deleteMagnet(this: void, magnetId: number) {
+    createMagnetsForEntities(this: void, entities: { id: number; color: string }[]) {
+        set(produce(function updateState(recipe: MagnetStore) {
+            const baseId = findHighestId(recipe) + 1;
+            const gridSize = 60; // Size of each magnet
+            const spacing = 10; // Space between magnets
+            const startX = 100; // Starting X position
+            const startY = 100; // Starting Y position
+            const columns = 5; // Number of columns in the grid
+
+            entities.forEach((entity, index) => {
+                // Check if this entity already has a linked magnet
+                const existingMagnet = recipe.magnets.find(m => m.linkedEntityId === entity.id);
+                if (existingMagnet) {
+                    return; // Skip if magnet already exists
+                }
+
+                const row = Math.floor(index / columns);
+                const col = index % columns;
+                const left = startX + col * (gridSize + spacing);
+                const top = startY + row * (gridSize + spacing);
+
+                recipe.magnets.push({
+                    id: baseId + index,
+                    location: { left, top },
+                    rotation: 0,
+                    kind: 2, // MagnetKind.MonsterToken
+                    isDragging: false,
+                    details: entity.color,
+                    linkedEntityId: entity.id,
+                });
+            });
+        }));
+    },
+    deleteMagnet(this: void, magnetId: number, skipLinkedDeletion = false) {
+        // Get the magnet before deleting to check for linked entity
+        const magnet = useMagnetStore.getState().magnets.find(m => m.id === magnetId);
+
         set(produce(function updateState(recipe: MagnetStore) {
             const index = recipe.magnets.findIndex(magnet => magnet.id === magnetId);
             recipe.magnets.splice(index, 1);
         }));
+
+        // Also delete the linked entity if it exists
+        if (!skipLinkedDeletion && magnet?.linkedEntityId) {
+            // Use dynamic import to avoid circular dependency
+            void import("./useEntityStore").then(({ useEntityStore }) => {
+                const entityStore = useEntityStore.getState();
+                entityStore.removeEntity(magnet.linkedEntityId!, true);
+            });
+        }
     },
     dragMagnet(this: void, magnetId: number) {
         set(produce(function updateState(recipe: MagnetStore) {
@@ -37,6 +84,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
                 throw new Error(`Couldn't find magnet with id ${magnetId} while trying to start drag!`);
             }
             magnet.isDragging = true;
+            recipe.draggedMagnetId = magnetId;
         }));
     },
     draggedMagnetId: -1,
@@ -47,6 +95,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
                 throw new Error("Couldn't find a dragged magnet to stop dragging!");
             }
             magnet.isDragging = false;
+            recipe.draggedMagnetId = -1;
         }));
     },
     magnets: [],

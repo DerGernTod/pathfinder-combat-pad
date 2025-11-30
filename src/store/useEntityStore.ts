@@ -6,7 +6,7 @@ import { produce } from "immer";
 interface EntityStore {
     entities: Entity[];
     addEntity(this: void, entity: Omit<Entity, "id">): void;
-    removeEntity(this: void, id: number): void;
+    removeEntity(this: void, id: number, skipLinkedDeletion?: boolean): void;
     swapEntities(this: void, id1: number, id2: number): void;
 
     draggedEntityId: number | null;
@@ -29,10 +29,22 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
     },
     draggedEntityId: null,
     entities: [],
-    removeEntity(this: void, id: number): void {
+    removeEntity(this: void, id: number, skipLinkedDeletion = false): void {
         set(produce(function updateState(recipe: EntityStore): void {
             recipe.entities = recipe.entities.filter(entity => entity.id !== id);
         }));
+
+        // Also delete the linked magnet if it exists
+        if (!skipLinkedDeletion) {
+            // Use dynamic import to avoid circular dependency
+            void import("./useMagnetStore").then(({ useMagnetStore }) => {
+                const magnetStore = useMagnetStore.getState();
+                const linkedMagnet = magnetStore.magnets.find((m: { linkedEntityId?: number }) => m.linkedEntityId === id);
+                if (linkedMagnet) {
+                    magnetStore.deleteMagnet(linkedMagnet.id, true);
+                }
+            });
+        }
     },
     setDamageTaken(this: void, id: number, damageTaken: number): void {
         set(produce(function updateState(recipe: EntityStore): void {
