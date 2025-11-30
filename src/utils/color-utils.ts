@@ -170,3 +170,57 @@ export function generateUniqueColors(count: number): string[] {
 
     return colors;
 }
+
+/**
+ * Generate a thematic color for a specific entity kind
+ * Varies the hue slightly around the base color for that kind
+ */
+export function generateThematicColor(
+    kind: EntityKind,
+    existingColors: string[],
+    options: {
+        hueRange?: number;
+        minExistingDistance?: number;
+        maxAttempts?: number;
+    } = {}
+): string {
+    const {
+        hueRange = 20, // +/- degrees
+        minExistingDistance = 10,
+        maxAttempts = 50
+    } = options;
+
+    const baseHex = PRIMARY_TYPE_COLORS[kind];
+    const baseHSV = hexToHSV(baseHex);
+    const existingHSVs = existingColors.map(hexToHSV);
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        // Generate random hue variation
+        const hueOffset = (Math.random() * 2 - 1) * hueRange; // -hueRange to +hueRange
+        let h = baseHSV.h + hueOffset;
+
+        // Normalize hue
+        if (h < 0) h += 360;
+        if (h >= 360) h -= 360;
+
+        // Use base color's saturation and value
+        const candidate: HSV = { h, s: baseHSV.s, v: baseHSV.v };
+
+        // Check against existing colors
+        const tooClose = existingHSVs.some(existingHSV => {
+            return hueDistance(candidate.h, existingHSV.h) < minExistingDistance;
+        });
+
+        if (!tooClose) {
+            return hsvToHex(candidate);
+        }
+    }
+
+    // Fallback: just return a random variation if we couldn't find a unique one
+    const hueOffset = (Math.random() * 2 - 1) * hueRange;
+    let h = baseHSV.h + hueOffset;
+    if (h < 0) h += 360;
+    if (h >= 360) h -= 360;
+
+    return hsvToHex({ h, s: baseHSV.s, v: baseHSV.v });
+}

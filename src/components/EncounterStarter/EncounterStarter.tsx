@@ -17,7 +17,7 @@ import type { ReactElement } from "react";
 import { useState } from "react";
 import { useEncounterSetupStore } from "../../store/useEncounterSetupStore.ts";
 import { useEntityStore } from "../../store/useEntityStore.ts";
-import { generateUniqueColor } from "../../utils/color-utils.ts";
+import { generateThematicColor } from "../../utils/color-utils.ts";
 import { useMagnetStore } from "../../store/useMagnetStore.ts";
 
 export function EncounterStarter(): ReactElement {
@@ -49,7 +49,7 @@ export function EncounterStarter(): ReactElement {
 
             if (existingEntity) {
                 // Existing entity - preserve color if it has one, otherwise generate
-                const color = existingEntity.color || generateUniqueColor(existingColors);
+                const color = existingEntity.color || generateThematicColor(existingEntity.kind, existingColors);
                 if (!existingEntity.color) {
                     existingColors.push(color); // Track newly generated color
                 }
@@ -59,7 +59,7 @@ export function EncounterStarter(): ReactElement {
                 };
             } else {
                 // New entity - generate color
-                const color = generateUniqueColor(existingColors);
+                const color = generateThematicColor(participant.kind, existingColors);
                 existingColors.push(color);
                 
                 return {
