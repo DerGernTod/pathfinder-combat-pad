@@ -88,7 +88,7 @@ export function EncounterStarter(): ReactElement {
         
         // Create magnets for all entities (all should have colors at this point)
         const entitiesWithColors = finalEntities.filter((e): e is typeof e & { color: string } => e.color !== undefined);
-        createMagnetsForEntities(entitiesWithColors.map(e => ({ id: e.id, color: e.color })));
+        createMagnetsForEntities(entitiesWithColors.map(e => ({ id: e.id, color: e.color, kind: e.kind })));
         
         setIsOpen(false);
     };

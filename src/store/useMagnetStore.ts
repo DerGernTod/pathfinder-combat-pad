@@ -1,13 +1,15 @@
-import type { MagnetData, MagnetKind } from "../components/MagnetStash/components/magnet-kind-types";
+import type { MagnetData } from "../components/MagnetStash/components/magnet-kind-types";
+import { MagnetKind } from "../components/MagnetStash/components/magnet-kind-types";
 import { create } from "zustand/react";
 import { persist } from "zustand/middleware";
 import { produce } from "immer";
+import { EntityKind } from "../constants";
 
 interface MagnetStore {
     magnets: MagnetData<MagnetKind>[];
     draggedMagnetId: number;
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">): void;
-    createMagnetsForEntities(this: void, entities: { id: number; color: string }[]): void;
+    createMagnetsForEntities(this: void, entities: { id: number; color: string; kind: EntityKind }[]): void;
     deleteMagnet(this: void, magnetId: number, skipLinkedDeletion?: boolean): void;
     dragMagnet(this: void, magnetId: number): void;
     dropMagnet(this: void, magnetId: number): void;
@@ -26,7 +28,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             });
         }));
     },
-    createMagnetsForEntities(this: void, entities: { id: number; color: string }[]) {
+    createMagnetsForEntities(this: void, entities: { id: number; color: string; kind: EntityKind }[]) {
         set(produce(function updateState(recipe: MagnetStore) {
             const baseId = findHighestId(recipe) + 1;
             const gridSize = 60; // Size of each magnet
@@ -51,7 +53,7 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
                     id: baseId + index,
                     location: { left, top },
                     rotation: 0,
-                    kind: 2, // MagnetKind.MonsterToken
+                    kind: entityKindToMagnetKind(entity.kind),
                     isDragging: false,
                     details: entity.color,
                     linkedEntityId: entity.id,
@@ -127,6 +129,23 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
         }));
     }
 }), { name: "magnet-store" }));
+
+function entityKindToMagnetKind(entityKind: EntityKind): MagnetKind {
+    switch (entityKind) {
+        case EntityKind.PlayerCharacter: {
+            return MagnetKind.PlayerToken;
+        }
+        case EntityKind.NonPlayerCharacter: {
+            return MagnetKind.NPCToken;
+        }
+        case EntityKind.Monster: {
+            return MagnetKind.MonsterToken;
+        }
+        case EntityKind.Hazard: {
+            return MagnetKind.HazardToken;
+        }
+    }
+}
 
 function findHighestId(store: MagnetStore): number {
     return store.magnets.reduce((acc, magnet) => Math.max(acc, magnet.id), 0);

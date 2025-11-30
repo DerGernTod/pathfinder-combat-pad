@@ -1,7 +1,10 @@
 export const enum MagnetKind {
     Arrow = 0,
     Condition = 1,
-    MonsterToken = 2
+    MonsterToken = 2,
+    PlayerToken = 3,
+    NPCToken = 4,
+    HazardToken = 5
 }
 
 export interface MagnetData<T extends MagnetKind> {
@@ -27,6 +30,9 @@ export interface MagnetKindDescriptors {
     [MagnetKind.Arrow]: MagnetKindDescriptor<MagnetKindProps>;
     [MagnetKind.Condition]: MagnetKindDescriptor<MagnetKindProps>;
     [MagnetKind.MonsterToken]: MagnetKindDescriptor<MagnetKindProps>;
+    [MagnetKind.PlayerToken]: MagnetKindDescriptor<MagnetKindProps>;
+    [MagnetKind.NPCToken]: MagnetKindDescriptor<MagnetKindProps>;
+    [MagnetKind.HazardToken]: MagnetKindDescriptor<MagnetKindProps>;
 }
 export interface MagnetKindProps {
     className: string;
