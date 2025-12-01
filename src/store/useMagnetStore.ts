@@ -8,6 +8,7 @@ import { EntityKind } from "../constants";
 interface MagnetStore {
     magnets: MagnetData<MagnetKind>[];
     draggedMagnetId: number;
+    highlightedMagnetId: number;
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">): void;
     createMagnetsForEntities(this: void, entities: { id: number; color: string; kind: EntityKind }[]): void;
     deleteMagnet(this: void, magnetId: number, skipLinkedDeletion?: boolean): void;
@@ -16,6 +17,7 @@ interface MagnetStore {
     rotateMagnet(this: void, magnetId: number): void;
     setMagnetLocation(this: void, magnetId: number, location: MagnetData<MagnetKind>["location"]): void;
     setMagnetImage(this: void, magnetId: number, image: string): void;
+    setHighlightedMagnet(this: void, magnetId: number): void;
 }
 
 export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
@@ -126,6 +128,12 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
                 throw new Error(`Couldn't find magnet with id ${magnetId} while trying to update location!`);
             }
             magnet.location = location;
+        }));
+    },
+    highlightedMagnetId: -1,
+    setHighlightedMagnet(this: void, magnetId: number): void {
+        set(produce(function updateState(recipe: MagnetStore) {
+            recipe.highlightedMagnetId = magnetId;
         }));
     }
 }), { name: "magnet-store" }));

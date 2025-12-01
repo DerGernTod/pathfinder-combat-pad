@@ -1,3 +1,4 @@
+import { useShallow } from "zustand/react/shallow";
 // import { useState } from "react";
 // import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
@@ -34,12 +35,12 @@ function App() {
         }
     }, []);
 
-    const { magnets } = useMagnetStore();
+    const magnetIds = useMagnetStore(useShallow(state => state.magnets.map(m => m.id)));
     return (
         <div className="container">
             <AnimatePresence>
                 {
-                    magnets.map(magnet => (<Magnet key={magnet.id} magnet={magnet} />))
+                    magnetIds.map(id => (<Magnet key={id} id={id} />))
                 }
             </AnimatePresence>
             <MagnetStash />

@@ -13,7 +13,7 @@
     font-size: 1rem;
     text-shadow: none;
     box-shadow: 0;
-    transition: box-shadow .4s, translate .2s;
+    transition: box-shadow .4s, translate .2s, background-color .2s;
     z-index: 10;
 }
 .status-1 {
@@ -59,9 +59,15 @@
     translate: -2px -2px;
 }
 
-.entity-instance.magnet-being-dragged {
-    border: 3px solid var(--entity-color, #fff);
-    box-shadow: 0 0 12px var(--entity-color, #fff);
-    outline: 2px solid rgba(255, 255, 255, 0.3);
-    outline-offset: 2px;
+.entity-instance-type-0.magnet-being-dragged {
+    background-color: var(--pc-l) !important;
+}
+.entity-instance-type-1.magnet-being-dragged {
+    background-color: var(--npc-l) !important;
+}
+.entity-instance-type-2.magnet-being-dragged {
+    background-color: var(--mon-l) !important;
+}
+.entity-instance-type-3.magnet-being-dragged {
+    background-color: var(--haz-l) !important;
 }

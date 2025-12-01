@@ -70,6 +70,10 @@
     --pc-d: #5f7a86; /* Darker blue */
     --mon-d: #6b4137; /* Darker brown */
     --haz-d: #8f7a7a; /* Darker pink */
+    --npc-l: #a3c2a8; /* Lighter green */
+    --pc-l: #9fc1cc; /* Lighter blue */
+    --mon-l: #ad756b; /* Lighter brown */
+    --haz-l: #cfbebe; /* Lighter pink */
     --label-border-radius: 12px;
 }
 

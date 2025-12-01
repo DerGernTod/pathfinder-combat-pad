@@ -18,10 +18,9 @@ transparentImage.src =
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement | null => {
-    const { removeEntity, setDraggedEntityId, draggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
+    const { removeEntity, setDraggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
         removeEntity: store.removeEntity,
         setDraggedEntityId: store.setDraggedEntityId,
-        draggedEntityId: store.draggedEntityId,
         setDamageTaken: store.setDamageTaken,
     })));
     const entity = useEntityStore(useShallow(store => store.entities.find(e => e.id === entityId)));
@@ -40,12 +39,11 @@ export const EntityInstance = ({
     const entityIds = useEntityStore(useShallow(state => state.entities.map(e => e.id)));
     const { id, name, kind, status, level, damageTaken, color } = lastKnownEntity;
     
-    // Check if this entity's linked magnet is being dragged
-    const draggedMagnetId = useMagnetStore(state => state.draggedMagnetId);
-    const draggedMagnet = useMagnetStore(state => 
-        state.magnets.find(m => m.id === draggedMagnetId)
+    // Check if this entity's linked magnet is being highlighted (clicked or dragged)
+    const highlightedLinkedEntityId = useMagnetStore(state => 
+        state.magnets.find(m => m.id === state.highlightedMagnetId)?.linkedEntityId
     );
-    const isMagnetBeingDragged = draggedMagnet?.linkedEntityId === id;
+    const isMagnetHighlighted = highlightedLinkedEntityId === id;
     
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
@@ -71,16 +69,16 @@ export const EntityInstance = ({
             );
         }
     };
-    useEffect(() => {
-        grabber.current?.classList.toggle("grab-cursor", draggedEntityId === null);
-    }, [draggedEntityId]);
     
-    // Build className with magnet highlight
-    const magnetHighlightClass = isMagnetBeingDragged ? "magnet-being-dragged" : "";
+    // Build className
+    const magnetHighlightClass = isMagnetHighlighted ? "magnet-being-dragged" : "";
     const className = `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass}`;
     
-    // Build inline style with entity color for dynamic border
-    const inlineStyle = color ? { "--entity-color": color } as React.CSSProperties : {};
+    // Build inline style with entity color
+    const inlineStyle: React.CSSProperties & { "--entity-color"?: string } = {};
+    if (color) {
+        inlineStyle["--entity-color"] = color;
+    }
     
     return (
         <motion.div
@@ -106,9 +104,18 @@ export const EntityInstance = ({
                 </div>
             </div>
             <SlotMachineInput onChange={(damage: number) => setDamageTaken(id, damage)} value={damageTaken} max={150} />
-            <div ref={grabber} className="grabber grab-cursor">⋮</div>
+            <Grabber ref={grabber} />
         </motion.div>
     );
 };
 
 
+function Grabber({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) {
+    const draggedEntityId = useEntityStore(state => state.draggedEntityId);
+    useEffect(() => {
+        ref.current?.classList.toggle("grab-cursor", draggedEntityId === null);
+    }, [draggedEntityId]);
+    return (
+        <div ref={ref} className="grabber grab-cursor">⋮</div>
+    );
+}

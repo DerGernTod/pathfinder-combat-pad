@@ -12,23 +12,30 @@ import { MagnetKinds } from "./MagnetKinds";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
 
-export interface MagnetProps<T extends MagnetKind> {
-    magnet: MagnetData<T>;
+import { useShallow } from "zustand/react/shallow";
+
+export interface MagnetProps {
+    id: number;
 }
 
 const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 const DRAG_MOVE_TOLERANCE = 5;
 
-export function Magnet<T extends MagnetKind>({
-    magnet,
-}: MagnetProps<T>): ReactElement {
+export function Magnet({
+    id,
+}: MagnetProps): ReactElement | null {
+    const magnet = useMagnetStore(useShallow(state => state.magnets.find(m => m.id === id)));
     const magnetRef = useRef<HTMLDivElement>(null);
+    
+    const allowDragging = useAllowDragging(magnet, magnetRef);
+
+    if (!magnet) return null;
+
     let draggingClass = "";
     if (magnet.isDragging) {
         draggingClass = "dragging";
     }
-    const allowDragging = useAllowDragging(magnet, magnetRef);
 
     return (
         <motion.div
@@ -50,7 +57,7 @@ export function Magnet<T extends MagnetKind>({
 }
 
 function useAllowDragging<T extends MagnetKind>(
-    magnet: MagnetData<T>,
+    magnet: MagnetData<T> | undefined,
     magnetRef: React.RefObject<HTMLDivElement | null>
 ) {
     const {
@@ -59,14 +66,18 @@ function useAllowDragging<T extends MagnetKind>(
         dropMagnet,
         deleteMagnet,
         rotateMagnet,
+        setHighlightedMagnet,
     } = useMagnetStore();
 
-    const [startOffset, setStartOffset] = useState<Offset>(MagnetKinds[magnet.kind].offset);
+    // Safe access for initial state, though it will update if magnet becomes defined/undefined
+    const initialOffset = magnet ? MagnetKinds[magnet.kind].offset : { left: 0, top: 0 };
+    const [startOffset, setStartOffset] = useState<Offset>(initialOffset);
     const [pointerDownStart, setPointerDownStart] = useState({ x: 0, y: 0 });
-    const [draggingAllowed, setDraggingAllowed] = useState(magnet.isDragging);
+    const [draggingAllowed, setDraggingAllowed] = useState(magnet?.isDragging ?? false);
 
     const updateLocation = useCallback(
         function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
+            if (!magnet) return;
 
             const totalOffset = {
                 left: moveEvent.clientX - pointerDownStart.x,
@@ -87,8 +98,7 @@ function useAllowDragging<T extends MagnetKind>(
         [
             dragMagnet,
             draggingAllowed,
-            magnet.id,
-            magnet.isDragging,
+            magnet,
             setMagnetLocation,
             startOffset.left,
             startOffset.top,
@@ -99,7 +109,9 @@ function useAllowDragging<T extends MagnetKind>(
 
     const stopDragging = useCallback(
         function stopDraggingCallback(e: globalThis.PointerEvent) {
+            if (!magnet) return;
             const { id, isDragging, kind } = magnet;
+            setHighlightedMagnet(-1);
             globalThis.removeEventListener("pointermove", updateLocation);
             if (!isDragging) {
                 if (isEraserEvent(e)) {
@@ -115,14 +127,15 @@ function useAllowDragging<T extends MagnetKind>(
             }
             setDraggingAllowed(false);
         },
-        [deleteMagnet, dropMagnet, magnet, rotateMagnet, updateLocation]
+        [deleteMagnet, dropMagnet, magnet, rotateMagnet, updateLocation, setHighlightedMagnet]
     );
 
     const allowDragging = useCallback(
         function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {
-            if (!magnetRef.current) {
+            if (!magnetRef.current || !magnet) {
                 return;
             }
+            setHighlightedMagnet(magnet.id);
             const bounds = magnetRef.current.getBoundingClientRect();
             setStartOffset({
                 left: e.clientX - bounds.left,
@@ -131,7 +144,7 @@ function useAllowDragging<T extends MagnetKind>(
             setPointerDownStart({ x: e.clientX, y: e.clientY });
             setDraggingAllowed(true);
         },
-        [magnetRef]
+        [magnetRef, magnet, setHighlightedMagnet]
     );
 
     useEffect(() => {
