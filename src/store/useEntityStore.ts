@@ -15,9 +15,16 @@ interface EntityStore {
     setDamageTaken(this: void, id: number, damageTaken: number): void;
     setEntities(this: void, entities: Entity[]): void;
     setStatus(this: void, id: number, status: number): void;
+
+    highlightedEntityId: number | null;
+    setHighlightedEntityId(this: void, id: number | null): void;
 }
 
 export const useEntityStore = create<EntityStore>()(persist((set) => ({
+    highlightedEntityId: null,
+    setHighlightedEntityId(this: void, id: number | null): void {
+        set({ highlightedEntityId: id });
+    },
     addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
         set(produce(function updateState(recipe: EntityStore): void {
             const newEntityId = findHighestId(recipe) + 1;

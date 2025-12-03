@@ -18,10 +18,11 @@ transparentImage.src =
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement | null => {
-    const { removeEntity, setDraggedEntityId, setDamageTaken } = useEntityStore(useShallow(store => ({
+    const { removeEntity, setDraggedEntityId, setDamageTaken, setHighlightedEntityId } = useEntityStore(useShallow(store => ({
         removeEntity: store.removeEntity,
         setDraggedEntityId: store.setDraggedEntityId,
         setDamageTaken: store.setDamageTaken,
+        setHighlightedEntityId: store.setHighlightedEntityId,
     })));
     const entity = useEntityStore(useShallow(store => store.entities.find(e => e.id === entityId)));
     const [lastKnownEntity, setLastKnownEntity] = useState(entity);
@@ -54,6 +55,7 @@ export const EntityInstance = ({
             removeEntity(id);
         } else if (grabber.current?.contains(e.target as Node)) {
             setDraggedEntityId(id);
+            setHighlightedEntityId(id); // Highlight linked magnet
             setDraggingClass("dragging");
             document.body.classList.add("grabbing");
             grabber.current?.classList.remove("grab-cursor");
@@ -62,8 +64,19 @@ export const EntityInstance = ({
                 () => {
                     setDraggingClass("");
                     setDraggedEntityId(null);
+                    setHighlightedEntityId(null); // Clear highlight
                     document.body.classList.remove("grabbing");
                     grabber.current?.classList.add("grab-cursor");
+                },
+                { once: true }
+            );
+        } else {
+            // Also highlight on simple click/press of the row
+            setHighlightedEntityId(id);
+            globalThis.addEventListener(
+                "pointerup",
+                () => {
+                    setHighlightedEntityId(null);
                 },
                 { once: true }
             );

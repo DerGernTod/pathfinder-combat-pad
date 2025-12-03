@@ -37,7 +37,6 @@ The goal is to eliminate the manual mapping between the initiative list and the 
 * [/] Ensure the corresponding **map token (magnet)** automatically adopts the assigned color (e.g., border color or fill color).
     * [/] Automatically create magnets for all participants when encounter starts
     * [/] Link magnets to entities via ID and color
-* [ ] Automatically display the combatant's **name/label** as a persistent, small label on or next to the map token.
 * [ ] Implement **Tap-to-Highlight** functionality:
     * [ ] Tapping an initiative row highlights the corresponding map token.
     * [ ] Tapping a map token highlights the corresponding initiative row.

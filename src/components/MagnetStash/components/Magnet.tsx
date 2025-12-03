@@ -11,6 +11,7 @@ import {
 import { MagnetKinds } from "./MagnetKinds";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
+import { useEntityStore } from "../../../store/useEntityStore";
 
 import { useShallow } from "zustand/react/shallow";
 
@@ -28,6 +29,11 @@ export function Magnet({
     const magnet = useMagnetStore(useShallow(state => state.magnets.find(m => m.id === id)));
     const magnetRef = useRef<HTMLDivElement>(null);
     
+    // Check if this magnet's linked entity is highlighted
+    const isHighlighted = useEntityStore(useShallow(state => 
+        state.highlightedEntityId !== null && state.highlightedEntityId === magnet?.linkedEntityId
+    ));
+    
     const allowDragging = useAllowDragging(magnet, magnetRef);
 
     if (!magnet) return null;
@@ -35,6 +41,9 @@ export function Magnet({
     let draggingClass = "";
     if (magnet.isDragging) {
         draggingClass = "dragging";
+    }
+    if (isHighlighted) {
+        draggingClass += " highlighted";
     }
 
     return (
