@@ -13,6 +13,7 @@ import {
 import { AnimatePresence } from "motion/react";
 import { InitSlot } from "./components/InitSlot/InitSlot";
 import { MarkerHeading } from "./components/MarkerHeading";
+import { TurnMarker } from "./components/TurnMarker";
 import { useEntityStore } from "../../store/useEntityStore";
 import { useShallow } from "zustand/react/shallow";
 import { ScrollContainer } from "../ScrollContainer";
@@ -36,6 +37,7 @@ export function CharacterMarkers() {
                 </div>
             </MarkerHeading>
             <ScrollContainer contentClassName={initContent}>
+                <TurnMarker />
                 <AnimatePresence>
                     {entityIds.map((id) => (
                         <InitSlot key={id} entityId={id} />

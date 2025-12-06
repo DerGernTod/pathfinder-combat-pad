@@ -1,5 +1,6 @@
 {
     "eslint.useFlatConfig": true,
     "eslint.format.enable": true,
-    "oxc.enable": true
+    "oxc.enable": true,
+    "git.enabled": false
 }

@@ -4,6 +4,9 @@ import { EntityInstance } from "./components/EntityInstance";
 import type { ReactElement } from "react";
 import { StatusSlot } from "./components/StatusSlot";
 import { motion } from "motion/react";
+import { useEntityStore } from "../../../../store/useEntityStore";
+import { useShallow } from "zustand/react/shallow";
+import { useEffect, useRef } from "react";
 
 interface InitSlotProps {
     entityId?: number;
@@ -15,9 +18,22 @@ const animateOptions = { height: "4rem" };
 
 export function InitSlot({ entityId }: InitSlotProps): ReactElement {
     const gapClass = getGapClass(!!entityId);
+    const activeEntityId = useEntityStore(useShallow(state => state.activeEntityId));
+    const isActive = entityId !== undefined && entityId === activeEntityId;
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (isActive && ref.current) {
+            ref.current.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+            });
+        }
+    }, [isActive]);
 
     return (
         <motion.div
+            ref={ref}
             key={entityId}
             className={`init-slot-container ${gapClass}`}
             animate={animateOptions}

@@ -1,0 +1,40 @@
+.turn-marker {
+    position: absolute;
+    left: 0;
+    width: 30px;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: top 0.3s ease-in-out;
+    filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
+    scroll-margin-block: 6rem;
+}
+
+.turn-marker:hover {
+    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5)) brightness(1.1);
+}
+
+.turn-marker::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--crimson);
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.turn-marker::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--parchment);
+    clip-path: polygon(60% 30%, 100% 50%, 60% 70%);
+}

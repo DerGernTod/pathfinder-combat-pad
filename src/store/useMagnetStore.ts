@@ -35,9 +35,37 @@ export const useMagnetStore = create<MagnetStore>()(persist((set) => ({
             const baseId = findHighestId(recipe) + 1;
             const gridSize = 60; // Size of each magnet
             const spacing = 10; // Space between magnets
-            const startX = 100; // Starting X position
-            const startY = 100; // Starting Y position
             const columns = 5; // Number of columns in the grid
+
+            // Calculate center of the main canvas area
+            // Side canvas (75px) + Character markers (500px) = 575px offset
+            const sidebarOffset = 575;
+            const availableWidth = window.innerWidth - sidebarOffset;
+            const availableHeight = window.innerHeight - 100; // Approximate header/footer/padding
+
+            // Calculate grid dimensions
+            const totalMagnets = entities.length;
+            const rows = Math.ceil(totalMagnets / columns);
+            const gridWidth = Math.min(totalMagnets, columns) * (gridSize + spacing) - spacing;
+            const gridHeight = rows * (gridSize + spacing) - spacing;
+
+            const startX = sidebarOffset + Math.max(0, (availableWidth - gridWidth) / 2);
+            const startY = Math.max(100, (availableHeight - gridHeight) / 2);
+
+            // Remove magnets for entities that are no longer present
+            const entityIds = new Set(entities.map(e => e.id));
+            const magnetsToRemove: number[] = [];
+
+            recipe.magnets.forEach((magnet) => {
+                if (magnet.linkedEntityId !== undefined && !entityIds.has(magnet.linkedEntityId)) {
+                    magnetsToRemove.push(magnet.id);
+                }
+            });
+
+            // Remove the identified magnets
+            if (magnetsToRemove.length > 0) {
+                recipe.magnets = recipe.magnets.filter(m => !magnetsToRemove.includes(m.id));
+            }
 
             entities.forEach((entity, index) => {
                 // Check if this entity already has a linked magnet

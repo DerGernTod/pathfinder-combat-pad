@@ -40,6 +40,7 @@ export const initContent = style({
             display: "none",
         },
     },
+    position: "relative",
 });
 
 export const statusHeading = style({

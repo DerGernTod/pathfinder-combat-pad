@@ -9,6 +9,7 @@
     text-align: center;
     color: var(--parchment);
     overflow: visible;
+    scroll-margin-block: 6rem;
 }
 
 .init-slot-container:nth-child(2n) .init-slot {

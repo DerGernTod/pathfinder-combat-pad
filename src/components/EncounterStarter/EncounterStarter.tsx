@@ -90,6 +90,9 @@ export function EncounterStarter(): ReactElement {
         const entitiesWithColors = finalEntities.filter((e): e is typeof e & { color: string } => e.color !== undefined);
         createMagnetsForEntities(entitiesWithColors.map(e => ({ id: e.id, color: e.color, kind: e.kind })));
         
+        // Initialize turn
+        useEntityStore.getState().cycleTurn();
+        
         setIsOpen(false);
     };
 
