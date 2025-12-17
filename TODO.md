@@ -48,6 +48,7 @@ The goal is to eliminate the manual mapping between the initiative list and the 
 The goal is to make applying and tracking conditions easier and less cluttering than tiny draggable "magnets."
 
 * [ ] Replace the "local scratch pad" on the condition indicators with a **standard dropdown/select box** for selecting the status (e.g., *Frightened 1*, *Sickened 2*, *Blinded*).
+* [ ] Not all 
 * [ ] Integrate the selected condition directly into the combatant's initiative row, perhaps as a **small, colored icon** or text snippet.
 * [ ] Add a **duration field** (optimized for pen input) that can be easily set for the selected condition (e.g., "2 rounds," "until end of turn").
 * [ ] Implement an automatic **countdown mechanism** for conditions with a set duration.
