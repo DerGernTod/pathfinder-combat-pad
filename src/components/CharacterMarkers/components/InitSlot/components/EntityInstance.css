@@ -59,6 +59,11 @@
     translate: -2px -2px;
 }
 
+.entity-instance.highlighted {
+    filter: brightness(1.25);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+}
+
 .entity-instance-type-0.magnet-being-dragged {
     background-color: var(--pc-l) !important;
 }

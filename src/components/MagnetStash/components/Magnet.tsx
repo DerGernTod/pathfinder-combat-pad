@@ -1,13 +1,7 @@
 import "./Magnet.css";
 import type { MagnetData, MagnetKind, Offset } from "./magnet-kind-types";
 import type { PointerEvent, ReactElement } from "react";
-import {
-    createElement,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import { createElement, useCallback, useEffect, useRef, useState } from "react";
 import { MagnetKinds } from "./MagnetKinds";
 import { motion } from "motion/react";
 import { useMagnetStore } from "../../../store/useMagnetStore";
@@ -23,18 +17,29 @@ const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 const DRAG_MOVE_TOLERANCE = 5;
 
-export function Magnet({
-    id,
-}: MagnetProps): ReactElement | null {
-    const magnet = useMagnetStore(useShallow(state => state.magnets.find(m => m.id === id)));
+export function Magnet({ id }: MagnetProps): ReactElement | null {
+    const magnet = useMagnetStore(
+        useShallow((state) => state.magnets.find((m) => m.id === id))
+    );
     const magnetRef = useRef<HTMLDivElement>(null);
-    
+
     // Check if this magnet's linked entity is highlighted
-    const isHighlighted = useEntityStore(useShallow(state => 
-        state.highlightedEntityId !== null && state.highlightedEntityId === magnet?.linkedEntityId
-    ));
-    
+    const isHighlighted = useEntityStore(
+        useShallow(
+            (state) =>
+                state.highlightedEntityId !== null &&
+                state.highlightedEntityId === magnet?.linkedEntityId
+        )
+    );
+
     const allowDragging = useAllowDragging(magnet, magnetRef);
+
+    const setHighlightedMagnet = useMagnetStore(
+        (state) => state.setHighlightedMagnet
+    );
+    const setHighlightedEntityId = useEntityStore(
+        (state) => state.setHighlightedEntityId
+    );
 
     if (!magnet) return null;
 
@@ -51,6 +56,14 @@ export function Magnet({
             ref={magnetRef}
             className="magnet"
             style={magnet.location}
+            onPointerEnter={() => {
+                setHighlightedMagnet(magnet.id);
+                setHighlightedEntityId(magnet.linkedEntityId ?? null);
+            }}
+            onPointerLeave={() => {
+                setHighlightedMagnet(-1);
+                setHighlightedEntityId(null);
+            }}
             onPointerDown={allowDragging}
             animate={{ rotate: magnet.rotation, scale: 1 }}
             initial={INITIAL_MAGNET_STYLE}
@@ -79,10 +92,14 @@ function useAllowDragging<T extends MagnetKind>(
     } = useMagnetStore();
 
     // Safe access for initial state, though it will update if magnet becomes defined/undefined
-    const initialOffset = magnet ? MagnetKinds[magnet.kind].offset : { left: 0, top: 0 };
+    const initialOffset = magnet
+        ? MagnetKinds[magnet.kind].offset
+        : { left: 0, top: 0 };
     const [startOffset, setStartOffset] = useState<Offset>(initialOffset);
     const [pointerDownStart, setPointerDownStart] = useState({ x: 0, y: 0 });
-    const [draggingAllowed, setDraggingAllowed] = useState(magnet?.isDragging ?? false);
+    const [draggingAllowed, setDraggingAllowed] = useState(
+        magnet?.isDragging ?? false
+    );
 
     const updateLocation = useCallback(
         function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
@@ -92,8 +109,13 @@ function useAllowDragging<T extends MagnetKind>(
                 left: moveEvent.clientX - pointerDownStart.x,
                 top: moveEvent.clientY - pointerDownStart.y,
             };
-            const movementTotal = Math.abs(totalOffset.left) + Math.abs(totalOffset.top);
-            if (!magnet.isDragging && draggingAllowed && movementTotal > DRAG_MOVE_TOLERANCE) {
+            const movementTotal =
+                Math.abs(totalOffset.left) + Math.abs(totalOffset.top);
+            if (
+                !magnet.isDragging &&
+                draggingAllowed &&
+                movementTotal > DRAG_MOVE_TOLERANCE
+            ) {
                 dragMagnet(magnet.id);
             }
             if (!magnet.isDragging) {
@@ -136,7 +158,14 @@ function useAllowDragging<T extends MagnetKind>(
             }
             setDraggingAllowed(false);
         },
-        [deleteMagnet, dropMagnet, magnet, rotateMagnet, updateLocation, setHighlightedMagnet]
+        [
+            deleteMagnet,
+            dropMagnet,
+            magnet,
+            rotateMagnet,
+            updateLocation,
+            setHighlightedMagnet,
+        ]
     );
 
     const allowDragging = useCallback(
@@ -175,6 +204,3 @@ function useAllowDragging<T extends MagnetKind>(
 function isEraserEvent(e: globalThis.PointerEvent) {
     return e.shiftKey || (e.pointerType === "pen" && e.button === 5);
 }
-
-
-

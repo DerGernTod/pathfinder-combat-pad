@@ -19,6 +19,9 @@ This repository is built using TypeScript, with React components and the Tauri f
 - **ESLint**: For linting JavaScript and TypeScript code to enforce coding standards.
 - **TypeScript**: For static type checking to catch errors early in development.
 
+## Version Control
+- Primary VCS: this repository uses jujutsu (`jj`) as the main version control tool. When referring to VCS operations (commit, push, merge, branch, etc.), prefer `jj` command examples and workflows. See `.opencode/skills/jujutsu-vcs/jujutsu-cli.md` and `.opencode/skills/jujutsu-vcs/skill.md` for quick references and skill triggers.
+
 ## Configuration Files
 - `.editorconfig`: Ensures consistent editor configurations.
   - Specifies settings for line endings, indentation, and other editor-specific options.

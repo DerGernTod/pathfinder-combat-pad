@@ -1,6 +1,6 @@
 import "./EntityInstance.css";
 import type { PointerEventHandler, ReactElement } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import { KIND_LOOKUP } from "./constants";
 import SlotMachineInput from "./SlotMachineInput";
 import { motion } from "motion/react";
@@ -18,13 +18,22 @@ transparentImage.src =
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement | null => {
-    const { removeEntity, setDraggedEntityId, setDamageTaken, setHighlightedEntityId } = useEntityStore(useShallow(store => ({
-        removeEntity: store.removeEntity,
-        setDraggedEntityId: store.setDraggedEntityId,
-        setDamageTaken: store.setDamageTaken,
-        setHighlightedEntityId: store.setHighlightedEntityId,
-    })));
-    const entity = useEntityStore(useShallow(store => store.entities.find(e => e.id === entityId)));
+    const {
+        removeEntity,
+        setDraggedEntityId,
+        setDamageTaken,
+        setHighlightedEntityId,
+    } = useEntityStore(
+        useShallow((store) => ({
+            removeEntity: store.removeEntity,
+            setDraggedEntityId: store.setDraggedEntityId,
+            setDamageTaken: store.setDamageTaken,
+            setHighlightedEntityId: store.setHighlightedEntityId,
+        })),
+    );
+    const entity = useEntityStore(
+        useShallow((store) => store.entities.find((e) => e.id === entityId)),
+    );
     const [lastKnownEntity, setLastKnownEntity] = useState(entity);
 
     useEffect(() => {
@@ -37,19 +46,30 @@ export const EntityInstance = ({
         return null;
     }
 
-    const entityIds = useEntityStore(useShallow(state => state.entities.map(e => e.id)));
-    const { id, name, kind, status, level, damageTaken, color } = lastKnownEntity;
-    
+    const entityIds = useEntityStore(
+        useShallow((state) => state.entities.map((e) => e.id)),
+    );
+    const { id, name, kind, status, level, damageTaken, color } =
+        lastKnownEntity;
+
     // Check if this entity's linked magnet is being highlighted (clicked or dragged)
-    const highlightedLinkedEntityId = useMagnetStore(state => 
-        state.magnets.find(m => m.id === state.highlightedMagnetId)?.linkedEntityId
+    const highlightedLinkedEntityId = useMagnetStore(
+        (state) =>
+            state.magnets.find((m) => m.id === state.highlightedMagnetId)
+                ?.linkedEntityId,
     );
     const isMagnetHighlighted = highlightedLinkedEntityId === id;
-    
+    const highlightedEntityId = useEntityStore(
+        useShallow((state) => state.highlightedEntityId),
+    );
+    const isHighlighted = highlightedEntityId === id || isMagnetHighlighted;
+
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const [draggingClass, setDraggingClass] = useState("");
-    const handlePointerDown = (e: Parameters<PointerEventHandler<HTMLDivElement>>[0]) => {
+    const handlePointerDown = (
+        e: Parameters<PointerEventHandler<HTMLDivElement>>[0],
+    ) => {
         const isPenErase = e.pointerType === "pen" && e.button === 5;
         if (e.shiftKey || isPenErase) {
             removeEntity(id);
@@ -68,7 +88,7 @@ export const EntityInstance = ({
                     document.body.classList.remove("grabbing");
                     grabber.current?.classList.add("grab-cursor");
                 },
-                { once: true }
+                { once: true },
             );
         } else {
             // Also highlight on simple click/press of the row
@@ -78,21 +98,24 @@ export const EntityInstance = ({
                 () => {
                     setHighlightedEntityId(null);
                 },
-                { once: true }
+                { once: true },
             );
         }
     };
-    
+
     // Build className
-    const magnetHighlightClass = isMagnetHighlighted ? "magnet-being-dragged" : "";
-    const className = `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass}`;
-    
+    const magnetHighlightClass = isMagnetHighlighted
+        ? "magnet-being-dragged"
+        : "";
+    const highlightedClass = isHighlighted ? "highlighted" : "";
+    const className = `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass} ${highlightedClass}`;
+
     // Build inline style with entity color
     const inlineStyle: React.CSSProperties & { "--entity-color"?: string } = {};
     if (color) {
         inlineStyle["--entity-color"] = color;
     }
-    
+
     return (
         <motion.div
             key={String(id)}
@@ -100,9 +123,11 @@ export const EntityInstance = ({
             layoutDependency={entityIds}
             layoutId={String(lastKnownEntity.id)}
             onPointerDown={handlePointerDown}
-            animate={{ opacity: 1, transition: { delay: .15 } }}
+            onPointerEnter={() => setHighlightedEntityId(id)}
+            onPointerLeave={() => setHighlightedEntityId(null)}
+            animate={{ opacity: 1, transition: { delay: 0.15 } }}
             initial={{ opacity: 0 }}
-            exit={{ left: -250, opacity: 0, transition: { delay: .15 } }}
+            exit={{ left: -250, opacity: 0, transition: { delay: 0.15 } }}
             layout
             className={className}
             style={inlineStyle}
@@ -116,19 +141,33 @@ export const EntityInstance = ({
                     {level}
                 </div>
             </div>
-            <SlotMachineInput onChange={(damage: number) => setDamageTaken(id, damage)} value={damageTaken} max={150} />
+            <SlotMachineInput
+                onChange={(damage: number) => setDamageTaken(id, damage)}
+                value={damageTaken}
+                max={150}
+            />
             <Grabber ref={grabber} />
         </motion.div>
     );
 };
 
+const Grabber = forwardRef<HTMLDivElement, unknown>((_, ref) => {
+    const draggedEntityId = useEntityStore((state) => state.draggedEntityId);
 
-function Grabber({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) {
-    const draggedEntityId = useEntityStore(state => state.draggedEntityId);
     useEffect(() => {
-        ref.current?.classList.toggle("grab-cursor", draggedEntityId === null);
-    }, [draggedEntityId]);
+        // `ref` can be a callback or object ref; normalize to access `.current` safely
+        const el = (ref as React.RefObject<HTMLDivElement | null>)?.current;
+        el?.classList.toggle("grab-cursor", draggedEntityId === null);
+    }, [draggedEntityId, ref]);
+
     return (
-        <div ref={ref} className="grabber grab-cursor">⋮</div>
+        <div
+            ref={ref as React.Ref<HTMLDivElement>}
+            className="grabber grab-cursor"
+        >
+            ⋮
+        </div>
     );
-}
+});
+
+Grabber.displayName = "Grabber";

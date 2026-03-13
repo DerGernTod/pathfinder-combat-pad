@@ -181,46 +181,57 @@ export function generateThematicColor(
     options: {
         hueRange?: number;
         minExistingDistance?: number;
+        /**
+         * Minimum hue distance from primary type colors.
+         * Separate from minExistingDistance which is the distance between generated colors.
+         */
+        minTypeDistance?: number;
         maxAttempts?: number;
     } = {}
 ): string {
     const {
-        hueRange = 20, // +/- degrees
-        minExistingDistance = 10,
-        maxAttempts = 50
+        // Make same-type colors more distinct: widen hue range and increase min distance
+        hueRange = 80, // +/- degrees
+        minExistingDistance = 40,
+        minTypeDistance,
+        maxAttempts = 120
     } = options;
+
+    // Backwards-compatible: if caller provided only minExistingDistance previously,
+    // treat minTypeDistance as the same value unless explicitly provided.
+    const resolvedMinTypeDistance = minTypeDistance ?? minExistingDistance;
 
     const baseHex = PRIMARY_TYPE_COLORS[kind];
     const baseHSV = hexToHSV(baseHex);
     const existingHSVs = existingColors.map(hexToHSV);
 
+    // Determine a sensible separation based on how many existing colors there are
+    const existingCount = Math.max(0, existingHSVs.length);
+    const slots = Math.max(3, existingCount + 1);
+    const separation = 360 / slots;
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        // Generate random hue variation
-        const hueOffset = (Math.random() * 2 - 1) * hueRange; // -hueRange to +hueRange
-        let h = baseHSV.h + hueOffset;
+        // Try evenly distributed slots around the base hue with a bit of jitter
+        const slot = attempt % slots;
+        const slotCenter = baseHSV.h + (slot - Math.floor(slots / 2)) * separation;
+        const jitter = (Math.random() * 2 - 1) * Math.min(hueRange / 2, separation / 4);
+        let h = slotCenter + jitter;
 
-        // Normalize hue
-        if (h < 0) h += 360;
-        if (h >= 360) h -= 360;
+        // Normalize
+        h = ((h % 360) + 360) % 360;
 
-        // Use base color's saturation and value
-        const candidate: HSV = { h, s: baseHSV.s, v: baseHSV.v };
+        const candidate: HSV = { h, s: Math.max(baseHSV.s, 60), v: Math.max(baseHSV.v, 60) };
 
-        // Check against existing colors
-        const tooClose = existingHSVs.some(existingHSV => {
-            return hueDistance(candidate.h, existingHSV.h) < minExistingDistance;
-        });
-
-        if (!tooClose) {
-            return hsvToHex(candidate);
+        // If candidate is not too close to the primary type colors, check existing colors
+        if (!isTooCloseToTypeColors(candidate, resolvedMinTypeDistance)) {
+            const tooClose = existingHSVs.some(existingHSV => hueDistance(candidate.h, existingHSV.h) < minExistingDistance);
+            if (!tooClose) {
+                return hsvToHex(candidate);
+            }
         }
     }
 
-    // Fallback: just return a random variation if we couldn't find a unique one
-    const hueOffset = (Math.random() * 2 - 1) * hueRange;
-    let h = baseHSV.h + hueOffset;
-    if (h < 0) h += 360;
-    if (h >= 360) h -= 360;
-
-    return hsvToHex({ h, s: baseHSV.s, v: baseHSV.v });
+    // Fallback: choose a hue offset farther from base
+    const fallbackHue = ((baseHSV.h + hueRange * 1.5 + Math.random() * 360) % 360 + 360) % 360;
+    return hsvToHex({ h: fallbackHue, s: Math.max(baseHSV.s, 60), v: Math.max(baseHSV.v, 60) });
 }

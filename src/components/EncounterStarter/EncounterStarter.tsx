@@ -9,7 +9,7 @@ import {
     modalContainer,
     startEncounterButtonSectionStyle,
     startEncounterButtonStyle,
-    verticalBarStyle
+    verticalBarStyle,
 } from "./EncounterStarter.css.ts";
 import { EncounterParticipantsList } from "./components/EncounterParticipantsList.tsx";
 import { EncounterCreaturesList } from "./components/EncounterCreaturesList.tsx";
@@ -19,15 +19,18 @@ import { useEncounterSetupStore } from "../../store/useEncounterSetupStore.ts";
 import { useEntityStore } from "../../store/useEntityStore.ts";
 import { generateThematicColor } from "../../utils/color-utils.ts";
 import { useMagnetStore } from "../../store/useMagnetStore.ts";
+import { initializeActiveEntity } from "./initializeActiveEntity";
 
 export function EncounterStarter(): ReactElement {
     const [isOpen, setIsOpen] = useState(false);
     const variant = isOpen ? "active" : "default";
-    const participants = useEncounterSetupStore(state => state.participants);
-    const clearParticipants = useEncounterSetupStore(state => state.clear);
-    const entities = useEntityStore(state => state.entities);
-    const setEntities = useEntityStore(state => state.setEntities);
-    const createMagnetsForEntities = useMagnetStore(state => state.createMagnetsForEntities);
+    const participants = useEncounterSetupStore((state) => state.participants);
+    const clearParticipants = useEncounterSetupStore((state) => state.clear);
+    const entities = useEntityStore((state) => state.entities);
+    const setEntities = useEntityStore((state) => state.setEntities);
+    const createMagnetsForEntities = useMagnetStore(
+        (state) => state.createMagnetsForEntities
+    );
 
     const handleOpen = () => {
         if (!isOpen) {
@@ -39,17 +42,19 @@ export function EncounterStarter(): ReactElement {
     const handleStartEncounter = () => {
         // Collect existing colors to avoid duplicates
         const existingColors = entities
-            .map(e => e.color)
+            .map((e) => e.color)
             .filter((color): color is string => color !== undefined);
 
         const newEntities = participants.map((participant) => {
-            const existingEntity = participant.originalId 
-                ? entities.find(e => e.id === participant.originalId) 
+            const existingEntity = participant.originalId
+                ? entities.find((e) => e.id === participant.originalId)
                 : undefined;
 
             if (existingEntity) {
                 // Existing entity - preserve color if it has one, otherwise generate
-                const color = existingEntity.color || generateThematicColor(existingEntity.kind, existingColors);
+                const color =
+                    existingEntity.color ||
+                    generateThematicColor(existingEntity.kind, existingColors);
                 if (!existingEntity.color) {
                     existingColors.push(color); // Track newly generated color
                 }
@@ -59,9 +64,12 @@ export function EncounterStarter(): ReactElement {
                 };
             } else {
                 // New entity - generate color
-                const color = generateThematicColor(participant.kind, existingColors);
+                const color = generateThematicColor(
+                    participant.kind,
+                    existingColors
+                );
                 existingColors.push(color);
-                
+
                 return {
                     id: 0, // Placeholder, will fix below
                     name: participant.name,
@@ -77,7 +85,7 @@ export function EncounterStarter(): ReactElement {
         // Fix IDs
         const maxId = newEntities.reduce((max, e) => Math.max(max, e.id), 0);
         let nextId = maxId + 1;
-        const finalEntities = newEntities.map(e => {
+        const finalEntities = newEntities.map((e) => {
             if (e.id === 0) {
                 return { ...e, id: nextId++ };
             }
@@ -85,38 +93,57 @@ export function EncounterStarter(): ReactElement {
         });
 
         setEntities(finalEntities);
-        
+
         // Create magnets for all entities (all should have colors at this point)
-        const entitiesWithColors = finalEntities.filter((e): e is typeof e & { color: string } => e.color !== undefined);
-        createMagnetsForEntities(entitiesWithColors.map(e => ({ id: e.id, color: e.color, kind: e.kind })));
-        
-        // Initialize turn
-        useEntityStore.getState().cycleTurn();
-        
+        const entitiesWithColors = finalEntities.filter(
+            (e): e is typeof e & { color: string } => e.color !== undefined
+        );
+        createMagnetsForEntities(
+            entitiesWithColors.map((e) => ({
+                id: e.id,
+                color: e.color,
+                kind: e.kind,
+            }))
+        );
+
+        // Initialize turn: if there is no active entity, set to the first entity.
+        // Preserve existing active entity if already set.
+        initializeActiveEntity(finalEntities);
+
         setIsOpen(false);
     };
 
     return (
         <div className={modalContainer[variant]}>
-            <div id="encounter-header" className={encounterButton[variant]} onClick={handleOpen}>
+            <div
+                id="encounter-header"
+                className={encounterButton[variant]}
+                onClick={handleOpen}
+            >
                 <span className={buttonText[variant]}>Start Encounter</span>
                 <h2 className={headerText[variant]}>Create New Encounter</h2>
             </div>
 
             <div className={modalBody[variant]}>
                 <div className={encounterSelectionBody}>
-                    <EncounterCreaturesList className={encounterSelectionBodyChild} />
-                    <div className={`${bodySeparator} ${encounterSelectionBodyChild}`}>
+                    <EncounterCreaturesList
+                        className={encounterSelectionBodyChild}
+                    />
+                    <div
+                        className={`${bodySeparator} ${encounterSelectionBodyChild}`}
+                    >
                         <h3>&nbsp;</h3>
                         <div className={verticalBarStyle} />
                         <div>&gt;</div>
                         <div>&lt;</div>
                         <div className={verticalBarStyle} />
                     </div>
-                    <EncounterParticipantsList className={encounterSelectionBodyChild} />
+                    <EncounterParticipantsList
+                        className={encounterSelectionBodyChild}
+                    />
                 </div>
                 <div className={startEncounterButtonSectionStyle}>
-                    <button 
+                    <button
                         className={startEncounterButtonStyle[variant]}
                         onClick={handleStartEncounter}
                         disabled={participants.length === 0}
@@ -127,5 +154,4 @@ export function EncounterStarter(): ReactElement {
             </div>
         </div>
     );
-
 }
