@@ -19,7 +19,7 @@ const DRAG_MOVE_TOLERANCE = 5;
 
 export function Magnet({ id }: MagnetProps): ReactElement | null {
     const magnet = useMagnetStore(
-        useShallow((state) => state.magnets.find((m) => m.id === id))
+        useShallow((state) => state.magnets.find((m) => m.id === id)),
     );
     const magnetRef = useRef<HTMLDivElement>(null);
 
@@ -28,20 +28,22 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
         useShallow(
             (state) =>
                 state.highlightedEntityId !== null &&
-                state.highlightedEntityId === magnet?.linkedEntityId
-        )
+                state.highlightedEntityId === magnet?.linkedEntityId,
+        ),
     );
 
     const allowDragging = useAllowDragging(magnet, magnetRef);
 
     const setHighlightedMagnet = useMagnetStore(
-        (state) => state.setHighlightedMagnet
+        (state) => state.setHighlightedMagnet,
     );
     const setHighlightedEntityId = useEntityStore(
-        (state) => state.setHighlightedEntityId
+        (state) => state.setHighlightedEntityId,
     );
 
-    if (!magnet) return null;
+    if (!magnet) {
+        return null;
+    }
 
     let draggingClass = "";
     if (magnet.isDragging) {
@@ -61,7 +63,7 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
                 setHighlightedEntityId(magnet.linkedEntityId ?? null);
             }}
             onPointerLeave={() => {
-                setHighlightedMagnet(-1);
+                setHighlightedMagnet(null);
                 setHighlightedEntityId(null);
             }}
             onPointerDown={allowDragging}
@@ -80,7 +82,7 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
 
 function useAllowDragging<T extends MagnetKind>(
     magnet: MagnetData<T> | undefined,
-    magnetRef: React.RefObject<HTMLDivElement | null>
+    magnetRef: React.RefObject<HTMLDivElement | null>,
 ) {
     const {
         setMagnetLocation,
@@ -98,12 +100,14 @@ function useAllowDragging<T extends MagnetKind>(
     const [startOffset, setStartOffset] = useState<Offset>(initialOffset);
     const [pointerDownStart, setPointerDownStart] = useState({ x: 0, y: 0 });
     const [draggingAllowed, setDraggingAllowed] = useState(
-        magnet?.isDragging ?? false
+        magnet?.isDragging ?? false,
     );
 
     const updateLocation = useCallback(
         function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
-            if (!magnet) return;
+            if (!magnet) {
+                return;
+            }
 
             const totalOffset = {
                 left: moveEvent.clientX - pointerDownStart.x,
@@ -135,14 +139,16 @@ function useAllowDragging<T extends MagnetKind>(
             startOffset.top,
             pointerDownStart.x,
             pointerDownStart.y,
-        ]
+        ],
     );
 
     const stopDragging = useCallback(
         function stopDraggingCallback(e: globalThis.PointerEvent) {
-            if (!magnet) return;
+            if (!magnet) {
+                return;
+            }
             const { id, isDragging, kind } = magnet;
-            setHighlightedMagnet(-1);
+            setHighlightedMagnet(null);
             globalThis.removeEventListener("pointermove", updateLocation);
             if (!isDragging) {
                 if (isEraserEvent(e)) {
@@ -165,7 +171,7 @@ function useAllowDragging<T extends MagnetKind>(
             rotateMagnet,
             updateLocation,
             setHighlightedMagnet,
-        ]
+        ],
     );
 
     const allowDragging = useCallback(
@@ -182,7 +188,7 @@ function useAllowDragging<T extends MagnetKind>(
             setPointerDownStart({ x: e.clientX, y: e.clientY });
             setDraggingAllowed(true);
         },
-        [magnetRef, magnet, setHighlightedMagnet]
+        [magnetRef, magnet, setHighlightedMagnet],
     );
 
     useEffect(() => {
