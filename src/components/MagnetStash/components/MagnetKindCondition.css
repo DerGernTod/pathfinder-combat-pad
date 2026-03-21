@@ -53,7 +53,7 @@
     padding: 3px 4px 4px;
     border-left: 1px dotted lightgray;
     cursor: default;
-    transition: .2s;
+    transition: 0.2s;
 }
 .condition-marker .condition-edit:hover {
     background-color: var(--crimson-light);

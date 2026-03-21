@@ -1,3 +1,4 @@
+// oxlint-disable react/jsx-max-depth
 import {
     characterMarkers,
     characterMarkerHeaderBg,
@@ -19,7 +20,9 @@ import { useShallow } from "zustand/react/shallow";
 import { ScrollContainer } from "../ScrollContainer";
 
 export function CharacterMarkers() {
-    const entityIds = useEntityStore(useShallow(state => state.entities.map(entity => entity.id)));
+    const entityIds = useEntityStore(
+        useShallow((state) => state.entities.map((entity) => entity.id)),
+    );
 
     return (
         <div className={characterMarkers}>

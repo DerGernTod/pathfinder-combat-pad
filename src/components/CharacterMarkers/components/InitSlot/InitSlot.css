@@ -17,7 +17,7 @@
 }
 
 .init-slot {
-    transition: background-color .25s .25s;
+    transition: background-color 0.25s 0.25s;
     background-color: var(--crimson);
     height: 100%;
 }

@@ -1,3 +1,4 @@
+// oxlint-disable react/jsx-max-depth
 import "./CreateSlot.css";
 import { useRef, useState } from "react";
 import { Canvas } from "../../../../Canvas";
@@ -25,10 +26,8 @@ const EntityOptions = [
 
 export function CreateSlot(): ReactElement {
     const initialEntityKind = 0;
-    const { addEntity } = useEntityStore(useShallow(state => ({ addEntity: state.addEntity })));
-    const [kind, setKind] = useState<EntityKind>(
-        EntityOptions[initialEntityKind]
-    );
+    const { addEntity } = useEntityStore(useShallow((state) => ({ addEntity: state.addEntity })));
+    const [kind, setKind] = useState<EntityKind>(EntityOptions[initialEntityKind]);
     const [level, setLevel] = useState(1);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const createEntity = () => {
@@ -41,16 +40,11 @@ export function CreateSlot(): ReactElement {
         });
         canvasRef.current
             ?.getContext("2d")
-            ?.clearRect(
-                0,
-                0,
-                canvasRef.current.width,
-                canvasRef.current.height
-            );
+            ?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     };
     const selectOptions = EntityOptions.map(toCustomSelectOption) as [
         CustomSelectOption,
-        ...CustomSelectOption[]
+        ...CustomSelectOption[],
     ];
 
     return (
@@ -59,10 +53,7 @@ export function CreateSlot(): ReactElement {
                 <div className={`entity-instance entity-instance-type-${kind}`}>
                     <Canvas style={canvasStyle} ref={canvasRef} penSize={2} />
                     <SlotNumberInput onChange={setLevel} max={20} value={level} />
-                    <CustomSelect
-                        options={selectOptions}
-                        selectedIndex={initialEntityKind}
-                    />
+                    <CustomSelect options={selectOptions} selectedIndex={initialEntityKind} />
                 </div>
             </div>
             <div className="button">

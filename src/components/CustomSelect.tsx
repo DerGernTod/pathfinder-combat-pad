@@ -20,9 +20,7 @@ export function CustomSelect({
     className,
     selectedIndex,
 }: CustomSelectProps): ReactElement {
-    const [selectedOption, setSelectedOption] = useState(
-        options[selectedIndex]
-    );
+    const [selectedOption, setSelectedOption] = useState(options[selectedIndex]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const handleSelect = (option: CustomSelectOption) => {
         setSelectedOption(option);
@@ -37,10 +35,7 @@ export function CustomSelect({
 
     return (
         <div className={`custom-select ${className ?? ""}`}>
-            <div
-                className="selected-option"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
+            <div className="selected-option" onClick={() => setDropdownOpen(!dropdownOpen)}>
                 {selectedOption.element}
             </div>
             <div className={`options ${dropdownOpenClass}`}>

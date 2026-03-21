@@ -5,7 +5,7 @@ import {
     useImperativeHandle,
     useLayoutEffect,
     useRef,
-    useState
+    useState,
 } from "react";
 import type { CSSProperties } from "react";
 import type { CanvasStore } from "../store/useCanvasStore";
@@ -20,127 +20,137 @@ interface CanvasProps {
     storeId?: string;
 }
 
-export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(({ style, containerClassName, className, storeId, penSize = 5 }, ref) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
-    const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-    const [drawing, setDrawing] = useState(false);
-    const [isErasing, setIsErasing] = useState(false);
-    const { updateCanvas } = useCanvasStore(useShallow(function extractSpecificCanvas(state: CanvasStore) {
-        return extractCanvasDataFromState(storeId, state);
-    }));
+export const Canvas = forwardRef<HTMLCanvasElement | null, CanvasProps>(
+    ({ style, containerClassName, className, storeId, penSize = 5 }, ref) => {
+        const canvasRef = useRef<HTMLCanvasElement>(null);
+        const canvasHiddenRef = useRef<HTMLCanvasElement>(null);
+        const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+        const [drawing, setDrawing] = useState(false);
+        const [isErasing, setIsErasing] = useState(false);
+        const { updateCanvas } = useCanvasStore(
+            useShallow(function extractSpecificCanvas(state: CanvasStore) {
+                return extractCanvasDataFromState(storeId, state);
+            }),
+        );
 
-    useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(ref, () => canvasRef.current);
+        useImperativeHandle<HTMLCanvasElement | null, HTMLCanvasElement | null>(
+            ref,
+            () => canvasRef.current,
+        );
 
-    const resizeCurrentCanvas = () => {
-        if (!canvasRef.current || !canvasHiddenRef.current) {
-            return;
-        }
-        resizeCanvas(canvasRef.current, canvasHiddenRef.current);
-    };
-
-    useEffect(() => {
-        configureCanvas(canvasRef, contextRef, storeId);
-    }, [storeId]);
-
-    useLayoutEffect(() => {
-        resizeCurrentCanvas();
-        globalThis.addEventListener("keydown", setErasing);
-        globalThis.addEventListener("keyup", resetErasing);
-        globalThis.addEventListener("resize", resizeCurrentCanvas);
-        return () => {
-            globalThis.removeEventListener("keydown", setErasing);
-            globalThis.removeEventListener("keyup", resetErasing);
-            globalThis.removeEventListener("resize", resizeCurrentCanvas);
+        const resizeCurrentCanvas = () => {
+            if (!canvasRef.current || !canvasHiddenRef.current) {
+                return;
+            }
+            resizeCanvas(canvasRef.current, canvasHiddenRef.current);
         };
 
-        function setErasing(e: globalThis.KeyboardEvent) {
-            if (e.key === "Shift") {
-                setIsErasing(true);
-            }
-        }
+        useEffect(() => {
+            configureCanvas(canvasRef, contextRef, storeId);
+        }, [storeId]);
 
-        function resetErasing(e: globalThis.KeyboardEvent) {
-            if (e.key === "Shift") {
-                setIsErasing(false);
-            }
-        }
-    }, []);
+        useLayoutEffect(() => {
+            resizeCurrentCanvas();
+            globalThis.addEventListener("keydown", setErasing);
+            globalThis.addEventListener("keyup", resetErasing);
+            globalThis.addEventListener("resize", resizeCurrentCanvas);
+            return () => {
+                globalThis.removeEventListener("keydown", setErasing);
+                globalThis.removeEventListener("keyup", resetErasing);
+                globalThis.removeEventListener("resize", resizeCurrentCanvas);
+            };
 
-    const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
-        event.stopPropagation();
-        if (event.pointerType === "pen") {
-            setIsErasing(event.button === 5);
-        }
-        setDrawing(true);
-        if (canvasRef.current) {
-            canvasRef.current.setPointerCapture(event.pointerId);
-        }
-        if (contextRef.current) {
-            contextRef.current.beginPath();
-            contextRef.current.moveTo(
+            function setErasing(e: globalThis.KeyboardEvent) {
+                if (e.key === "Shift") {
+                    setIsErasing(true);
+                }
+            }
+
+            function resetErasing(e: globalThis.KeyboardEvent) {
+                if (e.key === "Shift") {
+                    setIsErasing(false);
+                }
+            }
+        }, []);
+
+        const startDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
+            event.stopPropagation();
+            if (event.pointerType === "pen") {
+                setIsErasing(event.button === 5);
+            }
+            setDrawing(true);
+            if (canvasRef.current) {
+                canvasRef.current.setPointerCapture(event.pointerId);
+            }
+            if (contextRef.current) {
+                contextRef.current.beginPath();
+                contextRef.current.moveTo(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+                drawLineAndMove(
+                    contextRef.current,
+                    event.nativeEvent.offsetX,
+                    event.nativeEvent.offsetY,
+                );
+            }
+        };
+
+        const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
+            if (!drawing || !contextRef.current) {
+                return;
+            }
+            if (isErasing) {
+                contextRef.current.globalCompositeOperation = "destination-out";
+                contextRef.current.lineWidth = 15;
+            } else {
+                contextRef.current.globalCompositeOperation = "source-over";
+                contextRef.current.lineWidth = penSize;
+            }
+            drawLineAndMove(
+                contextRef.current,
                 event.nativeEvent.offsetX,
-                event.nativeEvent.offsetY
+                event.nativeEvent.offsetY,
             );
-            drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-        }
-    };
+        };
 
-    const draw = (event: React.PointerEvent<HTMLCanvasElement>) => {
-        if (!drawing || !contextRef.current) {
-            return;
-        }
-        if (isErasing) {
-            contextRef.current.globalCompositeOperation = "destination-out";
-            contextRef.current.lineWidth = 15;
-        } else {
-            contextRef.current.globalCompositeOperation = "source-over";
-            contextRef.current.lineWidth = penSize;
-        }
-        drawLineAndMove(contextRef.current, event.nativeEvent.offsetX, event.nativeEvent.offsetY);
-    };
-
-    const endDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
-        draw(event);
-        setDrawing(false);
-        if (contextRef.current) {
-            contextRef.current.closePath();
-        }
-        if (canvasRef.current) {
-            canvasRef.current.setPointerCapture(event.pointerId);
-            if (storeId) {
-                updateCanvas(storeId, canvasRef.current.toDataURL("image/webp"));
+        const endDrawing = (event: React.PointerEvent<HTMLCanvasElement>) => {
+            draw(event);
+            setDrawing(false);
+            if (contextRef.current) {
+                contextRef.current.closePath();
             }
+            if (canvasRef.current) {
+                canvasRef.current.setPointerCapture(event.pointerId);
+                if (storeId) {
+                    updateCanvas(storeId, canvasRef.current.toDataURL("image/webp"));
+                }
+            }
+        };
+
+        let erasingClass = "";
+        if (isErasing) {
+            erasingClass = "erasing";
         }
-    };
 
-    let erasingClass = "";
-    if (isErasing) {
-        erasingClass = "erasing";
-    }
-
-    return (
-        <>
-            <div className={`drawing-container ${containerClassName}`} style={style}>
-                <canvas
-                    className={`drawing-canvas ${erasingClass} ${className}`}
-                    ref={canvasRef}
-                    onPointerDown={startDrawing}
-                    onPointerUp={endDrawing}
-                    onPointerMove={draw}
-                />
-            </div>
-            <canvas
-                className="hidden"
-                ref={canvasHiddenRef} />
-        </>
-    );
-});
+        return (
+            <>
+                <div className={`drawing-container ${containerClassName}`} style={style}>
+                    <canvas
+                        className={`drawing-canvas ${erasingClass} ${className}`}
+                        ref={canvasRef}
+                        onPointerDown={startDrawing}
+                        onPointerUp={endDrawing}
+                        onPointerMove={draw}
+                    />
+                </div>
+                <canvas className="hidden" ref={canvasHiddenRef} />
+            </>
+        );
+    },
+);
 
 function configureCanvas(
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
     contextRef: React.MutableRefObject<CanvasRenderingContext2D | null>,
-    storeId?: string
+    storeId?: string,
 ): void {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -150,11 +160,7 @@ function configureCanvas(
     if (!context) {
         return;
     }
-    context.lineCap = "round";
-    context.strokeStyle = "black";
-    context.lineWidth = 5;
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
+    setupContext(context);
     contextRef.current = context;
     if (typeof storeId !== "string") {
         return;
@@ -165,6 +171,14 @@ function configureCanvas(
     }
 }
 
+function setupContext(context: CanvasRenderingContext2D) {
+    context.lineCap = "round";
+    context.strokeStyle = "black";
+    context.lineWidth = 5;
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+}
+
 function extractCanvasDataFromState(storeId: string | undefined, state: CanvasStore) {
     let canvasContent: string | undefined = undefined;
     if (storeId) {
@@ -172,7 +186,7 @@ function extractCanvasDataFromState(storeId: string | undefined, state: CanvasSt
     }
     return {
         canvasContent,
-        updateCanvas: state.updateCanvas
+        updateCanvas: state.updateCanvas,
     };
 }
 

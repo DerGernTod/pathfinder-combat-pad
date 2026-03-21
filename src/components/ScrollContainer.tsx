@@ -32,10 +32,7 @@ export function ScrollContainer({
         setShowBottom(el.scrollTop + el.clientHeight < el.scrollHeight - 2);
     }
 
-    function setupObservers(
-        el: HTMLDivElement,
-        handler: () => void
-    ): () => void {
+    function setupObservers(el: HTMLDivElement, handler: () => void): () => void {
         const ro = new ResizeObserver(handler);
         ro.observe(el);
 
@@ -103,12 +100,7 @@ export function ScrollContainer({
             <div className={contentClassName} ref={contentRef}>
                 {children}
             </div>
-            <ScrollButton
-                direction="top"
-                onClick={scrollToTop}
-                show={showTop}
-                variant={variant}
-            />
+            <ScrollButton direction="top" onClick={scrollToTop} show={showTop} variant={variant} />
             <ScrollButton
                 direction="bottom"
                 onClick={scrollToBottom}

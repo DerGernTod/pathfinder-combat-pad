@@ -13,7 +13,10 @@
     font-size: 1rem;
     text-shadow: none;
     box-shadow: 0;
-    transition: box-shadow .4s, translate .2s, background-color .2s;
+    transition:
+        box-shadow 0.4s,
+        translate 0.2s,
+        background-color 0.2s;
     z-index: 10;
 }
 .status-1 {
@@ -61,7 +64,7 @@
 
 .entity-instance.highlighted {
     filter: brightness(1.25);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 .entity-instance-type-0.magnet-being-dragged {

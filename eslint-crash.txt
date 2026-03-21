@@ -1,0 +1,46 @@
+﻿
+> pathfinder-combat-pad@0.1.0 lint:eslint C:\Users\gegen\Documents\workspaces\repos\pathfinder-combat-pad
+> eslint "src"
+
+node.exe : 
+In C:\nvm4w\nodejs\pnpm.ps1:16 Zeichen:5
++     & "$basedir/node$exe"  
+"$basedir/node_modules/pnpm/bin/pnpm.cjs"  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Oops! Something went wrong! :(
+
+ESLint: 10.1.0
+
+TypeError: Class extends value undefined is not a 
+constructor or null
+    at Object.<anonymous> (C:\Users\gegen\Documents\work
+spaces\repos\pathfinder-combat-pad\node_modules\.pnpm\@t
+ypescript-eslint+utils@8._93b21e87c2b31cabdb470d9bbffb63
+7e\node_modules\@typescript-eslint\utils\dist\ts-eslint\
+eslint\FlatESLint.js:12:49)
+    at Module._compile 
+(node:internal/modules/cjs/loader:1562:14)
+    at Object..js 
+(node:internal/modules/cjs/loader:1699:10)
+    at Module.load 
+(node:internal/modules/cjs/loader:1313:32)
+    at Function._load 
+(node:internal/modules/cjs/loader:1123:12)
+    at TracingChannel.traceSync 
+(node:diagnostics_channel:322:14)
+    at wrapModuleLoad 
+(node:internal/modules/cjs/loader:217:24)
+    at Module.require 
+(node:internal/modules/cjs/loader:1335:12)
+    at require (node:internal/modules/helpers:136:16)
+    at Object.<anonymous> (C:\Users\gegen\Documents\work
+spaces\repos\pathfinder-combat-pad\node_modules\.pnpm\@t
+ypescript-eslint+utils@8._93b21e87c2b31cabdb470d9bbffb63
+7e\node_modules\@typescript-eslint\utils\dist\ts-eslint\
+ESLint.js:4:20)
+ÔÇëELIFECYCLEÔÇë Command failed with exit code 2.

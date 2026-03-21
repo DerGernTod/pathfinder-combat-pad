@@ -2,10 +2,7 @@
 import type { ReactElement } from "react";
 import type { MagnetKindProps } from "./magnet-kind-types";
 
-export function MagnetKindNPCToken({
-    className,
-    details,
-}: MagnetKindProps): ReactElement {
+export function MagnetKindNPCToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#82a687";
 
     return (
@@ -20,19 +17,8 @@ export function MagnetKindNPCToken({
             xmlSpace="preserve"
         >
             <defs>
-                <filter
-                    id="shadow-npc"
-                    x="-20%"
-                    y="-20%"
-                    width="140%"
-                    height="140%"
-                >
-                    <feDropShadow
-                        dx="0"
-                        dy="0.5"
-                        stdDeviation="1"
-                        floodOpacity="0.8"
-                    />
+                <filter id="shadow-npc" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="0.5" stdDeviation="1" floodOpacity="0.8" />
                 </filter>
             </defs>
 
@@ -58,12 +44,7 @@ export function MagnetKindNPCToken({
                 {/* Person silhouette icon */}
                 <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
                     {/* Head */}
-                    <circle
-                        cx="0"
-                        cy="-8"
-                        r="5"
-                        fill="rgba(255, 255, 255, 0.9)"
-                    />
+                    <circle cx="0" cy="-8" r="5" fill="rgba(255, 255, 255, 0.9)" />
 
                     {/* Body - simple torso shape */}
                     <path

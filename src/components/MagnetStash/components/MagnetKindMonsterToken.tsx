@@ -22,15 +22,25 @@ function MonsterSkull({ fillColor }: { fillColor: string }): ReactElement {
             <rect x="4" y="5" width="2" height="3" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
 
             {/* Horns for monster effect */}
-            <path d="M -10 -8 Q -12 -12 -10 -14 L -9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
-            <path d="M 10 -8 Q 12 -12 10 -14 L 9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
+            <path
+                d="M -10 -8 Q -12 -12 -10 -14 L -9 -10 Z"
+                fill={fillColor}
+                stroke="#1a1a1a"
+                strokeWidth="0.5"
+            />
+            <path
+                d="M 10 -8 Q 12 -12 10 -14 L 9 -10 Z"
+                fill={fillColor}
+                stroke="#1a1a1a"
+                strokeWidth="0.5"
+            />
         </g>
     );
 }
 
 export function MagnetKindMonsterToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#8f554a";
-    
+
     return (
         <svg
             height="60"
@@ -40,9 +50,10 @@ export function MagnetKindMonsterToken({ className, details }: MagnetKindProps):
             xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 60 60"
             style={{ overflow: "visible" }}
-            xmlSpace="preserve">
+            xmlSpace="preserve"
+        >
             <ShadowFilter id="shadow" />
-            
+
             {/* Apply transitions to entire token */}
             <g className={`apply-transitions ${className}`}>
                 {/* Hexagonal background */}
@@ -53,7 +64,7 @@ export function MagnetKindMonsterToken({ className, details }: MagnetKindProps):
                     strokeWidth="2"
                     filter="url(#shadow)"
                 />
-                
+
                 {/* Inner hexagon for depth */}
                 <path
                     d="M 30 10 L 45 19 L 45 41 L 30 50 L 15 41 L 15 19 Z"
@@ -61,7 +72,7 @@ export function MagnetKindMonsterToken({ className, details }: MagnetKindProps):
                     stroke="rgba(255, 255, 255, 0.15)"
                     strokeWidth="1"
                 />
-                
+
                 {/* Stylized monster skull icon */}
                 <MonsterSkull fillColor={fillColor} />
             </g>

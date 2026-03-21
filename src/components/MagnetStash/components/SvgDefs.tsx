@@ -1,3 +1,4 @@
+// oxlint-disable react/jsx-max-depth
 import type { ReactElement } from "react";
 
 export function ShadowFilter({ id }: { id: string }): ReactElement {

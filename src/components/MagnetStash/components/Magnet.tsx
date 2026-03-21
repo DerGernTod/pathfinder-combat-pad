@@ -17,7 +17,7 @@ const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 const DRAG_MOVE_TOLERANCE = 5;
 
-function getDraggingClass(magnet: MagnetData<any>, isHighlighted: boolean) {
+function getDraggingClass(magnet: MagnetData<MagnetKind>, isHighlighted: boolean) {
     let cls = "";
     if (magnet?.isDragging) {
         cls = "dragging";
@@ -28,7 +28,7 @@ function getDraggingClass(magnet: MagnetData<any>, isHighlighted: boolean) {
     return cls;
 }
 
-function renderMagnetChildren(magnet: MagnetData<any>, draggingClass: string) {
+function renderMagnetChildren(magnet: MagnetData<MagnetKind>, draggingClass: string) {
     return createElement(MagnetKinds[magnet.kind].children, {
         className: draggingClass,
         details: magnet.details,
@@ -37,7 +37,7 @@ function renderMagnetChildren(magnet: MagnetData<any>, draggingClass: string) {
 }
 
 function createStopDraggingHandler(options: {
-    getMagnet: () => MagnetData<any> | undefined;
+    getMagnet: () => MagnetData<MagnetKind> | undefined;
     deleteMagnet: (id: number) => void;
     dropMagnet: (id: number) => void;
     rotateMagnet: (id: number) => void;
@@ -45,7 +45,7 @@ function createStopDraggingHandler(options: {
     setHighlightedMagnet: (id: number | null) => void;
     setDraggingAllowed: (v: boolean) => void;
 }) {
-    function handleNonDragging(e: globalThis.PointerEvent, m: MagnetData<any>) {
+    function handleNonDragging(e: globalThis.PointerEvent, m: MagnetData<MagnetKind>) {
         if (isEraserEvent(e)) {
             options.deleteMagnet(m.id);
         } else if (MagnetKinds[m.kind].allowRotate) {
@@ -75,9 +75,7 @@ function createStopDraggingHandler(options: {
 }
 
 export function Magnet({ id }: MagnetProps): ReactElement | null {
-    const magnet = useMagnetStore(
-        useShallow((state) => state.magnets.find((m) => m.id === id)),
-    );
+    const magnet = useMagnetStore(useShallow((state) => state.magnets.find((m) => m.id === id)));
     const magnetRef = useRef<HTMLDivElement>(null);
 
     // Check if this magnet's linked entity is highlighted
@@ -91,12 +89,8 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
 
     const allowDragging = useAllowDragging(magnet, magnetRef);
 
-    const setHighlightedMagnet = useMagnetStore(
-        (state) => state.setHighlightedMagnet,
-    );
-    const setHighlightedEntityId = useEntityStore(
-        (state) => state.setHighlightedEntityId,
-    );
+    const setHighlightedMagnet = useMagnetStore((state) => state.setHighlightedMagnet);
+    const setHighlightedEntityId = useEntityStore((state) => state.setHighlightedEntityId);
 
     if (!magnet) {
         return null;
@@ -141,14 +135,10 @@ function useAllowDragging<T extends MagnetKind>(
     } = useMagnetStore();
 
     // Safe access for initial state, though it will update if magnet becomes defined/undefined
-    const initialOffset = magnet
-        ? MagnetKinds[magnet.kind].offset
-        : { left: 0, top: 0 };
+    const initialOffset = magnet ? MagnetKinds[magnet.kind].offset : { left: 0, top: 0 };
     const [startOffset, setStartOffset] = useState<Offset>(initialOffset);
     const [pointerDownStart, setPointerDownStart] = useState({ x: 0, y: 0 });
-    const [draggingAllowed, setDraggingAllowed] = useState(
-        magnet?.isDragging ?? false,
-    );
+    const [draggingAllowed, setDraggingAllowed] = useState(magnet?.isDragging ?? false);
 
     const updateLocation = useCallback(
         function updateLocationCallback(moveEvent: globalThis.PointerEvent) {
@@ -160,13 +150,8 @@ function useAllowDragging<T extends MagnetKind>(
                 left: moveEvent.clientX - pointerDownStart.x,
                 top: moveEvent.clientY - pointerDownStart.y,
             };
-            const movementTotal =
-                Math.abs(totalOffset.left) + Math.abs(totalOffset.top);
-            if (
-                !magnet.isDragging &&
-                draggingAllowed &&
-                movementTotal > DRAG_MOVE_TOLERANCE
-            ) {
+            const movementTotal = Math.abs(totalOffset.left) + Math.abs(totalOffset.top);
+            if (!magnet.isDragging && draggingAllowed && movementTotal > DRAG_MOVE_TOLERANCE) {
                 dragMagnet(magnet.id);
             }
             if (!magnet.isDragging) {

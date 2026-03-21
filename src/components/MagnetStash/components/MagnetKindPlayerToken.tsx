@@ -6,7 +6,12 @@ function SwordIcon({ fillColor }: { fillColor: string }): ReactElement {
     return (
         <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
             {/* Shield shape */}
-            <path d="M -8 -10 L 8 -10 L 8 2 Q 8 8 0 12 Q -8 8 -8 2 Z" fill="rgba(255, 255, 255, 0.9)" stroke="#1a1a1a" strokeWidth="0.8" />
+            <path
+                d="M -8 -10 L 8 -10 L 8 2 Q 8 8 0 12 Q -8 8 -8 2 Z"
+                fill="rgba(255, 255, 255, 0.9)"
+                stroke="#1a1a1a"
+                strokeWidth="0.8"
+            />
 
             {/* Shield details - cross pattern */}
             <rect x="-1" y="-8" width="2" height="16" fill={fillColor} opacity="0.7" />
@@ -27,7 +32,7 @@ function SwordIcon({ fillColor }: { fillColor: string }): ReactElement {
 
 export function MagnetKindPlayerToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#7fa6b3";
-    
+
     return (
         <svg
             height="60"
@@ -37,9 +42,10 @@ export function MagnetKindPlayerToken({ className, details }: MagnetKindProps): 
             xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 60 60"
             style={{ overflow: "visible" }}
-            xmlSpace="preserve">
+            xmlSpace="preserve"
+        >
             <ShadowFilter id="shadow-pc" />
-            
+
             {/* Apply transitions to entire token */}
             <g className={`apply-transitions ${className}`}>
                 {/* Circular shield background */}
@@ -52,7 +58,7 @@ export function MagnetKindPlayerToken({ className, details }: MagnetKindProps): 
                     strokeWidth="2"
                     filter="url(#shadow-pc)"
                 />
-                
+
                 {/* Inner circle for depth */}
                 <circle
                     cx="30"
@@ -62,7 +68,7 @@ export function MagnetKindPlayerToken({ className, details }: MagnetKindProps): 
                     stroke="rgba(255, 255, 255, 0.15)"
                     strokeWidth="1"
                 />
-                
+
                 {/* Shield with sword icon */}
                 <SwordIcon fillColor={fillColor} />
             </g>

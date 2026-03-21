@@ -12,8 +12,7 @@ interface EntityInstanceProps {
     entityId: number;
 }
 const transparentImage = new Image();
-transparentImage.src =
-    "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+transparentImage.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
 function getClassName(opts: {
     kind: string;
@@ -22,18 +21,13 @@ function getClassName(opts: {
     isMagnetHighlighted: boolean;
     isHighlighted: boolean;
 }): string {
-    const { kind, status, draggingClass, isMagnetHighlighted, isHighlighted } =
-        opts;
-    const magnetHighlightClass = isMagnetHighlighted
-        ? "magnet-being-dragged"
-        : "";
+    const { kind, status, draggingClass, isMagnetHighlighted, isHighlighted } = opts;
+    const magnetHighlightClass = isMagnetHighlighted ? "magnet-being-dragged" : "";
     const highlightedClass = isHighlighted ? "highlighted" : "";
     return `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass} ${highlightedClass}`;
 }
 
-function getInlineStyle(
-    color?: string,
-): React.CSSProperties & { "--entity-color"?: string } {
+function getInlineStyle(color?: string): React.CSSProperties & { "--entity-color"?: string } {
     const style: React.CSSProperties & { "--entity-color"?: string } = {};
     if (color) {
         style["--entity-color"] = color;
@@ -104,9 +98,7 @@ function createHandlePointerDown(params: {
     };
 }
 
-export const EntityInstance = ({
-    entityId,
-}: EntityInstanceProps): ReactElement | null => {
+export const EntityInstance = ({ entityId }: EntityInstanceProps): ReactElement | null => {
     const { removeEntity, setDraggedEntityId, setDamageTaken, setHighlightedEntityId } =
         useEntityStore(
             useShallow((store) => ({
@@ -118,8 +110,8 @@ export const EntityInstance = ({
         );
 
     const entity = useEntityStore(
-        useShallow((store) => store.entities.find((e) => e.id === entityId)),
-    ),
+            useShallow((store) => store.entities.find((e) => e.id === entityId)),
+        ),
         [lastKnownEntity, setLastKnownEntity] = useState(entity);
 
     useEffect(() => {
@@ -136,8 +128,7 @@ export const EntityInstance = ({
         { id, name, kind, status, level, damageTaken, color } = lastKnownEntity,
         highlightedLinkedEntityId = useMagnetStore(
             (state) =>
-                state.magnets.find((m) => m.id === state.highlightedMagnetId)
-                    ?.linkedEntityId,
+                state.magnets.find((m) => m.id === state.highlightedMagnetId)?.linkedEntityId,
         ),
         isMagnetHighlighted = highlightedLinkedEntityId === id,
         highlightedEntityId = useEntityStore(useShallow((state) => state.highlightedEntityId)),
@@ -155,7 +146,13 @@ export const EntityInstance = ({
         setDraggingClass,
     });
 
-    const className = getClassName({ kind, status, draggingClass, isMagnetHighlighted, isHighlighted });
+    const className = getClassName({
+        kind: String(kind),
+        status: String(status),
+        draggingClass,
+        isMagnetHighlighted,
+        isHighlighted,
+    });
     const inlineStyle = getInlineStyle(color);
 
     return (
@@ -179,9 +176,7 @@ export const EntityInstance = ({
             </div>
             <div className="instance-kind-container">
                 {KIND_LOOKUP[kind]}
-                <div className={`instance-kind instance-kind-${kind}`}>
-                    {level}
-                </div>
+                <div className={`instance-kind instance-kind-${kind}`}>{level}</div>
             </div>
             <SlotMachineInput
                 onChange={(damage: number) => setDamageTaken(id, damage)}
@@ -203,14 +198,10 @@ const Grabber = forwardRef<HTMLDivElement, unknown>((_, ref) => {
     }, [draggedEntityId, ref]);
 
     return (
-        <div
-            ref={ref as React.Ref<HTMLDivElement>}
-            className="grabber grab-cursor"
-        >
+        <div ref={ref as React.Ref<HTMLDivElement>} className="grabber grab-cursor">
             ⋮
         </div>
     );
 });
 
 Grabber.displayName = "Grabber";
-

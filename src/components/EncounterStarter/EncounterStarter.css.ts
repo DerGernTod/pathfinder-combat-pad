@@ -167,7 +167,7 @@ export const bodySeparator = style({
     flexBasis: "3rem",
     flexShrink: 1,
     flexGrow: 0,
-    margin: 0
+    margin: 0,
 });
 
 export const horizontalBarStyle = style({
@@ -190,7 +190,7 @@ export const encounterHeaderStyle = style({
 
 const startEncounterButton = {
     padding: "0.5rem 1rem",
-    margin: "1rem"
+    margin: "1rem",
 } as const;
 
 export const startEncounterButtonStyle = styleVariants({

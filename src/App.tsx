@@ -28,20 +28,20 @@ function App() {
         return () => {
             document.removeEventListener("dragover", preventDragOverDefault, true);
             document.removeEventListener("dragenter", preventDragOverDefault, true);
-        }
+        };
 
         function preventDragOverDefault(e: DragEvent): void {
             e.preventDefault();
         }
     }, []);
 
-    const magnetIds = useMagnetStore(useShallow(state => state.magnets.map(m => m.id)));
+    const magnetIds = useMagnetStore(useShallow((state) => state.magnets.map((m) => m.id)));
     return (
         <div className="container">
             <AnimatePresence>
-                {
-                    magnetIds.map(id => (<Magnet key={id} id={id} />))
-                }
+                {magnetIds.map((id) => (
+                    <Magnet key={id} id={id} />
+                ))}
             </AnimatePresence>
             <MagnetStash />
             <header>Pathfinder Combat Pad</header>

@@ -26,48 +26,62 @@ export const useEncounterSetupStore = create<EncounterSetupStore>((set) => ({
     participants: [],
     availableCreatures: [],
     addParticipant(this: void, participant: Omit<EncounterParticipant, "id">) {
-        set(produce((state: EncounterSetupStore) => {
-            state.participants.push({
-                ...participant,
-                id: crypto.randomUUID(),
-            });
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                state.participants.push({
+                    ...participant,
+                    id: crypto.randomUUID(),
+                });
+            }),
+        );
     },
     removeParticipant(this: void, id: string) {
-        set(produce((state: EncounterSetupStore) => {
-            state.participants = state.participants.filter(p => p.id !== id);
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                state.participants = state.participants.filter((p) => p.id !== id);
+            }),
+        );
     },
     addAvailableCreature(this: void, creature: Omit<EncounterParticipant, "id">) {
-        set(produce((state: EncounterSetupStore) => {
-            state.availableCreatures.unshift({
-                ...creature,
-                id: crypto.randomUUID(),
-            });
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                state.availableCreatures.unshift({
+                    ...creature,
+                    id: crypto.randomUUID(),
+                });
+            }),
+        );
     },
     removeAvailableCreature(this: void, id: string) {
-        set(produce((state: EncounterSetupStore) => {
-            state.availableCreatures = state.availableCreatures.filter(c => c.id !== id);
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                state.availableCreatures = state.availableCreatures.filter((c) => c.id !== id);
+            }),
+        );
     },
     moveToParticipants(this: void, creatureId: string) {
-        set(produce((state: EncounterSetupStore) => {
-            const creature = state.availableCreatures.find(c => c.id === creatureId);
-            if (creature) {
-                state.availableCreatures = state.availableCreatures.filter(c => c.id !== creatureId);
-                state.participants.push(creature);
-            }
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                const creature = state.availableCreatures.find((c) => c.id === creatureId);
+                if (creature) {
+                    state.availableCreatures = state.availableCreatures.filter(
+                        (c) => c.id !== creatureId,
+                    );
+                    state.participants.push(creature);
+                }
+            }),
+        );
     },
     moveToAvailableCreatures(this: void, participantId: string) {
-        set(produce((state: EncounterSetupStore) => {
-            const participant = state.participants.find(p => p.id === participantId);
-            if (participant) {
-                state.participants = state.participants.filter(p => p.id !== participantId);
-                state.availableCreatures.push(participant);
-            }
-        }));
+        set(
+            produce((state: EncounterSetupStore) => {
+                const participant = state.participants.find((p) => p.id === participantId);
+                if (participant) {
+                    state.participants = state.participants.filter((p) => p.id !== participantId);
+                    state.availableCreatures.push(participant);
+                }
+            }),
+        );
     },
     clear(this: void) {
         set({ participants: [], availableCreatures: [] });

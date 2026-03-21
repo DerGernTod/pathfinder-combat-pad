@@ -11,8 +11,9 @@ canvas.drawing-canvas {
     position: absolute;
     cursor: crosshair;
     touch-action: none;
-    background-image: url("/img-noise-128x128 base.png"),
-      linear-gradient(to bottom right, var(--parchment-light), var(--parchment))
+    background-image:
+        url("/img-noise-128x128 base.png"),
+        linear-gradient(to bottom right, var(--parchment-light), var(--parchment));
 }
 
 .drawing-container {

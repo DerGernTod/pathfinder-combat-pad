@@ -1,3 +1,4 @@
+// oxlint-disable react/jsx-max-depth
 import {
     bodySeparator,
     buttonText,
@@ -28,9 +29,7 @@ export function EncounterStarter(): ReactElement {
     const clearParticipants = useEncounterSetupStore((state) => state.clear);
     const entities = useEntityStore((state) => state.entities);
     const setEntities = useEntityStore((state) => state.setEntities);
-    const createMagnetsForEntities = useMagnetStore(
-        (state) => state.createMagnetsForEntities
-    );
+    const createMagnetsForEntities = useMagnetStore((state) => state.createMagnetsForEntities);
 
     const handleOpen = () => {
         if (!isOpen) {
@@ -64,10 +63,7 @@ export function EncounterStarter(): ReactElement {
                 };
             } else {
                 // New entity - generate color
-                const color = generateThematicColor(
-                    participant.kind,
-                    existingColors
-                );
+                const color = generateThematicColor(participant.kind, existingColors);
                 existingColors.push(color);
 
                 return {
@@ -96,14 +92,14 @@ export function EncounterStarter(): ReactElement {
 
         // Create magnets for all entities (all should have colors at this point)
         const entitiesWithColors = finalEntities.filter(
-            (e): e is typeof e & { color: string } => e.color !== undefined
+            (e): e is typeof e & { color: string } => e.color !== undefined,
         );
         createMagnetsForEntities(
             entitiesWithColors.map((e) => ({
                 id: e.id,
                 color: e.color,
                 kind: e.kind,
-            }))
+            })),
         );
 
         // Initialize turn: if there is no active entity, set to the first entity.
@@ -115,32 +111,22 @@ export function EncounterStarter(): ReactElement {
 
     return (
         <div className={modalContainer[variant]}>
-            <div
-                id="encounter-header"
-                className={encounterButton[variant]}
-                onClick={handleOpen}
-            >
+            <div id="encounter-header" className={encounterButton[variant]} onClick={handleOpen}>
                 <span className={buttonText[variant]}>Start Encounter</span>
                 <h2 className={headerText[variant]}>Create New Encounter</h2>
             </div>
 
             <div className={modalBody[variant]}>
                 <div className={encounterSelectionBody}>
-                    <EncounterCreaturesList
-                        className={encounterSelectionBodyChild}
-                    />
-                    <div
-                        className={`${bodySeparator} ${encounterSelectionBodyChild}`}
-                    >
+                    <EncounterCreaturesList className={encounterSelectionBodyChild} />
+                    <div className={`${bodySeparator} ${encounterSelectionBodyChild}`}>
                         <h3>&nbsp;</h3>
                         <div className={verticalBarStyle} />
                         <div>&gt;</div>
                         <div>&lt;</div>
                         <div className={verticalBarStyle} />
                     </div>
-                    <EncounterParticipantsList
-                        className={encounterSelectionBodyChild}
-                    />
+                    <EncounterParticipantsList className={encounterSelectionBodyChild} />
                 </div>
                 <div className={startEncounterButtonSectionStyle}>
                     <button

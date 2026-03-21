@@ -29,7 +29,8 @@ body {
     padding: 0;
 }
 
-header, footer {
+header,
+footer {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -141,7 +142,7 @@ button:active {
 }
 
 .start-encounter-button {
-/* Button's initial styles */
+    /* Button's initial styles */
     height: 50px; /* Initial button height */
     width: 250px;
     margin: 0 auto; /* Center the button */

@@ -2,7 +2,6 @@ import { sortableHandle, sortableItem } from "./EntityInstanceButton.css";
 import type { Entity } from "../../../constants";
 import type { ReactElement } from "react";
 
-
 interface EntityInstanceButtonProps {
     entity: Entity;
     onClick: (id: number) => void;

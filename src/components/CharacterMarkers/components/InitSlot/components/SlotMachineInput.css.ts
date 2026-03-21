@@ -8,7 +8,7 @@ const baseNumberSlot = {
     borderRadius: "8px",
     display: "flex",
     overflow: "hidden",
-    width: "2rem"
+    width: "2rem",
 } satisfies Partial<StyleRule>;
 
 const baseFlexCenter = {
@@ -20,20 +20,20 @@ const baseFlexCenter = {
 export const numberSlot = styleVariants({
     collapsed: {
         ...baseNumberSlot,
-        height: "100%"
+        height: "100%",
     },
     expanded: {
         ...baseNumberSlot,
         justifyContent: "center",
         height: "5rem",
-    }
+    },
 });
 
 export const slotList = style({
     alignItems: "center",
     display: "flex",
     flexDirection: "column",
-    height: "fit-content"
+    height: "fit-content",
 });
 
 export const item = style({

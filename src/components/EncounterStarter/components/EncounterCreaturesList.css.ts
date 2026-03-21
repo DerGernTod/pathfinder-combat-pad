@@ -16,7 +16,7 @@ export const encounterCreateSlotStyle = style({
     gap: "1rem",
     padding: "5px",
     fontSize: "1rem",
-    textShadow: "none"
+    textShadow: "none",
 });
 
 export const encounterEntityInstanceStyle = style({
@@ -71,22 +71,34 @@ const baseListItemStyle = style({
 });
 
 export const creatureListItemStyle = styleVariants({
-    [EntityKind.PlayerCharacter]: [baseListItemStyle, {
-        borderLeft: "8px solid var(--pc-d)",
-        background: "color-mix(in srgb, var(--pc), transparent 85%)"
-    }],
-    [EntityKind.NonPlayerCharacter]: [baseListItemStyle, {
-        borderLeft: "8px solid var(--npc-d)",
-        background: "color-mix(in srgb, var(--npc), transparent 85%)"
-    }],
-    [EntityKind.Monster]: [baseListItemStyle, {
-        borderLeft: "8px solid var(--mon-d)",
-        background: "color-mix(in srgb, var(--mon), transparent 85%)"
-    }],
-    [EntityKind.Hazard]: [baseListItemStyle, {
-        borderLeft: "8px solid var(--haz-d)",
-        background: "color-mix(in srgb, var(--haz), transparent 85%)"
-    }],
+    [EntityKind.PlayerCharacter]: [
+        baseListItemStyle,
+        {
+            borderLeft: "8px solid var(--pc-d)",
+            background: "color-mix(in srgb, var(--pc), transparent 85%)",
+        },
+    ],
+    [EntityKind.NonPlayerCharacter]: [
+        baseListItemStyle,
+        {
+            borderLeft: "8px solid var(--npc-d)",
+            background: "color-mix(in srgb, var(--npc), transparent 85%)",
+        },
+    ],
+    [EntityKind.Monster]: [
+        baseListItemStyle,
+        {
+            borderLeft: "8px solid var(--mon-d)",
+            background: "color-mix(in srgb, var(--mon), transparent 85%)",
+        },
+    ],
+    [EntityKind.Hazard]: [
+        baseListItemStyle,
+        {
+            borderLeft: "8px solid var(--haz-d)",
+            background: "color-mix(in srgb, var(--haz), transparent 85%)",
+        },
+    ],
 });
 
 export const creatureImageStyle = style({

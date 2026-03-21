@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import eslint from "vite-plugin-eslint2";
+
 import react from "@vitejs/plugin-react";
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 
@@ -15,8 +15,8 @@ const config = defineConfig(() => ({
             babel: {
                 plugins: [["babel-plugin-react-compiler"]]
             }
-        }),
-        eslint()
+        })
+
     ],
     // 2. tauri expects a fixed port, fail if that port is not available
     server: {

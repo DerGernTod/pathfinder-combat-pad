@@ -19,7 +19,10 @@ export function ScrollButton({ direction, onClick, show, variant = "grid" }: Scr
     const label = `Scroll to ${direction}`;
     const symbol = direction === "top" ? "▲" : "▼";
     const containerClass = variant === "grid" ? scrollOverlay : scrollAttached;
-    const buttonClass = variant === "grid" ? scrollOverlayButton : `${scrollOverlayButton} ${scrollOverlayButtonAttached}`;
+    const buttonClass =
+        variant === "grid"
+            ? scrollOverlayButton
+            : `${scrollOverlayButton} ${scrollOverlayButtonAttached}`;
 
     return (
         <div

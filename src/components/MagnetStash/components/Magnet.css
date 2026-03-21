@@ -13,7 +13,9 @@
     filter: brightness(1.15) drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.35));
 }
 .magnet .apply-transitions {
-    transition: filter .3s, translate .15s;
+    transition:
+        filter 0.3s,
+        translate 0.15s;
 }
 
 .magnet .highlighted:not(.dragging) {

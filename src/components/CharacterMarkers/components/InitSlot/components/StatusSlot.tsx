@@ -15,27 +15,32 @@ export function StatusSlot({
     status,
     entityId,
 }: StatusSlotProps): ReactElement {
-    const { draggedEntityId, setStatus, swapEntities } = useEntityStore(useShallow((state) => ({
-        draggedEntityId: state.draggedEntityId,
-        setStatus: state.setStatus,
-        swapEntities: state.swapEntities,
-    })));
+    const { draggedEntityId, setStatus, swapEntities } = useEntityStore(
+        useShallow((state) => ({
+            draggedEntityId: state.draggedEntityId,
+            setStatus: state.setStatus,
+            swapEntities: state.swapEntities,
+        })),
+    );
     const elemRef = useRef<HTMLDivElement | null>(null);
 
-    const moveEntityInstance = useCallback(function moveEntityInstanceCallback(e: PointerEvent) {
-        const boundingRect = elemRef.current?.getBoundingClientRect();
-        if (
-            !entityId ||
-            draggedEntityId === null ||
-            !isWithinBounds(e.clientX, e.clientY, boundingRect)
-        ) {
-            return;
-        }
-        if (entityId !== draggedEntityId) {
-            swapEntities(draggedEntityId, entityId);
-        }
-        setStatus(draggedEntityId, status);
-    }, [draggedEntityId, entityId, setStatus, swapEntities, status]);
+    const moveEntityInstance = useCallback(
+        function moveEntityInstanceCallback(e: PointerEvent) {
+            const boundingRect = elemRef.current?.getBoundingClientRect();
+            if (
+                !entityId ||
+                draggedEntityId === null ||
+                !isWithinBounds(e.clientX, e.clientY, boundingRect)
+            ) {
+                return;
+            }
+            if (entityId !== draggedEntityId) {
+                swapEntities(draggedEntityId, entityId);
+            }
+            setStatus(draggedEntityId, status);
+        },
+        [draggedEntityId, entityId, setStatus, swapEntities, status],
+    );
 
     useEffect(() => {
         if (draggedEntityId !== null) {
@@ -45,24 +50,17 @@ export function StatusSlot({
         }
         return () => {
             globalThis.removeEventListener("pointermove", moveEntityInstance);
-        }
+        };
     }, [draggedEntityId, moveEntityInstance]);
 
     return (
-        <div
-            ref={elemRef}
-            className={className}
-        >
+        <div ref={elemRef} className={className}>
             {children}
         </div>
     );
 }
 
-function isWithinBounds(
-    x: number,
-    y: number,
-    boundingRect: DOMRect | undefined
-): boolean {
+function isWithinBounds(x: number, y: number, boundingRect: DOMRect | undefined): boolean {
     if (!boundingRect) {
         return false;
     }

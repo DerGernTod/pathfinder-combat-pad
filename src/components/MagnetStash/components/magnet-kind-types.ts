@@ -4,7 +4,7 @@ export const enum MagnetKind {
     MonsterToken = 2,
     PlayerToken = 3,
     NPCToken = 4,
-    HazardToken = 5
+    HazardToken = 5,
 }
 
 export interface MagnetData<T extends MagnetKind> {
@@ -43,4 +43,3 @@ export interface Offset {
     left: number;
     top: number;
 }
-

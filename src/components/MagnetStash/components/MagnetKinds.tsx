@@ -24,27 +24,24 @@ export const MagnetKinds: MagnetKindDescriptors = {
         allowRotate: false,
         children: MagnetKindMonsterToken,
         offset: { left: 25, top: 25 },
-        preview: MagnetKindMonsterToken
+        preview: MagnetKindMonsterToken,
     },
     [MagnetKind.PlayerToken]: {
         allowRotate: false,
         children: MagnetKindPlayerToken,
         offset: { left: 25, top: 25 },
-        preview: MagnetKindPlayerToken
+        preview: MagnetKindPlayerToken,
     },
     [MagnetKind.NPCToken]: {
         allowRotate: false,
         children: MagnetKindNPCToken,
         offset: { left: 25, top: 25 },
-        preview: MagnetKindNPCToken
+        preview: MagnetKindNPCToken,
     },
     [MagnetKind.HazardToken]: {
         allowRotate: false,
         children: MagnetKindHazardToken,
         offset: { left: 25, top: 25 },
-        preview: MagnetKindHazardToken
-    }
+        preview: MagnetKindHazardToken,
+    },
 };
-
-
-

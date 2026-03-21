@@ -12,6 +12,5 @@ export const enum EntityKind {
     PlayerCharacter = 0,
     NonPlayerCharacter = 1,
     Monster = 2,
-    Hazard = 3
+    Hazard = 3,
 }
-

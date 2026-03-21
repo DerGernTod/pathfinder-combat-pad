@@ -10,12 +10,19 @@ interface MagnetStore {
     draggedMagnetId: number | null;
     highlightedMagnetId: number | null;
     createAndDragMagnet(this: void, magnetData: Omit<MagnetData<MagnetKind>, "id">): void;
-    createMagnetsForEntities(this: void, entities: { id: number; color: string; kind: EntityKind }[]): void;
+    createMagnetsForEntities(
+        this: void,
+        entities: { id: number; color: string; kind: EntityKind }[],
+    ): void;
     deleteMagnet(this: void, magnetId: number, skipLinkedDeletion?: boolean): void;
     dragMagnet(this: void, magnetId: number): void;
     dropMagnet(this: void, magnetId: number): void;
     rotateMagnet(this: void, magnetId: number): void;
-    setMagnetLocation(this: void, magnetId: number, location: MagnetData<MagnetKind>["location"]): void;
+    setMagnetLocation(
+        this: void,
+        magnetId: number,
+        location: MagnetData<MagnetKind>["location"],
+    ): void;
     setMagnetImage(this: void, magnetId: number, image: string): void;
     setHighlightedMagnet(this: void, magnetId: number | null): void;
 }
@@ -31,11 +38,14 @@ export const useMagnetStore = create<MagnetStore>()(
                             ...magnetData,
                             id: newMagnetId,
                         });
-                    })
+                    }),
                 );
             },
 
-            createMagnetsForEntities(this: void, entities: { id: number; color: string; kind: EntityKind }[]) {
+            createMagnetsForEntities(
+                this: void,
+                entities: { id: number; color: string; kind: EntityKind }[],
+            ) {
                 set(
                     produce(function updateState(recipe: MagnetStore) {
                         const baseId = findHighestId(recipe) + 1;
@@ -49,27 +59,36 @@ export const useMagnetStore = create<MagnetStore>()(
 
                         const totalMagnets = entities.length;
                         const rows = Math.ceil(totalMagnets / columns);
-                        const gridWidth = Math.min(totalMagnets, columns) * (gridSize + spacing) - spacing;
+                        const gridWidth =
+                            Math.min(totalMagnets, columns) * (gridSize + spacing) - spacing;
                         const gridHeight = rows * (gridSize + spacing) - spacing;
 
-                        const startX = sidebarOffset + Math.max(0, (availableWidth - gridWidth) / 2);
+                        const startX =
+                            sidebarOffset + Math.max(0, (availableWidth - gridWidth) / 2);
                         const startY = Math.max(100, (availableHeight - gridHeight) / 2);
 
                         const entityIds = new Set(entities.map((e) => e.id));
                         const magnetsToRemove: number[] = [];
 
                         recipe.magnets.forEach((magnet) => {
-                            if (magnet.linkedEntityId !== undefined && !entityIds.has(magnet.linkedEntityId)) {
+                            if (
+                                magnet.linkedEntityId !== undefined &&
+                                !entityIds.has(magnet.linkedEntityId)
+                            ) {
                                 magnetsToRemove.push(magnet.id);
                             }
                         });
 
                         if (magnetsToRemove.length > 0) {
-                            recipe.magnets = recipe.magnets.filter((m) => !magnetsToRemove.includes(m.id));
+                            recipe.magnets = recipe.magnets.filter(
+                                (m) => !magnetsToRemove.includes(m.id),
+                            );
                         }
 
                         entities.forEach((entity, index) => {
-                            const existingMagnet = recipe.magnets.find((m) => m.linkedEntityId === entity.id);
+                            const existingMagnet = recipe.magnets.find(
+                                (m) => m.linkedEntityId === entity.id,
+                            );
                             if (existingMagnet) {
                                 return;
                             }
@@ -89,7 +108,7 @@ export const useMagnetStore = create<MagnetStore>()(
                                 linkedEntityId: entity.id,
                             });
                         });
-                    })
+                    }),
                 );
             },
 
@@ -100,7 +119,7 @@ export const useMagnetStore = create<MagnetStore>()(
                     produce(function updateState(recipe: MagnetStore) {
                         const index = recipe.magnets.findIndex((magnet) => magnet.id === magnetId);
                         recipe.magnets.splice(index, 1);
-                    })
+                    }),
                 );
 
                 if (!skipLinkedDeletion && magnet?.linkedEntityId) {
@@ -116,11 +135,13 @@ export const useMagnetStore = create<MagnetStore>()(
                     produce(function updateState(recipe: MagnetStore) {
                         const magnet = recipe.magnets.find((magnet) => magnet.id === magnetId);
                         if (!magnet) {
-                            throw new Error(`Couldn't find magnet with id ${magnetId} while trying to start drag!`);
+                            throw new Error(
+                                `Couldn't find magnet with id ${magnetId} while trying to start drag!`,
+                            );
                         }
                         magnet.isDragging = true;
                         recipe.draggedMagnetId = magnetId;
-                    })
+                    }),
                 );
             },
 
@@ -135,7 +156,7 @@ export const useMagnetStore = create<MagnetStore>()(
                         }
                         magnet.isDragging = false;
                         recipe.draggedMagnetId = null;
-                    })
+                    }),
                 );
             },
 
@@ -146,10 +167,12 @@ export const useMagnetStore = create<MagnetStore>()(
                     produce(function updateState(recipe: MagnetStore) {
                         const magnet = recipe.magnets.find((magnet) => magnet.id === magnetId);
                         if (!magnet) {
-                            throw new Error(`Couldn't find magnet with id ${magnetId} while trying to rotate!`);
+                            throw new Error(
+                                `Couldn't find magnet with id ${magnetId} while trying to rotate!`,
+                            );
                         }
                         magnet.rotation += 90;
-                    })
+                    }),
                 );
             },
 
@@ -158,22 +181,30 @@ export const useMagnetStore = create<MagnetStore>()(
                     produce(function updateState(recipe: MagnetStore) {
                         const magnet = recipe.magnets.find((magnet) => magnet.id === magnetId);
                         if (!magnet) {
-                            throw new Error(`Couldn't find magnet with id ${magnetId} while trying to update image!`);
+                            throw new Error(
+                                `Couldn't find magnet with id ${magnetId} while trying to update image!`,
+                            );
                         }
                         magnet.details = image;
-                    })
+                    }),
                 );
             },
 
-            setMagnetLocation(this: void, magnetId: number, location: MagnetData<MagnetKind>["location"]): void {
+            setMagnetLocation(
+                this: void,
+                magnetId: number,
+                location: MagnetData<MagnetKind>["location"],
+            ): void {
                 set(
                     produce(function updateState(recipe: MagnetStore) {
                         const magnet = recipe.magnets.find((magnet) => magnet.id === magnetId);
                         if (!magnet) {
-                            throw new Error(`Couldn't find magnet with id ${magnetId} while trying to update location!`);
+                            throw new Error(
+                                `Couldn't find magnet with id ${magnetId} while trying to update location!`,
+                            );
                         }
                         magnet.location = location;
-                    })
+                    }),
                 );
             },
 
@@ -183,7 +214,7 @@ export const useMagnetStore = create<MagnetStore>()(
                 set(
                     produce(function updateState(recipe: MagnetStore) {
                         recipe.highlightedMagnetId = magnetId;
-                    })
+                    }),
                 );
             },
         }),
@@ -192,8 +223,8 @@ export const useMagnetStore = create<MagnetStore>()(
             // Migrate old persisted sentinel values (-1) to null on hydrate
 
             migrate: migrateMagnetStore,
-        }
-    )
+        },
+    ),
 );
 
 function isMagnetStore(store: unknown): store is MagnetStore {
@@ -213,8 +244,10 @@ export function migrateMagnetStore(persistedState: unknown): MagnetStore | undef
     }
     return {
         ...persistedState,
-        draggedMagnetId: persistedState.draggedMagnetId === -1 ? null : persistedState.draggedMagnetId,
-        highlightedMagnetId: persistedState.highlightedMagnetId === -1 ? null : persistedState.highlightedMagnetId,
+        draggedMagnetId:
+            persistedState.draggedMagnetId === -1 ? null : persistedState.draggedMagnetId,
+        highlightedMagnetId:
+            persistedState.highlightedMagnetId === -1 ? null : persistedState.highlightedMagnetId,
     };
 }
 

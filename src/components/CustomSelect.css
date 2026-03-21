@@ -13,7 +13,7 @@
     transform: scaleY(0);
     transform-origin: top;
     position: absolute;
-    transition: .2s;
+    transition: 0.2s;
     background-color: #fffe;
     border-radius: 5px;
     overflow: hidden;

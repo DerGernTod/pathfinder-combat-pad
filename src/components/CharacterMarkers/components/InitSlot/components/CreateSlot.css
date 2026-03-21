@@ -6,10 +6,18 @@
     height: 20px;
 }
 .kind-option:active {
-    text-shadow: 1px 1px 1px black, -1px -1px 1px black, 1px -1px 1px black, -1px 1px 1px black;
+    text-shadow:
+        1px 1px 1px black,
+        -1px -1px 1px black,
+        1px -1px 1px black,
+        -1px 1px 1px black;
 }
 .kind-option:hover {
-    text-shadow: 1px 1px 1px var(--gold), -1px -1px 1px var(--gold), 1px -1px 1px var(--gold), -1px 1px 1px var(--gold);
+    text-shadow:
+        1px 1px 1px var(--gold),
+        -1px -1px 1px var(--gold),
+        1px -1px 1px var(--gold),
+        -1px 1px 1px var(--gold);
 }
 .kind-option-0 {
     color: var(--pc-d);
@@ -34,7 +42,7 @@
 }
 .create-slot > .button {
     grid-area: 1 / 3 / 1 / 4;
-    padding: .5rem;
+    padding: 0.5rem;
     width: 100%;
     height: 100%;
 }
@@ -46,6 +54,6 @@
     border-radius: var(--label-border-radius) 0 0 var(--label-border-radius);
 }
 .create-slot .entity-instance {
-    transition: background-color .25s;
+    transition: background-color 0.25s;
     padding: 5px;
 }

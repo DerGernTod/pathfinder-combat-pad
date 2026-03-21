@@ -23,98 +23,131 @@ interface EntityStore {
     cycleTurn(this: void): void;
 }
 
-export const useEntityStore = create<EntityStore>()(persist((set) => ({
-    activeEntityId: null,
-    cycleTurn(this: void) {
-        set(produce(function updateState(recipe: EntityStore) {
-            // Delegate next-active calculation to a helper to reduce statements here
-            recipe.activeEntityId = getNextActiveEntityId(recipe.entities, recipe.activeEntityId);
-        }));
-    },
-    highlightedEntityId: null,
-    setHighlightedEntityId(this: void, id: number | null): void {
-        set({ highlightedEntityId: id });
-    },
-    addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const newEntityId = findHighestId(recipe) + 1;
-            recipe.entities.push({
-                ...entity,
-                id: newEntityId,
-            });
+export const useEntityStore = create<EntityStore>()(
+    persist(
+        (set) => ({
+            activeEntityId: null,
+            cycleTurn(this: void) {
+                set(
+                    produce(function updateState(recipe: EntityStore) {
+                        // Delegate next-active calculation to a helper to reduce statements here
+                        recipe.activeEntityId = getNextActiveEntityId(
+                            recipe.entities,
+                            recipe.activeEntityId,
+                        );
+                    }),
+                );
+            },
+            highlightedEntityId: null,
+            setHighlightedEntityId(this: void, id: number | null): void {
+                set({ highlightedEntityId: id });
+            },
+            addEntity(this: void, entity: Omit<Entity, "id" | "priority">) {
+                set(
+                    produce(function updateState(recipe: EntityStore): void {
+                        const newEntityId = findHighestId(recipe) + 1;
+                        recipe.entities.push({
+                            ...entity,
+                            id: newEntityId,
+                        });
 
-            // If this is the first entity, set it as active
-            if (recipe.activeEntityId === null) {
-                recipe.activeEntityId = newEntityId;
-            }
-        }));
-    },
-    draggedEntityId: null,
-    entities: [],
-    removeEntity(this: void, id: number, skipLinkedDeletion = false): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            // Handle active entity deletion logic
-            if (recipe.activeEntityId === id) {
-                const currentIndex = recipe.entities.findIndex(e => e.id === id);
-                if (recipe.entities.length <= 1) {
-                    // Last entity being deleted
-                    recipe.activeEntityId = null;
-                } else {
-                    // Move to next entity, or wrap to first if it was the last one
-                    const nextIndex = (currentIndex + 1) % recipe.entities.length;
-                    recipe.activeEntityId = recipe.entities[nextIndex].id;
+                        // If this is the first entity, set it as active
+                        if (recipe.activeEntityId === null) {
+                            recipe.activeEntityId = newEntityId;
+                        }
+                    }),
+                );
+            },
+            draggedEntityId: null,
+            entities: [],
+            removeEntity(this: void, id: number, skipLinkedDeletion = false): void {
+                set(
+                    produce(function updateState(recipe: EntityStore): void {
+                        // Handle active entity deletion logic
+                        if (recipe.activeEntityId === id) {
+                            const currentIndex = recipe.entities.findIndex((e) => e.id === id);
+                            if (recipe.entities.length <= 1) {
+                                // Last entity being deleted
+                                recipe.activeEntityId = null;
+                            } else {
+                                // Move to next entity, or wrap to first if it was the last one
+                                const nextIndex = (currentIndex + 1) % recipe.entities.length;
+                                recipe.activeEntityId = recipe.entities[nextIndex].id;
+                            }
+                        }
+
+                        recipe.entities = recipe.entities.filter((entity) => entity.id !== id);
+                    }),
+                );
+
+                // Also delete the linked magnet if it exists
+                if (!skipLinkedDeletion) {
+                    // Use dynamic import to avoid circular dependency
+                    void import("./useMagnetStore").then(({ useMagnetStore }) => {
+                        const magnetStore = useMagnetStore.getState();
+                        const linkedMagnet = magnetStore.magnets.find(
+                            (m: { linkedEntityId?: number }) => m.linkedEntityId === id,
+                        );
+                        if (linkedMagnet) {
+                            magnetStore.deleteMagnet(linkedMagnet.id, true);
+                        }
+                    });
                 }
-            }
-
-            recipe.entities = recipe.entities.filter(entity => entity.id !== id);
-        }));
-
-        // Also delete the linked magnet if it exists
-        if (!skipLinkedDeletion) {
-            // Use dynamic import to avoid circular dependency
-            void import("./useMagnetStore").then(({ useMagnetStore }) => {
-                const magnetStore = useMagnetStore.getState();
-                const linkedMagnet = magnetStore.magnets.find((m: { linkedEntityId?: number }) => m.linkedEntityId === id);
-                if (linkedMagnet) {
-                    magnetStore.deleteMagnet(linkedMagnet.id, true);
-                }
-            });
-        }
-    },
-    setDamageTaken(this: void, id: number, damageTaken: number): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const entity = recipe.entities.find(entity => entity.id === id);
-            if (!entity) {
-                throw new Error(`Tried to set damage taken for non-existing Entity ${id}`);
-            }
-            entity.damageTaken = damageTaken;
-        }));
-    },
-    setDraggedEntityId(this: void, id: number | null): void {
-        set({ draggedEntityId: id });
-    },
-    setEntities(this: void, entities: Entity[]): void {
-        set({ entities });
-    },
-    setStatus(this: void, id: number, status: number): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const entity = recipe.entities.find(entity => entity.id === id);
-            if (!entity) {
-                throw new Error(`Tried to increase status for non-existing Entity ${id}`);
-            }
-            entity.status = status;
-        }));
-    },
-    swapEntities(this: void, id1: number, id2: number): void {
-        set(produce(function updateState(recipe: EntityStore): void {
-            const entityIndex1 = recipe.entities.findIndex(entity => entity.id === id1);
-            const entityIndex2 = recipe.entities.findIndex(entity => entity.id === id2);
-            if (entityIndex1 !== -1 && entityIndex2 !== -1) {
-                [recipe.entities[entityIndex1], recipe.entities[entityIndex2]] = [recipe.entities[entityIndex2], recipe.entities[entityIndex1]];
-            }
-        }));
-    },
-}), { name: "entity-store" }));
+            },
+            setDamageTaken(this: void, id: number, damageTaken: number): void {
+                set(
+                    produce(function updateState(recipe: EntityStore): void {
+                        const entity = recipe.entities.find((entity) => entity.id === id);
+                        if (!entity) {
+                            throw new Error(
+                                `Tried to set damage taken for non-existing Entity ${id}`,
+                            );
+                        }
+                        entity.damageTaken = damageTaken;
+                    }),
+                );
+            },
+            setDraggedEntityId(this: void, id: number | null): void {
+                set({ draggedEntityId: id });
+            },
+            setEntities(this: void, entities: Entity[]): void {
+                set({ entities });
+            },
+            setStatus(this: void, id: number, status: number): void {
+                set(
+                    produce(function updateState(recipe: EntityStore): void {
+                        const entity = recipe.entities.find((entity) => entity.id === id);
+                        if (!entity) {
+                            throw new Error(
+                                `Tried to increase status for non-existing Entity ${id}`,
+                            );
+                        }
+                        entity.status = status;
+                    }),
+                );
+            },
+            swapEntities(this: void, id1: number, id2: number): void {
+                set(
+                    produce(function updateState(recipe: EntityStore): void {
+                        const entityIndex1 = recipe.entities.findIndex(
+                            (entity) => entity.id === id1,
+                        );
+                        const entityIndex2 = recipe.entities.findIndex(
+                            (entity) => entity.id === id2,
+                        );
+                        if (entityIndex1 !== -1 && entityIndex2 !== -1) {
+                            [recipe.entities[entityIndex1], recipe.entities[entityIndex2]] = [
+                                recipe.entities[entityIndex2],
+                                recipe.entities[entityIndex1],
+                            ];
+                        }
+                    }),
+                );
+            },
+        }),
+        { name: "entity-store" },
+    ),
+);
 
 function findHighestId(store: EntityStore): number {
     return store.entities.reduce((acc, entity) => Math.max(acc, entity.id), 0);
@@ -129,7 +162,7 @@ function getNextActiveEntityId(entities: Entity[], activeEntityId: number | null
         return entities[0].id;
     }
 
-    const currentIndex = entities.findIndex(e => e.id === activeEntityId);
+    const currentIndex = entities.findIndex((e) => e.id === activeEntityId);
     if (currentIndex === -1) {
         return entities[0].id;
     }

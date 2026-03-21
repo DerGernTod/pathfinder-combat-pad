@@ -2,10 +2,10 @@ import { EntityKind } from "../constants";
 
 // Primary type colors extracted from CSS (InitSlot.css)
 const PRIMARY_TYPE_COLORS = {
-    [EntityKind.PlayerCharacter]: "#7fa6b3",  // PC blue
+    [EntityKind.PlayerCharacter]: "#7fa6b3", // PC blue
     [EntityKind.NonPlayerCharacter]: "#82a687", // NPC green
-    [EntityKind.Monster]: "#8f554a",          // Monster brown
-    [EntityKind.Hazard]: "#b39f9f",           // Hazard pink
+    [EntityKind.Monster]: "#8f554a", // Monster brown
+    [EntityKind.Hazard]: "#b39f9f", // Hazard pink
 };
 
 interface HSV {
@@ -30,7 +30,13 @@ function computeMaxMinDelta(r: number, g: number, b: number) {
     return { max, min, delta };
 }
 
-function computeHueFromRgb(args: { max: number; r: number; g: number; b: number; delta: number }): number {
+function computeHueFromRgb(args: {
+    max: number;
+    r: number;
+    g: number;
+    b: number;
+    delta: number;
+}): number {
     const { max, r, g, b, delta } = args;
     if (delta === 0) {
         return 0;
@@ -62,7 +68,7 @@ function rgbToHsv(r: number, g: number, b: number): HSV {
     return { h, s, v };
 }
 
-function hexToHSV(hex: string): HSV {
+export function hexToHSV(hex: string): HSV {
     const { r, g, b } = parseHexToRgb(hex);
     return rgbToHsv(r, g, b);
 }
@@ -76,7 +82,7 @@ function sectorRgb(h: number, c: number, x: number) {
         { r: 0, g: c, b: x },
         { r: 0, g: x, b: c },
         { r: x, g: 0, b: c },
-        { r: c, g: 0, b: x }
+        { r: c, g: 0, b: x },
     ];
     return map[sector] as { r: number; g: number; b: number };
 }
@@ -102,14 +108,14 @@ function hsvToHex(hsv: HSV): string {
 }
 
 /* --- Distance / type checks --- */
-function hueDistance(h1: number, h2: number): number {
+export function hueDistance(h1: number, h2: number): number {
     const diff = Math.abs(h1 - h2);
     return Math.min(diff, 360 - diff);
 }
 
 function isTooCloseToTypeColors(hsv: HSV, minDistance: number): boolean {
     const typeHSVs = Object.values(PRIMARY_TYPE_COLORS).map(hexToHSV);
-    return typeHSVs.some(typeHSV => {
+    return typeHSVs.some((typeHSV) => {
         const hueDist = hueDistance(hsv.h, typeHSV.h);
         return hueDist < minDistance;
     });
@@ -123,13 +129,13 @@ function randomCandidate(saturation: number, value: number): HSV {
 function candidateIsAcceptable(
     candidate: HSV,
     existingHSVs: HSV[],
-    opts: { minTypeDistance: number; minExistingDistance: number }
+    opts: { minTypeDistance: number; minExistingDistance: number },
 ): boolean {
     if (isTooCloseToTypeColors(candidate, opts.minTypeDistance)) {
         return false;
     }
 
-    const tooCloseToExisting = existingHSVs.some(existingHSV => {
+    const tooCloseToExisting = existingHSVs.some((existingHSV) => {
         const hueDist = hueDistance(candidate.h, existingHSV.h);
         return hueDist < opts.minExistingDistance;
     });
@@ -145,21 +151,23 @@ export function generateUniqueColor(
         minTypeDistance?: number;
         minExistingDistance?: number;
         maxAttempts?: number;
-    } = {}
+    } = {},
 ): string {
     const {
         saturation = 60,
         value = 70,
         minTypeDistance = 30,
         minExistingDistance = 20,
-        maxAttempts = 100
+        maxAttempts = 100,
     } = options;
 
     const existingHSVs = existingColors.map(hexToHSV);
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const candidate = randomCandidate(saturation, value);
-        if (candidateIsAcceptable(candidate, existingHSVs, { minTypeDistance, minExistingDistance })) {
+        if (
+            candidateIsAcceptable(candidate, existingHSVs, { minTypeDistance, minExistingDistance })
+        ) {
             return hsvToHex(candidate);
         }
     }
@@ -180,7 +188,7 @@ export function generateUniqueColors(count: number): string[] {
 
 function createCandidateForAttempt(
     baseHSV: HSV,
-    params: { attempt: number; slots: number; separation: number; hueRange: number }
+    params: { attempt: number; slots: number; separation: number; hueRange: number },
 ): HSV {
     const { attempt, slots, separation, hueRange } = params;
     const slot = attempt % slots;
@@ -201,12 +209,29 @@ function findThematicCandidate(
         resolvedMinTypeDistance: number;
         minExistingDistance: number;
         maxAttempts: number;
-    }
+    },
 ): HSV | null {
-    const { slots, separation, hueRange, resolvedMinTypeDistance, minExistingDistance, maxAttempts } = params;
+    const {
+        slots,
+        separation,
+        hueRange,
+        resolvedMinTypeDistance,
+        minExistingDistance,
+        maxAttempts,
+    } = params;
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        const candidate = createCandidateForAttempt(baseHSV, { attempt, slots, separation, hueRange });
-        if (candidateIsAcceptable(candidate, existingHSVs, { minTypeDistance: resolvedMinTypeDistance, minExistingDistance })) {
+        const candidate = createCandidateForAttempt(baseHSV, {
+            attempt,
+            slots,
+            separation,
+            hueRange,
+        });
+        if (
+            candidateIsAcceptable(candidate, existingHSVs, {
+                minTypeDistance: resolvedMinTypeDistance,
+                minExistingDistance,
+            })
+        ) {
             return candidate;
         }
     }
@@ -231,17 +256,15 @@ export function generateThematicColor(
         minExistingDistance?: number;
         minTypeDistance?: number;
         maxAttempts?: number;
-    } = {}
+    } = {},
 ): string {
-    const {
-        hueRange = 80,
-        minExistingDistance = 40,
-        minTypeDistance,
-        maxAttempts = 120
-    } = options;
+    const { hueRange = 80, minExistingDistance = 40, minTypeDistance, maxAttempts = 120 } = options;
 
     const resolvedMinTypeDistance = minTypeDistance ?? minExistingDistance;
-    const { baseHSV, existingHSVs, slots, separation } = prepareThematicContext(kind, existingColors);
+    const { baseHSV, existingHSVs, slots, separation } = prepareThematicContext(
+        kind,
+        existingColors,
+    );
 
     const found = findThematicCandidate(baseHSV, existingHSVs, {
         slots,
@@ -249,13 +272,13 @@ export function generateThematicColor(
         hueRange,
         resolvedMinTypeDistance,
         minExistingDistance,
-        maxAttempts
+        maxAttempts,
     });
 
     if (found) {
         return hsvToHex(found);
     }
 
-    const fallbackHue = ((baseHSV.h + hueRange * 1.5 + Math.random() * 360) % 360 + 360) % 360;
+    const fallbackHue = (((baseHSV.h + hueRange * 1.5 + Math.random() * 360) % 360) + 360) % 360;
     return hsvToHex({ h: fallbackHue, s: Math.max(baseHSV.s, 60), v: Math.max(baseHSV.v, 60) });
 }

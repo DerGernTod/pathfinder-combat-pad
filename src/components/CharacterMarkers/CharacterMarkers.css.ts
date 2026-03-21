@@ -17,7 +17,8 @@ export const characterMarkers = style({
 
 export const characterMarkerHeaderBg = style({
     gridArea: "1 / 1 / 2 / 3",
-    backgroundImage: "url('/img-noise-128x128 base.png'), linear-gradient(to top, var(--parchment), var(--crimson) 40%)",
+    backgroundImage:
+        "url('/img-noise-128x128 base.png'), linear-gradient(to top, var(--parchment), var(--crimson) 40%)",
     width: "100%",
     height: "100%",
 });

@@ -22,7 +22,7 @@ function HazardIcon(): ReactElement {
 
 export function MagnetKindHazardToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#b39f9f";
-    
+
     return (
         <svg
             height="60"
@@ -32,9 +32,10 @@ export function MagnetKindHazardToken({ className, details }: MagnetKindProps): 
             xmlnsXlink="http://www.w3.org/1999/xlink"
             viewBox="0 0 60 60"
             style={{ overflow: "visible" }}
-            xmlSpace="preserve">
+            xmlSpace="preserve"
+        >
             <ShadowFilter id="shadow-hazard" />
-            
+
             {/* Apply transitions to entire token */}
             <g className={`apply-transitions ${className}`}>
                 {/* Triangle warning sign background */}
@@ -45,7 +46,7 @@ export function MagnetKindHazardToken({ className, details }: MagnetKindProps): 
                     strokeWidth="2"
                     filter="url(#shadow-hazard)"
                 />
-                
+
                 {/* Inner triangle for depth */}
                 <path
                     d="M 30 14 L 47 45 L 13 45 Z"
@@ -53,7 +54,7 @@ export function MagnetKindHazardToken({ className, details }: MagnetKindProps): 
                     stroke="rgba(255, 255, 255, 0.15)"
                     strokeWidth="1"
                 />
-                
+
                 {/* Warning exclamation mark */}
                 <HazardIcon />
             </g>

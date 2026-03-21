@@ -11,7 +11,7 @@ const canvasStyle = { height: "21px", width: "100%" };
 export function MagnetKindCondition({ className, details = "", id }: MagnetKindProps) {
     const [isEditing, setIsEditing] = useState(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const setMagnetImage = useMagnetStore(useShallow(state => state.setMagnetImage));
+    const setMagnetImage = useMagnetStore(useShallow((state) => state.setMagnetImage));
 
     if (typeof details !== "string") {
         throw new Error("MagnetKindCondition details must be a string");
@@ -57,7 +57,11 @@ function renderEditChar(isEditing: boolean) {
     return "✎";
 }
 
-function renderDetails(details: string, isEditing: boolean, ref: RefObject<HTMLCanvasElement | null>) {
+function renderDetails(
+    details: string,
+    isEditing: boolean,
+    ref: RefObject<HTMLCanvasElement | null>,
+) {
     if (isEditing) {
         return <Canvas ref={ref} style={canvasStyle} penSize={2} />;
     }
@@ -73,5 +77,5 @@ export function MagnetKindConditionPreview() {
             <div className="condition-label">condition</div>
             <div className="condition-text">&nbsp;</div>
         </div>
-    )
+    );
 }

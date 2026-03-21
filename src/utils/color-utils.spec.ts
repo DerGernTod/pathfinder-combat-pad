@@ -19,7 +19,11 @@ describe("color-utils generate functions", () => {
         // Use moderate tolerances that the algorithm can satisfy reliably
         const minExistingDistance = 20;
         const minTypeDistance = 20;
-        const color = generateThematicColor(EntityKind.PlayerCharacter, existing, { minExistingDistance, minTypeDistance, maxAttempts: 200 });
+        const color = generateThematicColor(EntityKind.PlayerCharacter, existing, {
+            minExistingDistance,
+            minTypeDistance,
+            maxAttempts: 200,
+        });
         const hsv = hexToHSV(color);
         const pc = hexToHSV("#7fa6b3");
         // Color must not equal any existing color

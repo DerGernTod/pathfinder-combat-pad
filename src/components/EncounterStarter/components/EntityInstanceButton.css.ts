@@ -25,5 +25,5 @@ export const sortableHandle = style({
     color: "#666",
     cursor: "grab",
     fontSize: "16px",
-    marginRight: "8px"
+    marginRight: "8px",
 });

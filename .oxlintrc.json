@@ -29,6 +29,7 @@
         "no-ternary": ["off"],
         "sort-imports": ["off"],
         "sort-keys": ["off"],
-        "capitalized-comments": ["off"]
+        "capitalized-comments": ["off"],
+        "max-statements": ["error", 20]
     }
 }

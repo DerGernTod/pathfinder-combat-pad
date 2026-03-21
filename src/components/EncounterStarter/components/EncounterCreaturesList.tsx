@@ -1,3 +1,4 @@
+// oxlint-disable react/jsx-max-depth
 import type { ReactElement } from "react";
 import { useRef, useState } from "react";
 import { encounterHeaderStyle, horizontalBarStyle } from "../EncounterStarter.css";
@@ -13,7 +14,7 @@ import {
     creatureImageStyle,
     creatureInfoStyle,
     scrollableContent,
-    creatureContainerStyle
+    creatureContainerStyle,
 } from "./EncounterCreaturesList.css";
 import { useEncounterSetupStore } from "../../../store/useEncounterSetupStore";
 import { EntityKind } from "../../../constants";
@@ -22,7 +23,8 @@ import { Canvas } from "../../Canvas";
 import SlotNumberInput from "../../CharacterMarkers/components/InitSlot/components/SlotMachineInput";
 import CustomSelect from "../../CustomSelect";
 import type { CustomSelectOption } from "../../CustomSelect";
-import { ScrollContainer } from "../../ScrollContainer";interface EncounterCreaturesListProps {
+import { ScrollContainer } from "../../ScrollContainer";
+interface EncounterCreaturesListProps {
     className?: string;
 }
 
@@ -41,11 +43,11 @@ const canvasStyle = {
 };
 
 export function EncounterCreaturesList(props: EncounterCreaturesListProps): ReactElement {
-    const addAvailableCreature = useEncounterSetupStore(state => state.addAvailableCreature);
-    const moveToParticipants = useEncounterSetupStore(state => state.moveToParticipants);
-    const availableCreatures = useEncounterSetupStore(state => state.availableCreatures);
-    const participants = useEncounterSetupStore(state => state.participants);
-    const existingEntities = useEntityStore(state => state.entities);
+    const addAvailableCreature = useEncounterSetupStore((state) => state.addAvailableCreature);
+    const moveToParticipants = useEncounterSetupStore((state) => state.moveToParticipants);
+    const availableCreatures = useEncounterSetupStore((state) => state.availableCreatures);
+    const participants = useEncounterSetupStore((state) => state.participants);
+    const existingEntities = useEntityStore((state) => state.entities);
 
     // New Entity State
     const [kind, setKind] = useState<EntityKind>(EntityOptions[EntityKind.Monster]);
@@ -54,10 +56,12 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Filter out entities that are already in participants or availableCreatures (by originalId)
-    const participantIds = new Set(participants.map(p => p.originalId).filter(Boolean));
-    const availableCreatureIds = new Set(availableCreatures.map(c => c.originalId).filter(Boolean));
-    const availableExistingEntities = existingEntities.filter(entity =>
-        !participantIds.has(entity.id) && !availableCreatureIds.has(entity.id)
+    const participantIds = new Set(participants.map((p) => p.originalId).filter(Boolean));
+    const availableCreatureIds = new Set(
+        availableCreatures.map((c) => c.originalId).filter(Boolean),
+    );
+    const availableExistingEntities = existingEntities.filter(
+        (entity) => !participantIds.has(entity.id) && !availableCreatureIds.has(entity.id),
     );
 
     const handleAddNew = () => {
@@ -83,7 +87,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
         setCount(1);
     };
 
-    const handleClickExistingEntity = (entity: typeof existingEntities[0]) => {
+    const handleClickExistingEntity = (entity: (typeof existingEntities)[0]) => {
         // Add existing entity directly to participants with originalId
         const { addParticipant } = useEncounterSetupStore.getState();
         addParticipant({
@@ -94,7 +98,10 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
         });
     };
 
-    const selectOptions = EntityOptions.map(toCustomSelectOption) as [CustomSelectOption, ...CustomSelectOption[]];
+    const selectOptions = EntityOptions.map(toCustomSelectOption) as [
+        CustomSelectOption,
+        ...CustomSelectOption[],
+    ];
 
     function toCustomSelectOption(entityKind: EntityKind): CustomSelectOption {
         return {
@@ -113,8 +120,15 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
 
             {/* New Entity Form - Encounter-specific flexbox layout */}
             <div className={encounterCreateSlotStyle}>
-                <div className={`entity-instance entity-instance-type-${kind} ${encounterEntityInstanceStyle}`}>
-                    <Canvas style={canvasStyle} className={encounterCanvasStyle} ref={canvasRef} penSize={2} />
+                <div
+                    className={`entity-instance entity-instance-type-${kind} ${encounterEntityInstanceStyle}`}
+                >
+                    <Canvas
+                        style={canvasStyle}
+                        className={encounterCanvasStyle}
+                        ref={canvasRef}
+                        penSize={2}
+                    />
                     <SlotNumberInput onChange={setLevel} max={20} value={level} />
                     <CustomSelect
                         options={selectOptions}
@@ -125,7 +139,9 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
                     <SlotNumberInput onChange={setCount} max={20} value={count} />
                 </div>
                 <div className={encounterAddButtonStyle}>
-                    <button className={encounterAddButtonInnerStyle} onClick={handleAddNew}>✚</button>
+                    <button className={encounterAddButtonInnerStyle} onClick={handleAddNew}>
+                        ✚
+                    </button>
                 </div>
             </div>
             <div className={horizontalBarStyle} />
@@ -134,7 +150,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
             <div className={creatureContainerStyle}>
                 <ScrollContainer contentClassName={scrollableContent} variant="absolute">
                     {/* Show available creatures from the store */}
-                    {availableCreatures.map(creature => (
+                    {availableCreatures.map((creature) => (
                         <button
                             key={creature.id}
                             onClick={() => moveToParticipants(creature.id)}
@@ -146,7 +162,7 @@ export function EncounterCreaturesList(props: EncounterCreaturesListProps): Reac
                     ))}
 
                     {/* Show existing entities that aren't in participants */}
-                    {availableExistingEntities.map(entity => (
+                    {availableExistingEntities.map((entity) => (
                         <button
                             key={entity.id}
                             onClick={() => handleClickExistingEntity(entity)}
