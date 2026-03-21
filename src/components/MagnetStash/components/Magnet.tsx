@@ -36,6 +36,20 @@ function renderMagnetChildren(magnet: MagnetData<any>, draggingClass: string) {
     });
 }
 
+function handleNonDraggingEvent(
+    e: globalThis.PointerEvent,
+    id: number,
+    kind: MagnetKind,
+    deleteMagnet: (id: number) => void,
+    rotateMagnet: (id: number) => void,
+) {
+    if (isEraserEvent(e)) {
+        deleteMagnet(id);
+    } else if (MagnetKinds[kind].allowRotate) {
+        rotateMagnet(id);
+    }
+}
+
 function createStopDraggingHandler(options: {
     getMagnet: () => MagnetData<any> | undefined;
     deleteMagnet: (id: number) => void;
@@ -54,11 +68,7 @@ function createStopDraggingHandler(options: {
         options.setHighlightedMagnet(null);
         globalThis.removeEventListener("pointermove", options.updateLocation);
         if (!isDragging) {
-            if (isEraserEvent(e)) {
-                options.deleteMagnet(id);
-            } else if (MagnetKinds[kind].allowRotate) {
-                options.rotateMagnet(id);
-            }
+            handleNonDraggingEvent(e, id, kind, options.deleteMagnet, options.rotateMagnet);
         } else {
             options.dropMagnet(id);
         }

@@ -1,5 +1,32 @@
 import type { ReactElement } from "react";
 import type { MagnetKindProps } from "./magnet-kind-types";
+import { ShadowFilter } from "./SvgDefs";
+
+function MonsterSkull({ fillColor }: { fillColor: string }): ReactElement {
+    return (
+        <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
+            {/* Skull shape */}
+            <ellipse cx="0" cy="-2" rx="10" ry="11" />
+
+            {/* Eye sockets */}
+            <ellipse cx="-4" cy="-4" rx="2.5" ry="3.5" fill="rgba(255, 255, 255, 0.9)" />
+            <ellipse cx="4" cy="-4" rx="2.5" ry="3.5" fill="rgba(255, 255, 255, 0.9)" />
+
+            {/* Nose cavity */}
+            <path d="M -1.5 1 L 0 3 L 1.5 1 Z" fill="rgba(255, 255, 255, 0.9)" />
+
+            {/* Teeth/jaw */}
+            <rect x="-6" y="5" width="2" height="3" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
+            <rect x="-2" y="5" width="1.5" height="3.5" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
+            <rect x="0.5" y="5" width="1.5" height="3.5" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
+            <rect x="4" y="5" width="2" height="3" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
+
+            {/* Horns for monster effect */}
+            <path d="M -10 -8 Q -12 -12 -10 -14 L -9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
+            <path d="M 10 -8 Q 12 -12 10 -14 L 9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
+        </g>
+    );
+}
 
 export function MagnetKindMonsterToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#8f554a";
@@ -14,11 +41,7 @@ export function MagnetKindMonsterToken({ className, details }: MagnetKindProps):
             viewBox="0 0 60 60"
             style={{ overflow: "visible" }}
             xmlSpace="preserve">
-            <defs>
-                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="0.5" stdDeviation="1" floodOpacity="0.8"/>
-                </filter>
-            </defs>
+            <ShadowFilter id="shadow" />
             
             {/* Apply transitions to entire token */}
             <g className={`apply-transitions ${className}`}>
@@ -40,27 +63,7 @@ export function MagnetKindMonsterToken({ className, details }: MagnetKindProps):
                 />
                 
                 {/* Stylized monster skull icon */}
-                <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
-                    {/* Skull shape */}
-                    <ellipse cx="0" cy="-2" rx="10" ry="11" />
-                    
-                    {/* Eye sockets */}
-                    <ellipse cx="-4" cy="-4" rx="2.5" ry="3.5" fill="rgba(255, 255, 255, 0.9)" />
-                    <ellipse cx="4" cy="-4" rx="2.5" ry="3.5" fill="rgba(255, 255, 255, 0.9)" />
-                    
-                    {/* Nose cavity */}
-                    <path d="M -1.5 1 L 0 3 L 1.5 1 Z" fill="rgba(255, 255, 255, 0.9)" />
-                    
-                    {/* Teeth/jaw */}
-                    <rect x="-6" y="5" width="2" height="3" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
-                    <rect x="-2" y="5" width="1.5" height="3.5" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
-                    <rect x="0.5" y="5" width="1.5" height="3.5" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
-                    <rect x="4" y="5" width="2" height="3" rx="0.5" fill="rgba(255, 255, 255, 0.9)" />
-                    
-                    {/* Horns for monster effect */}
-                    <path d="M -10 -8 Q -12 -12 -10 -14 L -9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
-                    <path d="M 10 -8 Q 12 -12 10 -14 L 9 -10 Z" fill={fillColor} stroke="#1a1a1a" strokeWidth="0.5" />
-                </g>
+                <MonsterSkull fillColor={fillColor} />
             </g>
         </svg>
     );

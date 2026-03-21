@@ -11,7 +11,7 @@ export function DurationBar(): ReactElement {
             {nums.map((_, i) => {
                 const value = 10 - i;
                 return (
-                    <div key={} className=duration-number>
+                    <div key={'duration-' + value} className=duration-number>
                         {value}
                     </div>
                 );

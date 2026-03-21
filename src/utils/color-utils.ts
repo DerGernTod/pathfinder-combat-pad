@@ -26,6 +26,19 @@ function parseHexToRgb(hex: string) {
 }
 
 /**
+ * Compute hue from components when delta !== 0
+ */
+function computeHue(max: number, r: number, g: number, b: number, delta: number): number {
+    if (max === r) {
+        return ((g - b) / delta + (g < b ? 6 : 0)) * 60;
+    }
+    if (max === g) {
+        return ((b - r) / delta + 2) * 60;
+    }
+    return ((r - g) / delta + 4) * 60;
+}
+
+/**
  * Convert RGB (0-1) to HSV with same numeric behavior as before
  */
 function rgbToHsv(r: number, g: number, b: number): HSV {
@@ -39,14 +52,7 @@ function rgbToHsv(r: number, g: number, b: number): HSV {
 
     if (delta !== 0) {
         s = (delta / max) * 100;
-
-        if (max === r) {
-            h = ((g - b) / delta + (g < b ? 6 : 0)) * 60;
-        } else if (max === g) {
-            h = ((b - r) / delta + 2) * 60;
-        } else {
-            h = ((r - g) / delta + 4) * 60;
-        }
+        h = computeHue(max, r, g, b, delta);
     }
 
     return { h, s, v };
@@ -61,6 +67,18 @@ function hexToHSV(hex: string): HSV {
 }
 
 /**
+ * Map sector values to normalized rgb before adding m
+ */
+function sectorRgb(h: number, c: number, x: number) {
+    if (h >= 0 && h < 60) return { r: c, g: x, b: 0 };
+    if (h >= 60 && h < 120) return { r: x, g: c, b: 0 };
+    if (h >= 120 && h < 180) return { r: 0, g: c, b: x };
+    if (h >= 180 && h < 240) return { r: 0, g: x, b: c };
+    if (h >= 240 && h < 300) return { r: x, g: 0, b: c };
+    return { r: c, g: 0, b: x };
+}
+
+/**
  * Convert HSV to RGB (0-1) following the same algorithm
  */
 function hsvToRgb(h: number, sPercent: number, vPercent: number) {
@@ -71,23 +89,8 @@ function hsvToRgb(h: number, sPercent: number, vPercent: number) {
     const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
     const m = v - c;
 
-    let r = 0, g = 0, b = 0;
-
-    if (h >= 0 && h < 60) {
-        r = c; g = x; b = 0;
-    } else if (h >= 60 && h < 120) {
-        r = x; g = c; b = 0;
-    } else if (h >= 120 && h < 180) {
-        r = 0; g = c; b = x;
-    } else if (h >= 180 && h < 240) {
-        r = 0; g = x; b = c;
-    } else if (h >= 240 && h < 300) {
-        r = x; g = 0; b = c;
-    } else {
-        r = c; g = 0; b = x;
-    }
-
-    return { r: r + m, g: g + m, b: b + m };
+    const base = sectorRgb(h, c, x);
+    return { r: base.r + m, g: base.g + m, b: base.b + m };
 }
 
 /**
@@ -136,12 +139,12 @@ function randomCandidate(saturation: number, value: number): HSV {
 /**
  * Check candidate against type colors and existing colors
  */
-function candidateIsAcceptable(candidate: HSV, existingHSVs: HSV[], minTypeDistance: number, minExistingDistance: number): boolean {
-    if (isTooCloseToTypeColors(candidate, minTypeDistance)) return false;
+function candidateIsAcceptable(candidate: HSV, existingHSVs: HSV[], opts: { minTypeDistance: number; minExistingDistance: number }): boolean {
+    if (isTooCloseToTypeColors(candidate, opts.minTypeDistance)) { return false; }
 
     const tooCloseToExisting = existingHSVs.some(existingHSV => {
         const hueDist = hueDistance(candidate.h, existingHSV.h);
-        return hueDist < minExistingDistance;
+        return hueDist < opts.minExistingDistance;
     });
 
     return !tooCloseToExisting;
@@ -173,7 +176,7 @@ export function generateUniqueColor(
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const candidate = randomCandidate(saturation, value);
-        if (candidateIsAcceptable(candidate, existingHSVs, minTypeDistance, minExistingDistance)) {
+        if (candidateIsAcceptable(candidate, existingHSVs, { minTypeDistance, minExistingDistance })) {
             return hsvToHex(candidate);
         }
     }
@@ -200,7 +203,8 @@ export function generateUniqueColors(count: number): string[] {
 /**
  * Create a candidate hue for a given attempt slot around base hue
  */
-function createCandidateForAttempt(baseHSV: HSV, attempt: number, slots: number, separation: number, hueRange: number): HSV {
+function createCandidateForAttempt(baseHSV: HSV, params: { attempt: number; slots: number; separation: number; hueRange: number }): HSV {
+    const { attempt, slots, separation, hueRange } = params;
     const slot = attempt % slots;
     const slotCenter = baseHSV.h + (slot - Math.floor(slots / 2)) * separation;
     const jitter = (Math.random() * 2 - 1) * Math.min(hueRange / 2, separation / 4);
@@ -208,6 +212,19 @@ function createCandidateForAttempt(baseHSV: HSV, attempt: number, slots: number,
     // Normalize
     h = ((h % 360) + 360) % 360;
     return { h, s: Math.max(baseHSV.s, 60), v: Math.max(baseHSV.v, 60) };
+}
+
+/**
+ * Try to find an acceptable thematic candidate within attempts
+ */
+function findThematicCandidate(baseHSV: HSV, existingHSVs: HSV[], slots: number, separation: number, hueRange: number, resolvedMinTypeDistance: number, minExistingDistance: number, maxAttempts: number): HSV | null {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const candidate = createCandidateForAttempt(baseHSV, { attempt, slots, separation, hueRange });
+        if (candidateIsAcceptable(candidate, existingHSVs, { minTypeDistance: resolvedMinTypeDistance, minExistingDistance })) {
+            return candidate;
+        }
+    }
+    return null;
 }
 
 /**
@@ -246,14 +263,4 @@ export function generateThematicColor(
     const slots = Math.max(3, existingCount + 1);
     const separation = 360 / slots;
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        const candidate = createCandidateForAttempt(baseHSV, attempt, slots, separation, hueRange);
-        if (candidateIsAcceptable(candidate, existingHSVs, resolvedMinTypeDistance, minExistingDistance)) {
-            return hsvToHex(candidate);
-        }
-    }
-
-    // Fallback: choose a hue offset farther from base
-    const fallbackHue = ((baseHSV.h + hueRange * 1.5 + Math.random() * 360) % 360 + 360) % 360;
-    return hsvToHex({ h: fallbackHue, s: Math.max(baseHSV.s, 60), v: Math.max(baseHSV.v, 60) });
-}
+    const found = findThematicCandidate(baseHSV, existingHSVs, slots, separation, hueRange, resolvedMinTypeDistance, minExi

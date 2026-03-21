@@ -15,13 +15,15 @@ const transparentImage = new Image();
 transparentImage.src =
     "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
-function getClassName(
-    kind: string,
-    status: string,
-    draggingClass: string,
-    isMagnetHighlighted: boolean,
-    isHighlighted: boolean,
-): string {
+function getClassName(opts: {
+    kind: string;
+    status: string;
+    draggingClass: string;
+    isMagnetHighlighted: boolean;
+    isHighlighted: boolean;
+}): string {
+    const { kind, status, draggingClass, isMagnetHighlighted, isHighlighted } =
+        opts;
     const magnetHighlightClass = isMagnetHighlighted
         ? "magnet-being-dragged"
         : "";
@@ -56,36 +58,25 @@ function createHandlePointerDown(params: {
         setDraggingClass,
     } = params;
 
-    return (e) => {
-        const isPenErase = e.pointerType === "pen" && e.button === 5;
-        if (e.shiftKey || isPenErase) {
-            removeEntity(id);
-            return;
+    function startGrab() {
+        setDraggedEntityId(id);
+        setHighlightedEntityId(id); // Highlight linked magnet
+        setDraggingClass("dragging");
+        document.body.classList.add("grabbing");
+        grabberRef.current?.classList.remove("grab-cursor");
+
+        function onPointerUp() {
+            setDraggingClass("");
+            setDraggedEntityId(null);
+            setHighlightedEntityId(null); // Clear highlight
+            document.body.classList.remove("grabbing");
+            grabberRef.current?.classList.add("grab-cursor");
         }
 
-        if (grabberRef.current?.contains(e.target as Node)) {
-            setDraggedEntityId(id);
-            setHighlightedEntityId(id); // Highlight linked magnet
-            setDraggingClass("dragging");
-            document.body.classList.add("grabbing");
-            grabberRef.current?.classList.remove("grab-cursor");
+        globalThis.addEventListener("pointerup", onPointerUp, { once: true });
+    }
 
-            globalThis.addEventListener(
-                "pointerup",
-                () => {
-                    setDraggingClass("");
-                    setDraggedEntityId(null);
-                    setHighlightedEntityId(null); // Clear highlight
-                    document.body.classList.remove("grabbing");
-                    grabberRef.current?.classList.add("grab-cursor");
-                },
-                { once: true },
-            );
-
-            return;
-        }
-
-        // Also highlight on simple click/press of the row
+    function startSimpleHighlight() {
         setHighlightedEntityId(id);
         globalThis.addEventListener(
             "pointerup",
@@ -94,62 +85,62 @@ function createHandlePointerDown(params: {
             },
             { once: true },
         );
+    }
+
+    return (e) => {
+        const isPenErase = e.pointerType === "pen" && e.button === 5;
+        if (e.shiftKey || isPenErase) {
+            removeEntity(id);
+            return;
+        }
+
+        if (grabberRef.current?.contains(e.target as Node)) {
+            startGrab();
+            return;
+        }
+
+        // Also highlight on simple click/press of the row
+        startSimpleHighlight();
     };
 }
 
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement | null => {
-    const {
-        removeEntity,
-        setDraggedEntityId,
-        setDamageTaken,
-        setHighlightedEntityId,
-    } = useEntityStore(
-        useShallow((store) => ({
-            removeEntity: store.removeEntity,
-            setDraggedEntityId: store.setDraggedEntityId,
-            setDamageTaken: store.setDamageTaken,
-            setHighlightedEntityId: store.setHighlightedEntityId,
-        })),
-    );
+    const { removeEntity, setDraggedEntityId, setDamageTaken, setHighlightedEntityId } =
+        useEntityStore(
+            useShallow((store) => ({
+                removeEntity: store.removeEntity,
+                setDraggedEntityId: store.setDraggedEntityId,
+                setDamageTaken: store.setDamageTaken,
+                setHighlightedEntityId: store.setHighlightedEntityId,
+            })),
+        );
 
     const entity = useEntityStore(
         useShallow((store) => store.entities.find((e) => e.id === entityId)),
-    );
-    const [lastKnownEntity, setLastKnownEntity] = useState(entity);
+    ),
+        [lastKnownEntity, setLastKnownEntity] = useState(entity);
 
     useEffect(() => {
-        if (entity) {
-            setLastKnownEntity(entity);
-        }
+        if (entity) setLastKnownEntity(entity);
     }, [entity]);
 
-    if (!lastKnownEntity) {
-        return null;
-    }
+    if (!lastKnownEntity) return null;
 
-    const entityIds = useEntityStore(
-        useShallow((state) => state.entities.map((e) => e.id)),
-    );
-    const { id, name, kind, status, level, damageTaken, color } =
-        lastKnownEntity;
-
-    // Check if this entity's linked magnet is being highlighted (clicked or dragged)
-    const highlightedLinkedEntityId = useMagnetStore(
-        (state) =>
-            state.magnets.find((m) => m.id === state.highlightedMagnetId)
-                ?.linkedEntityId,
-    );
-    const isMagnetHighlighted = highlightedLinkedEntityId === id;
-    const highlightedEntityId = useEntityStore(
-        useShallow((state) => state.highlightedEntityId),
-    );
-    const isHighlighted = highlightedEntityId === id || isMagnetHighlighted;
-
-    const draggableRef = useRef(null);
-    const grabber = useRef<HTMLDivElement | null>(null);
-    const [draggingClass, setDraggingClass] = useState("");
+    const entityIds = useEntityStore(useShallow((state) => state.entities.map((e) => e.id))),
+        { id, name, kind, status, level, damageTaken, color } = lastKnownEntity,
+        highlightedLinkedEntityId = useMagnetStore(
+            (state) =>
+                state.magnets.find((m) => m.id === state.highlightedMagnetId)
+                    ?.linkedEntityId,
+        ),
+        isMagnetHighlighted = highlightedLinkedEntityId === id,
+        highlightedEntityId = useEntityStore(useShallow((state) => state.highlightedEntityId)),
+        isHighlighted = highlightedEntityId === id || isMagnetHighlighted,
+        draggableRef = useRef(null),
+        grabber = useRef<HTMLDivElement | null>(null),
+        [draggingClass, setDraggingClass] = useState("");
 
     const handlePointerDown = createHandlePointerDown({
         id,
@@ -160,14 +151,7 @@ export const EntityInstance = ({
         setDraggingClass,
     });
 
-    const className = getClassName(
-        kind,
-        status,
-        draggingClass,
-        isMagnetHighlighted,
-        isHighlighted,
-    );
-
+    const className = getClassName({ kind, status, draggingClass, isMagnetHighlighted, isHighlighted });
     const inlineStyle = getInlineStyle(color);
 
     return (
