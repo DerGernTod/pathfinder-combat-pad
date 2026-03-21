@@ -28,6 +28,7 @@
         "id-length": ["off"],
         "no-ternary": ["off"],
         "sort-imports": ["off"],
-        "sort-keys": ["off"]
+        "sort-keys": ["off"],
+        "capitalized-comments": ["off"]
     }
 }

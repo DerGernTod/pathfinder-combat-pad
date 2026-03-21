@@ -17,6 +17,55 @@ const INITIAL_MAGNET_STYLE = { scale: 0 };
 const EXIT_MAGNET_STYLE = { scale: 0 };
 const DRAG_MOVE_TOLERANCE = 5;
 
+function getDraggingClass(magnet: MagnetData<any>, isHighlighted: boolean) {
+    let cls = "";
+    if (magnet?.isDragging) {
+        cls = "dragging";
+    }
+    if (isHighlighted) {
+        cls += `${cls ? " " : ""}highlighted`;
+    }
+    return cls;
+}
+
+function renderMagnetChildren(magnet: MagnetData<any>, draggingClass: string) {
+    return createElement(MagnetKinds[magnet.kind].children, {
+        className: draggingClass,
+        details: magnet.details,
+        id: magnet.id,
+    });
+}
+
+function createStopDraggingHandler(options: {
+    getMagnet: () => MagnetData<any> | undefined;
+    deleteMagnet: (id: number) => void;
+    dropMagnet: (id: number) => void;
+    rotateMagnet: (id: number) => void;
+    updateLocation: (e: globalThis.PointerEvent) => void;
+    setHighlightedMagnet: (id: number | null) => void;
+    setDraggingAllowed: (v: boolean) => void;
+}) {
+    return function stopDraggingCallback(e: globalThis.PointerEvent) {
+        const magnet = options.getMagnet();
+        if (!magnet) {
+            return;
+        }
+        const { id, isDragging, kind } = magnet;
+        options.setHighlightedMagnet(null);
+        globalThis.removeEventListener("pointermove", options.updateLocation);
+        if (!isDragging) {
+            if (isEraserEvent(e)) {
+                options.deleteMagnet(id);
+            } else if (MagnetKinds[kind].allowRotate) {
+                options.rotateMagnet(id);
+            }
+        } else {
+            options.dropMagnet(id);
+        }
+        options.setDraggingAllowed(false);
+    };
+}
+
 export function Magnet({ id }: MagnetProps): ReactElement | null {
     const magnet = useMagnetStore(
         useShallow((state) => state.magnets.find((m) => m.id === id)),
@@ -45,13 +94,7 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
         return null;
     }
 
-    let draggingClass = "";
-    if (magnet.isDragging) {
-        draggingClass = "dragging";
-    }
-    if (isHighlighted) {
-        draggingClass += " highlighted";
-    }
+    const draggingClass = getDraggingClass(magnet, isHighlighted);
 
     return (
         <motion.div
@@ -71,11 +114,7 @@ export function Magnet({ id }: MagnetProps): ReactElement | null {
             initial={INITIAL_MAGNET_STYLE}
             exit={EXIT_MAGNET_STYLE}
         >
-            {createElement(MagnetKinds[magnet.kind].children, {
-                className: draggingClass,
-                details: magnet.details,
-                id: magnet.id,
-            })}
+            {renderMagnetChildren(magnet, draggingClass)}
         </motion.div>
     );
 }
@@ -142,37 +181,15 @@ function useAllowDragging<T extends MagnetKind>(
         ],
     );
 
-    const stopDragging = useCallback(
-        function stopDraggingCallback(e: globalThis.PointerEvent) {
-            if (!magnet) {
-                return;
-            }
-            const { id, isDragging, kind } = magnet;
-            setHighlightedMagnet(null);
-            globalThis.removeEventListener("pointermove", updateLocation);
-            if (!isDragging) {
-                if (isEraserEvent(e)) {
-                    deleteMagnet(id);
-                } else if (
-                    !magnet.isDragging &&
-                    MagnetKinds[kind].allowRotate
-                ) {
-                    rotateMagnet(id);
-                }
-            } else {
-                dropMagnet(id);
-            }
-            setDraggingAllowed(false);
-        },
-        [
-            deleteMagnet,
-            dropMagnet,
-            magnet,
-            rotateMagnet,
-            updateLocation,
-            setHighlightedMagnet,
-        ],
-    );
+    const stopDragging = createStopDraggingHandler({
+        getMagnet: () => magnet,
+        deleteMagnet,
+        dropMagnet,
+        rotateMagnet,
+        updateLocation,
+        setHighlightedMagnet,
+        setDraggingAllowed,
+    });
 
     const allowDragging = useCallback(
         function startDraggingCallback(e: PointerEvent<HTMLDivElement>) {

@@ -27,25 +27,8 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
     activeEntityId: null,
     cycleTurn(this: void) {
         set(produce(function updateState(recipe: EntityStore) {
-            const { entities, activeEntityId } = recipe;
-            if (entities.length === 0) {
-                recipe.activeEntityId = null;
-                return;
-            }
-
-            if (activeEntityId === null) {
-                recipe.activeEntityId = entities[0].id;
-                return;
-            }
-
-            const currentIndex = entities.findIndex(e => e.id === activeEntityId);
-            if (currentIndex === -1) {
-                // Current active entity not found (maybe deleted), start over
-                recipe.activeEntityId = entities[0].id;
-            } else {
-                const nextIndex = (currentIndex + 1) % entities.length;
-                recipe.activeEntityId = entities[nextIndex].id;
-            }
+            // Delegate next-active calculation to a helper to reduce statements here
+            recipe.activeEntityId = getNextActiveEntityId(recipe.entities, recipe.activeEntityId);
         }));
     },
     highlightedEntityId: null,
@@ -135,4 +118,21 @@ export const useEntityStore = create<EntityStore>()(persist((set) => ({
 
 function findHighestId(store: EntityStore): number {
     return store.entities.reduce((acc, entity) => Math.max(acc, entity.id), 0);
+}
+
+function getNextActiveEntityId(entities: Entity[], activeEntityId: number | null): number | null {
+    if (entities.length === 0) {
+        return null;
+    }
+
+    if (activeEntityId === null) {
+        return entities[0].id;
+    }
+
+    const currentIndex = entities.findIndex(e => e.id === activeEntityId);
+    if (currentIndex === -1) {
+        return entities[0].id;
+    }
+
+    return entities[(currentIndex + 1) % entities.length].id;
 }

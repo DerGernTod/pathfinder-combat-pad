@@ -17,7 +17,7 @@ const initialOptions = { height: 0 };
 const animateOptions = { height: "4rem" };
 
 export function InitSlot({ entityId }: InitSlotProps): ReactElement {
-    const gapClass = getGapClass(!!entityId);
+    const gapClass = getGapClass(Boolean(entityId));
     const activeEntityId = useEntityStore(useShallow(state => state.activeEntityId));
     const isActive = entityId !== undefined && entityId === activeEntityId;
     const ref = useRef<HTMLDivElement>(null);

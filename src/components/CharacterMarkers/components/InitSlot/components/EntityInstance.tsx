@@ -15,6 +15,88 @@ const transparentImage = new Image();
 transparentImage.src =
     "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
+function getClassName(
+    kind: string,
+    status: string,
+    draggingClass: string,
+    isMagnetHighlighted: boolean,
+    isHighlighted: boolean,
+): string {
+    const magnetHighlightClass = isMagnetHighlighted
+        ? "magnet-being-dragged"
+        : "";
+    const highlightedClass = isHighlighted ? "highlighted" : "";
+    return `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass} ${highlightedClass}`;
+}
+
+function getInlineStyle(
+    color?: string,
+): React.CSSProperties & { "--entity-color"?: string } {
+    const style: React.CSSProperties & { "--entity-color"?: string } = {};
+    if (color) {
+        style["--entity-color"] = color;
+    }
+    return style;
+}
+
+function createHandlePointerDown(params: {
+    id: number;
+    grabberRef: React.RefObject<HTMLDivElement | null>;
+    removeEntity: (id: number) => void;
+    setDraggedEntityId: (id: number | null) => void;
+    setHighlightedEntityId: (id: number | null) => void;
+    setDraggingClass: (c: string) => void;
+}): PointerEventHandler<HTMLDivElement> {
+    const {
+        id,
+        grabberRef,
+        removeEntity,
+        setDraggedEntityId,
+        setHighlightedEntityId,
+        setDraggingClass,
+    } = params;
+
+    return (e) => {
+        const isPenErase = e.pointerType === "pen" && e.button === 5;
+        if (e.shiftKey || isPenErase) {
+            removeEntity(id);
+            return;
+        }
+
+        if (grabberRef.current?.contains(e.target as Node)) {
+            setDraggedEntityId(id);
+            setHighlightedEntityId(id); // Highlight linked magnet
+            setDraggingClass("dragging");
+            document.body.classList.add("grabbing");
+            grabberRef.current?.classList.remove("grab-cursor");
+
+            globalThis.addEventListener(
+                "pointerup",
+                () => {
+                    setDraggingClass("");
+                    setDraggedEntityId(null);
+                    setHighlightedEntityId(null); // Clear highlight
+                    document.body.classList.remove("grabbing");
+                    grabberRef.current?.classList.add("grab-cursor");
+                },
+                { once: true },
+            );
+
+            return;
+        }
+
+        // Also highlight on simple click/press of the row
+        setHighlightedEntityId(id);
+        globalThis.addEventListener(
+            "pointerup",
+            () => {
+                setHighlightedEntityId(null);
+            },
+            { once: true },
+        );
+    };
+}
+
 export const EntityInstance = ({
     entityId,
 }: EntityInstanceProps): ReactElement | null => {
@@ -31,6 +113,7 @@ export const EntityInstance = ({
             setHighlightedEntityId: store.setHighlightedEntityId,
         })),
     );
+
     const entity = useEntityStore(
         useShallow((store) => store.entities.find((e) => e.id === entityId)),
     );
@@ -67,54 +150,25 @@ export const EntityInstance = ({
     const draggableRef = useRef(null);
     const grabber = useRef<HTMLDivElement | null>(null);
     const [draggingClass, setDraggingClass] = useState("");
-    const handlePointerDown = (
-        e: Parameters<PointerEventHandler<HTMLDivElement>>[0],
-    ) => {
-        const isPenErase = e.pointerType === "pen" && e.button === 5;
-        if (e.shiftKey || isPenErase) {
-            removeEntity(id);
-        } else if (grabber.current?.contains(e.target as Node)) {
-            setDraggedEntityId(id);
-            setHighlightedEntityId(id); // Highlight linked magnet
-            setDraggingClass("dragging");
-            document.body.classList.add("grabbing");
-            grabber.current?.classList.remove("grab-cursor");
-            globalThis.addEventListener(
-                "pointerup",
-                () => {
-                    setDraggingClass("");
-                    setDraggedEntityId(null);
-                    setHighlightedEntityId(null); // Clear highlight
-                    document.body.classList.remove("grabbing");
-                    grabber.current?.classList.add("grab-cursor");
-                },
-                { once: true },
-            );
-        } else {
-            // Also highlight on simple click/press of the row
-            setHighlightedEntityId(id);
-            globalThis.addEventListener(
-                "pointerup",
-                () => {
-                    setHighlightedEntityId(null);
-                },
-                { once: true },
-            );
-        }
-    };
 
-    // Build className
-    const magnetHighlightClass = isMagnetHighlighted
-        ? "magnet-being-dragged"
-        : "";
-    const highlightedClass = isHighlighted ? "highlighted" : "";
-    const className = `entity-instance entity-instance-type-${kind} status-${status} ${draggingClass} ${magnetHighlightClass} ${highlightedClass}`;
+    const handlePointerDown = createHandlePointerDown({
+        id,
+        grabberRef: grabber,
+        removeEntity,
+        setDraggedEntityId,
+        setHighlightedEntityId,
+        setDraggingClass,
+    });
 
-    // Build inline style with entity color
-    const inlineStyle: React.CSSProperties & { "--entity-color"?: string } = {};
-    if (color) {
-        inlineStyle["--entity-color"] = color;
-    }
+    const className = getClassName(
+        kind,
+        status,
+        draggingClass,
+        isMagnetHighlighted,
+        isHighlighted,
+    );
+
+    const inlineStyle = getInlineStyle(color);
 
     return (
         <motion.div

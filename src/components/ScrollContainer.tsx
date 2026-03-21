@@ -9,10 +9,54 @@ interface ScrollContainerProps {
     variant?: "grid" | "absolute";
 }
 
-export function ScrollContainer({ children, contentClassName, variant = "grid" }: ScrollContainerProps) {
+export function ScrollContainer({
+    children,
+    contentClassName,
+    variant = "grid",
+}: ScrollContainerProps) {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [showTop, setShowTop] = useState(false);
     const [showBottom, setShowBottom] = useState(false);
+
+    function updateFor(el: HTMLDivElement | null): void {
+        if (!el) {
+            return;
+        }
+        const canScroll = el.scrollHeight > el.clientHeight + 1;
+        if (!canScroll) {
+            setShowTop(false);
+            setShowBottom(false);
+            return;
+        }
+        setShowTop(el.scrollTop > 2);
+        setShowBottom(el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+    }
+
+    function setupObservers(
+        el: HTMLDivElement,
+        handler: () => void
+    ): () => void {
+        const ro = new ResizeObserver(handler);
+        ro.observe(el);
+
+        const mo = new MutationObserver(handler);
+        mo.observe(el, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+        });
+
+        el.addEventListener("scroll", handler, { passive: true });
+
+        // Wait for fonts to load before initial check
+        document.fonts.ready.then(handler).catch(handler);
+
+        return () => {
+            ro.disconnect();
+            mo.disconnect();
+            el.removeEventListener("scroll", handler);
+        };
+    }
 
     useEffect(() => {
         const content = contentRef.current;
@@ -20,36 +64,12 @@ export function ScrollContainer({ children, contentClassName, variant = "grid" }
             return;
         }
 
-        const update = () => {
-            const el = content;
-            const canScroll = el.scrollHeight > el.clientHeight + 1;
-            if (!canScroll) {
-                setShowTop(false);
-                setShowBottom(false);
-                return;
-            }
-            setShowTop(el.scrollTop > 2);
-            setShowBottom(el.scrollTop + el.clientHeight < el.scrollHeight - 2);
-        };
+        const debouncedUpdate = debounce(() => updateFor(content), 250);
 
-        const debouncedUpdate = debounce(update, 250);
-
-        // listeners and observers
-        const ro = new ResizeObserver(debouncedUpdate);
-        ro.observe(content);
-
-        const mo = new MutationObserver(debouncedUpdate);
-        mo.observe(content, { childList: true, subtree: true, characterData: true });
-
-        content.addEventListener("scroll", debouncedUpdate, { passive: true });
-
-        // Wait for fonts to load before initial check
-        document.fonts.ready.then(debouncedUpdate).catch(debouncedUpdate);
+        const cleanup = setupObservers(content, debouncedUpdate);
 
         return () => {
-            ro.disconnect();
-            mo.disconnect();
-            content.removeEventListener("scroll", debouncedUpdate);
+            cleanup();
             debouncedUpdate.cancel();
         };
     }, []);
@@ -60,7 +80,10 @@ export function ScrollContainer({ children, contentClassName, variant = "grid" }
             return;
         }
         const scrollAmount = el.clientHeight * 0.8;
-        el.scrollTo({ top: Math.max(0, el.scrollTop - scrollAmount), behavior: "smooth" });
+        el.scrollTo({
+            top: Math.max(0, el.scrollTop - scrollAmount),
+            behavior: "smooth",
+        });
     };
 
     const scrollToBottom = () => {
@@ -69,7 +92,10 @@ export function ScrollContainer({ children, contentClassName, variant = "grid" }
             return;
         }
         const scrollAmount = el.clientHeight * 0.8;
-        el.scrollTo({ top: Math.min(el.scrollHeight, el.scrollTop + scrollAmount), behavior: "smooth" });
+        el.scrollTo({
+            top: Math.min(el.scrollHeight, el.scrollTop + scrollAmount),
+            behavior: "smooth",
+        });
     };
 
     return (

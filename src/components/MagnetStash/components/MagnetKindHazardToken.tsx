@@ -1,5 +1,24 @@
 import type { ReactElement } from "react";
 import type { MagnetKindProps } from "./magnet-kind-types";
+import { ShadowFilter } from "./SvgDefs";
+
+function HazardIcon(): ReactElement {
+    return (
+        <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
+            {/* Exclamation mark body */}
+            <rect x="-2" y="-8" width="4" height="12" rx="2" fill="rgba(255, 255, 255, 0.9)" />
+
+            {/* Exclamation mark dot */}
+            <circle cx="0" cy="8" r="2.5" fill="rgba(255, 255, 255, 0.9)" />
+
+            {/* Additional hazard stripes for effect */}
+            <g opacity="0.3">
+                <rect x="-12" y="12" width="24" height="2" fill="#1a1a1a" />
+                <rect x="-10" y="16" width="20" height="2" fill="#1a1a1a" />
+            </g>
+        </g>
+    );
+}
 
 export function MagnetKindHazardToken({ className, details }: MagnetKindProps): ReactElement {
     const fillColor = details || "#b39f9f";
@@ -14,11 +33,7 @@ export function MagnetKindHazardToken({ className, details }: MagnetKindProps): 
             viewBox="0 0 60 60"
             style={{ overflow: "visible" }}
             xmlSpace="preserve">
-            <defs>
-                <filter id="shadow-hazard" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="0.5" stdDeviation="1" floodOpacity="0.8"/>
-                </filter>
-            </defs>
+            <ShadowFilter id="shadow-hazard" />
             
             {/* Apply transitions to entire token */}
             <g className={`apply-transitions ${className}`}>
@@ -40,31 +55,7 @@ export function MagnetKindHazardToken({ className, details }: MagnetKindProps): 
                 />
                 
                 {/* Warning exclamation mark */}
-                <g transform="translate(30, 30)" fill="#1a1a1a" opacity="0.9">
-                    {/* Exclamation mark body */}
-                    <rect 
-                        x="-2" 
-                        y="-8" 
-                        width="4" 
-                        height="12" 
-                        rx="2" 
-                        fill="rgba(255, 255, 255, 0.9)" 
-                    />
-                    
-                    {/* Exclamation mark dot */}
-                    <circle 
-                        cx="0" 
-                        cy="8" 
-                        r="2.5" 
-                        fill="rgba(255, 255, 255, 0.9)" 
-                    />
-                    
-                    {/* Additional hazard stripes for effect */}
-                    <g opacity="0.3">
-                        <rect x="-12" y="12" width="24" height="2" fill="#1a1a1a" />
-                        <rect x="-10" y="16" width="20" height="2" fill="#1a1a1a" />
-                    </g>
-                </g>
+                <HazardIcon />
             </g>
         </svg>
     );
