@@ -123,10 +123,14 @@ export const EntityInstance = ({
         [lastKnownEntity, setLastKnownEntity] = useState(entity);
 
     useEffect(() => {
-        if (entity) setLastKnownEntity(entity);
+        if (entity) {
+            setLastKnownEntity(entity);
+        }
     }, [entity]);
 
-    if (!lastKnownEntity) return null;
+    if (!lastKnownEntity) {
+        return null;
+    }
 
     const entityIds = useEntityStore(useShallow((state) => state.entities.map((e) => e.id))),
         { id, name, kind, status, level, damageTaken, color } = lastKnownEntity,
@@ -209,3 +213,4 @@ const Grabber = forwardRef<HTMLDivElement, unknown>((_, ref) => {
 });
 
 Grabber.displayName = "Grabber";
+

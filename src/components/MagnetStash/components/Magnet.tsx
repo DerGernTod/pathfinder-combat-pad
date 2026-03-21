@@ -36,20 +36,6 @@ function renderMagnetChildren(magnet: MagnetData<any>, draggingClass: string) {
     });
 }
 
-function handleNonDraggingEvent(
-    e: globalThis.PointerEvent,
-    id: number,
-    kind: MagnetKind,
-    deleteMagnet: (id: number) => void,
-    rotateMagnet: (id: number) => void,
-) {
-    if (isEraserEvent(e)) {
-        deleteMagnet(id);
-    } else if (MagnetKinds[kind].allowRotate) {
-        rotateMagnet(id);
-    }
-}
-
 function createStopDraggingHandler(options: {
     getMagnet: () => MagnetData<any> | undefined;
     deleteMagnet: (id: number) => void;
@@ -59,20 +45,32 @@ function createStopDraggingHandler(options: {
     setHighlightedMagnet: (id: number | null) => void;
     setDraggingAllowed: (v: boolean) => void;
 }) {
-    return function stopDraggingCallback(e: globalThis.PointerEvent) {
+    function handleNonDragging(e: globalThis.PointerEvent, m: MagnetData<any>) {
+        if (isEraserEvent(e)) {
+            options.deleteMagnet(m.id);
+        } else if (MagnetKinds[m.kind].allowRotate) {
+            options.rotateMagnet(m.id);
+        }
+    }
+
+    function stopDraggingImpl(e: globalThis.PointerEvent) {
         const magnet = options.getMagnet();
         if (!magnet) {
             return;
         }
-        const { id, isDragging, kind } = magnet;
+        const { id, isDragging } = magnet;
         options.setHighlightedMagnet(null);
         globalThis.removeEventListener("pointermove", options.updateLocation);
         if (!isDragging) {
-            handleNonDraggingEvent(e, id, kind, options.deleteMagnet, options.rotateMagnet);
+            handleNonDragging(e, magnet);
         } else {
             options.dropMagnet(id);
         }
         options.setDraggingAllowed(false);
+    }
+
+    return function stopDraggingCallback(e: globalThis.PointerEvent) {
+        return stopDraggingImpl(e);
     };
 }
 
